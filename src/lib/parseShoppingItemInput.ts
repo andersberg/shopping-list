@@ -3,8 +3,9 @@ import {
   DEFAULT_UNIT,
   STARTS_WITH_NUMBER_REGEX,
 } from "./constants";
-import { parseListInput } from "./parseListInput";
-import { parseListInputWithQuantity } from "./parseListInputWithQuantity";
+import { parseListInput } from "./ParseLinstInput/parseListInput";
+import { parseListInputWithQuantity } from "./ParseLinstInput/parseListInputWithQuantity";
+
 import { ShoppingItem, ShoppingListItemWithoutId } from "./schema";
 
 export function parseShoppingItemInput(

@@ -1,5 +1,5 @@
-import { COLON_SPLIT_REGEX, SPLIT_FIRST_WORD_REGEX } from "./constants";
-import { ShoppingItem, ShoppingListItemWithoutId } from "./schema";
+import { COLON_SPLIT_REGEX, SPLIT_FIRST_WORD_REGEX } from "../constants";
+import { ShoppingItem, ShoppingListItemWithoutId } from "../schema";
 
 export function parseListInput(
   input: string,

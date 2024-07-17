@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
-import { MOCK_SHOPPING_ITEMS } from "./mocks";
+import { MOCK_SHOPPING_ITEMS } from "../mocks";
+import { ShoppingListItem } from "../schema";
 import { parseListInputWithQuantity } from "./parseListInputWithQuantity";
-import { ShoppingListItem } from "./schema";
 
 describe("parseListInputWithQuantity", () => {
   it("2 mjölk", () => {
