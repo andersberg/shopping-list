@@ -1,33 +1,6 @@
 export const DEFAULT_UNIT = "st";
 export const DEFAULT_QUANTITY = 1;
 
-export const UNITS = [
-  "bunt",
-  "cl",
-  "centiliter",
-  "cm",
-  "centimeter",
-  "dl",
-  "deciliter",
-  "fpk",
-  "förpackning",
-  "g",
-  "gram",
-  "hg",
-  "hekto",
-  "kg",
-  "kilo",
-  "l",
-  "liter",
-  "m",
-  "meter",
-  "ml",
-  "milliliter",
-  "par",
-  "st",
-  "stycken",
-] as const;
-
 // /(\d+)?\s?+([a-zA-Z]+)\s?+([a-zA-Z]+)?/i;
 // /(\d+)\s+(\p{L}+)\s+(\p{L}+)/iu;
 
