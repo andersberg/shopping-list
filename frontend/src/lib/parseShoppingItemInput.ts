@@ -1,4 +1,5 @@
 import { ShoppingItem } from "@backend/lib/ShoppingItem";
+import { ShoppingListItemWithoutId } from "@backend/lib/schema";
 import { parseListInput } from "./ParseLinstInput/parseListInput";
 import { parseListInputWithQuantity } from "./ParseLinstInput/parseListInputWithQuantity";
 import {
@@ -6,8 +7,6 @@ import {
   DEFAULT_UNIT,
   STARTS_WITH_NUMBER_REGEX,
 } from "./constants";
-
-import { ShoppingListItemWithoutId } from "./schema";
 
 export function parseShoppingItemInput(
   input: string,

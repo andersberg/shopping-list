@@ -1,6 +1,6 @@
 import { describe, expect, it } from "bun:test";
+import { ShoppingListItem } from "../../../../backend/src/lib/schema";
 import { MOCK_SHOPPING_ITEMS } from "../mocks";
-import { ShoppingListItem } from "../schema";
 import { parseListInputWithQuantity } from "./parseListInputWithQuantity";
 
 describe("parseListInputWithQuantity", () => {

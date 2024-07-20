@@ -1,7 +1,7 @@
 import { describe, expect, it } from "bun:test";
+import type { ShoppingListItem } from "../../../backend/src/lib/schema";
 import { MOCK_SHOPPING_ITEMS } from "./mocks";
 import { parseShoppingItemInput } from "./parseShoppingItemInput";
-import type { ShoppingListItem } from "./schema";
 
 describe("parseShoppingItemInput", () => {
   it("1 kg mjöl 3 för 2", () => {

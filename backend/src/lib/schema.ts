@@ -1,5 +1,5 @@
-import { ShoppingItemSchema } from "@backend/lib/ShoppingItem";
 import { z } from "zod";
+import { ShoppingItemSchema } from "./ShoppingItem";
 
 export const ShoppingListItemSchema = ShoppingItemSchema.extend({
   quantity: z

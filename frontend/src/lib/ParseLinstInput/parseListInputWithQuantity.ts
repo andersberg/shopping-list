@@ -1,5 +1,7 @@
-import { DEFAULT_QUANTITY, DEFAULT_UNIT, UNITS } from "../constants";
-import { ShoppingItem, ShoppingListItem } from "../schema";
+import { UNITS } from "@backend/lib/constants";
+import { ShoppingItem } from "@backend/lib/ShoppingItem";
+import { ShoppingListItem } from "../../../../backend/src/lib/schema";
+import { DEFAULT_QUANTITY, DEFAULT_UNIT } from "../constants";
 import { parseListInput } from "./parseListInput";
 
 type Unit = (typeof UNITS)[number];
