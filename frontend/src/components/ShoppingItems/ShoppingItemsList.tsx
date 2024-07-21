@@ -1,14 +1,18 @@
 import { parseShoppingItemInput } from "@/lib/parseShoppingItemInput";
-import { ShoppingItem } from "@backend/lib/ShoppingItem";
-import { useQuery } from "@tanstack/react-query";
+import { shoppingListQueryClient } from "@/lib/resources";
+import { ShoppingItem, ShoppingItemWithoutId } from "@backend/lib/ShoppingItem";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { Input } from "../ui/input";
+import { addShoppingItem } from "./mutations";
 import { getShoppingItems } from "./resources";
 
 const INPUT_NAME = "input";
 
+const shoppingListsQueryKey = ["shopping-items"];
+
 export function ShoppingItemsList() {
   const shoppingListsQuery = useQuery<ShoppingItem[]>({
-    queryKey: ["shopping-items"],
+    queryKey: shoppingListsQueryKey,
     queryFn: getShoppingItems,
   });
 
@@ -22,10 +26,25 @@ export function ShoppingItemsList() {
 
     if (typeof input === "string") {
       const parsed = parseShoppingItemInput(input, data);
-
+      addItemMutation.mutate(parsed);
       console.log(parsed);
+      event.currentTarget.reset();
     }
   }
+
+  const addItemMutation = useMutation({
+    mutationFn: async (item: ShoppingItemWithoutId) => {
+      const response = await addShoppingItem(item);
+      if (!response.ok) {
+        throw new Error("Failed to add item");
+      }
+      return await response.json();
+    },
+    onSettled: () =>
+      shoppingListQueryClient.invalidateQueries({
+        queryKey: shoppingListsQueryKey,
+      }),
+  });
 
   if (!shoppingListsQuery.data) {
     return <div>Loading...</div>;

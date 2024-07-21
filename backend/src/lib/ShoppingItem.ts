@@ -21,3 +21,8 @@ export const ShoppingItemSchema = z.object({
 });
 
 export type ShoppingItem = z.infer<typeof ShoppingItemSchema>;
+
+export const ShoppingItemWithoutIdSchema = ShoppingItemSchema.omit({
+  id: true,
+});
+export type ShoppingItemWithoutId = z.infer<typeof ShoppingItemWithoutIdSchema>;

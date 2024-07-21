@@ -1,7 +1,10 @@
 import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { hc } from "hono/client";
+import { nanoid } from "nanoid";
 import { z } from "zod";
+
+import { ShoppingItemWithoutIdSchema } from "../lib/ShoppingItem";
 import { SHOPPING_ITEMS } from "../mocks/shoppingItems";
 
 const shoppingItems = new Hono();
@@ -27,6 +30,14 @@ export const shoppingItemsRoute = shoppingItems
   )
   .get("/", (c) => {
     return c.json(Array.from(SHOPPING_ITEMS.values()));
+  })
+  .post("/", zValidator("json", ShoppingItemWithoutIdSchema), (c) => {
+    const item = c.req.valid("json");
+    const itemWithId = { ...item, id: nanoid() };
+
+    SHOPPING_ITEMS.set(itemWithId.id, itemWithId);
+
+    return c.json(itemWithId);
   });
 
 export type ShoppingItemsRoute = typeof shoppingItemsRoute;

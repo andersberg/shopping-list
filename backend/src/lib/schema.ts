@@ -10,6 +10,4 @@ export const ShoppingListItemSchema = ShoppingItemSchema.extend({
     .default(1),
   comment: z.string().optional(),
 });
-
 export type ShoppingListItem = z.infer<typeof ShoppingListItemSchema>;
-export type ShoppingListItemWithoutId = Omit<ShoppingListItem, "id">;
