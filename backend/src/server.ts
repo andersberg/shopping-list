@@ -1,6 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { shoppingItemsRoute } from "./routes/ShoppingItems";
+import { shoppingListsRoute } from "./routes/ShoppingLists";
 
 const app = new Hono();
 
@@ -17,6 +18,7 @@ app.get("/", (c) => {
 });
 
 app.route("/items", shoppingItemsRoute);
+app.route("/lists", shoppingListsRoute);
 
 export default {
   port: Number(process.env.BACKEND_PORT),

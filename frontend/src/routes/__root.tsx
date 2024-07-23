@@ -1,12 +1,16 @@
-import { shoppingListQueryClient } from "@/lib/resources";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
-import { Outlet, createRootRoute } from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
+import { Fragment } from "react/jsx-runtime";
 
-export const Route = createRootRoute({
+const rootRouteWithContext = createRootRouteWithContext<{
+  queryClient: QueryClient;
+}>();
+
+export const Route = rootRouteWithContext({
   component: () => (
-    <QueryClientProvider client={shoppingListQueryClient}>
+    <Fragment>
       <main className="space-y-4 grow">
         <header>
           <h1 className="text-3xl font-bold">Shopping List</h1>
@@ -15,6 +19,6 @@ export const Route = createRootRoute({
       </main>
       <TanStackRouterDevtools position="top-right" />
       <ReactQueryDevtools position="bottom" buttonPosition="top-right" />
-    </QueryClientProvider>
+    </Fragment>
   ),
 });

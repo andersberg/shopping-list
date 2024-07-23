@@ -1,5 +1,5 @@
 import { parseShoppingItemInput } from "@/lib/parseShoppingItemInput";
-import { shoppingListQueryClient } from "@/lib/resources";
+import { queryClient } from "@/main";
 import { ShoppingItem, ShoppingItemWithoutId } from "@backend/lib/ShoppingItem";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Input } from "../ui/input";
@@ -11,7 +11,7 @@ const INPUT_NAME = "input";
 const shoppingListsQueryKey = ["shopping-items"];
 
 export function ShoppingItemsList() {
-  const shoppingListsQuery = useQuery<ShoppingItem[]>({
+  const shoppingItemsQuery = useQuery<ShoppingItem[]>({
     queryKey: shoppingListsQueryKey,
     queryFn: getShoppingItems,
   });
@@ -41,19 +41,19 @@ export function ShoppingItemsList() {
       return await response.json();
     },
     onSettled: () =>
-      shoppingListQueryClient.invalidateQueries({
+      queryClient.invalidateQueries({
         queryKey: shoppingListsQueryKey,
       }),
   });
 
-  if (!shoppingListsQuery.data) {
+  if (!shoppingItemsQuery.data) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="">
       <ul>
-        {shoppingListsQuery.data.map((item) => (
+        {shoppingItemsQuery.data.map((item) => (
           <li key={item.id}>
             <p className="space-x-[1ch]">
               <span>{item.quantity}</span>
@@ -66,7 +66,7 @@ export function ShoppingItemsList() {
       </ul>
 
       <form
-        onSubmit={(event) => handleSubmit(event, shoppingListsQuery.data)}
+        onSubmit={(event) => handleSubmit(event, shoppingItemsQuery.data)}
         className="fixed inset-x-0 bottom-0 z-50 p-2 py-4 bg-primary/85 backdrop-blur-sm"
       >
         <Input
