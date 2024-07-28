@@ -2,7 +2,7 @@
   "name": "shopping-list-backend",
   "type": "module",
   "scripts": {
-    "dev": "bun run --hot src/server.ts",
+    "dev": "bun run --hot server/index.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

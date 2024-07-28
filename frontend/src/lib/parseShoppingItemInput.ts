@@ -1,5 +1,7 @@
-import { ShoppingItem } from "@backend/lib/ShoppingItem";
-import { ShoppingListItemWithoutId } from "@backend/lib/schema";
+import {
+  AddShoppingItem,
+  ShoppingItem,
+} from "../../../server/lib/ShoppingItem";
 import { parseListInput } from "./ParseLinstInput/parseListInput";
 import { parseListInputWithQuantity } from "./ParseLinstInput/parseListInputWithQuantity";
 import {
@@ -11,7 +13,7 @@ import {
 export function parseShoppingItemInput(
   input: string,
   items: Array<ShoppingItem>
-): ShoppingListItemWithoutId {
+): AddShoppingItem {
   const startsWithQuantity = STARTS_WITH_NUMBER_REGEX.test(input);
 
   if (startsWithQuantity) {

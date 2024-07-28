@@ -1,11 +1,11 @@
 import {
-  ShoppingItem,
-  ShoppingListItemWithoutId,
-} from "../../backend/src/lib/schema";
-import {
   COLON_SPLIT_REGEX,
   SPLIT_FIRST_WORD_REGEX,
 } from "../../frontend/src/lib/constants";
+import {
+  ShoppingItem,
+  ShoppingListItemWithoutId,
+} from "../../server/src/lib/schema";
 
 export function parseListInput(
   input: string,

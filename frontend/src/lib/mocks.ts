@@ -1,4 +1,4 @@
-import { ShoppingItem } from "@backend/lib/ShoppingItem";
+import { ShoppingItem } from "../../../server/lib/ShoppingItem";
 
 export const MOCK_SHOPPING_ITEMS = [
   {

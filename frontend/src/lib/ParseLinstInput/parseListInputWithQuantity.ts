@@ -1,6 +1,6 @@
-import { UNITS } from "@backend/lib/constants";
-import { ShoppingItem } from "@backend/lib/ShoppingItem";
-import { ShoppingListItem } from "../../../../backend/src/lib/schema";
+import { UNITS } from "../../../../server/lib/constants";
+import { ShoppingItem } from "../../../../server/lib/ShoppingItem";
+import { ShoppingListItem } from "../../../../server/src/lib/schema";
 import { DEFAULT_QUANTITY, DEFAULT_UNIT } from "../constants";
 import { parseListInput } from "./parseListInput";
 

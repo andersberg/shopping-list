@@ -4,14 +4,10 @@ import { hc } from "hono/client";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 
-import { ShoppingItemWithoutIdSchema } from "../lib/ShoppingItem";
+import { AddShoppingItemSchema } from "../lib/ShoppingItem";
 import { SHOPPING_ITEMS } from "../mocks/shoppingItems";
 
 const shoppingItems = new Hono();
-
-export const shoppingItemsClient = hc<ShoppingItemsRoute>(
-  `http://localhost:${Bun.env.BACKEND_PORT}/items`
-);
 
 export const shoppingItemsRoute = shoppingItems
   .get(
@@ -31,7 +27,7 @@ export const shoppingItemsRoute = shoppingItems
   .get("/", (c) => {
     return c.json(Array.from(SHOPPING_ITEMS.values()));
   })
-  .post("/", zValidator("json", ShoppingItemWithoutIdSchema), (c) => {
+  .post("/", zValidator("json", AddShoppingItemSchema), (c) => {
     const item = c.req.valid("json");
     const itemWithId = { ...item, id: nanoid() };
 

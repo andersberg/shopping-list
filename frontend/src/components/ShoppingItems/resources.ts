@@ -1,7 +1,7 @@
-import { shoppingItemsClient } from "@backend/routes/ShoppingItems";
+import { ItemsApi } from "@/lib/api";
 
 export async function getShoppingItems() {
-  const res = await shoppingItemsClient.index.$get();
+  const res = await ItemsApi.$get();
   const items = await res.json();
 
   return items;

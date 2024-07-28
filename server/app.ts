@@ -1,11 +1,14 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { logger } from "hono/logger";
 import { shoppingItemsRoute } from "./routes/ShoppingItems";
 import { shoppingListsRoute } from "./routes/ShoppingLists";
 
+const FRONTEND_PORT = Bun.env.FRONTEND_PORT;
+
 const app = new Hono();
 
-const FRONTEND_PORT = Bun.env.FRONTEND_PORT;
+app.use(logger());
 
 app.use(
   cors({
@@ -13,14 +16,13 @@ app.use(
   })
 );
 
+const apiRoutes = app
+  .route("/lists", shoppingListsRoute)
+  .route("/items", shoppingItemsRoute);
+
 app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-app.route("/items", shoppingItemsRoute);
-app.route("/lists", shoppingListsRoute);
-
-export default {
-  port: Number(process.env.BACKEND_PORT),
-  fetch: app.fetch,
-};
+export type ApiRoutes = typeof apiRoutes;
+export { app };

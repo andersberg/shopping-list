@@ -1,5 +1,5 @@
 import { describe, expect, it } from "bun:test";
-import type { ShoppingListItem } from "../../../backend/src/lib/schema";
+import type { ShoppingListItem } from "../../../server/src/lib/schema";
 import { MOCK_SHOPPING_ITEMS } from "./mocks";
 import { parseShoppingItemInput } from "./parseShoppingItemInput";
 

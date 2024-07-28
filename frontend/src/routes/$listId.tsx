@@ -9,21 +9,21 @@ export const Route = createFileRoute("/$listId")({
 
     return queryClient.ensureQueryData(queryOptions);
   },
-  component: () => <div>Hello /$listId!</div>,
+  component: ShoppingList,
 });
 
 function ShoppingList() {
   const { listId } = Route.useParams();
   const { data: list } = useQuery(shoppingListQueryOptions(listId));
 
-  if (!list) {
+  if (!list.item) {
     return <div>Loading...</div>;
   }
 
   return (
     <main>
       <header>
-        <h2>{list}</h2>
+        <h2>{list.item?.name}</h2>
       </header>
     </main>
   );

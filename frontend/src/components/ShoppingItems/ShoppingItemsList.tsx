@@ -1,7 +1,10 @@
 import { parseShoppingItemInput } from "@/lib/parseShoppingItemInput";
 import { queryClient } from "@/main";
-import { ShoppingItem, ShoppingItemWithoutId } from "@backend/lib/ShoppingItem";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  AddShoppingItem,
+  ShoppingItem,
+} from "../../../../server/lib/ShoppingItem";
 import { Input } from "../ui/input";
 import { addShoppingItem } from "./mutations";
 import { getShoppingItems } from "./resources";
@@ -33,7 +36,7 @@ export function ShoppingItemsList() {
   }
 
   const addItemMutation = useMutation({
-    mutationFn: async (item: ShoppingItemWithoutId) => {
+    mutationFn: async (item: AddShoppingItem) => {
       const response = await addShoppingItem(item);
       if (!response.ok) {
         throw new Error("Failed to add item");

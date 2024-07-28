@@ -1,11 +1,10 @@
-import { shoppingListsClient } from "@backend/routes/ShoppingLists";
+import { ListsApi } from "@/lib/api";
 import { queryOptions } from "@tanstack/react-query";
-import { getShoppingLists } from "./DisplayShoppingLists";
 
 export const shoppingListsQueryOptions = queryOptions({
-  queryKey: ["shopping-lists"],
+  queryKey: ["lists"],
   queryFn: async () => {
-    const result = await shoppingListsClient.index.$get();
+    const result = await ListsApi.$get();
     const data = await result.json();
 
     return data;

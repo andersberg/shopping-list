@@ -10,6 +10,12 @@ const BACKEND_PORT = import.meta.env.BACKEND_PORT ?? 5173;
 export default defineConfig({
   server: {
     port: Number(FRONTEND_PORT),
+    // proxy: {
+    //   "/api": {
+    //     target: `http://localhost:${BACKEND_PORT}`,
+    //     changeOrigin: true,
+    //   },
+    // },
   },
   define: {
     "Bun.env.BACKEND_PORT": BACKEND_PORT,
@@ -17,8 +23,8 @@ export default defineConfig({
   plugins: [react(), TanStackRouterVite()],
   resolve: {
     alias: {
-      "@": resolve(__dirname, "./src"),
-      "@backend": resolve(__dirname, "../backend/src"),
+      "@": resolve(import.meta.dir, "./src"),
+      "@server": resolve(import.meta.dir, "../server"),
     },
   },
 });

@@ -1,11 +1,13 @@
-import { ShoppingItem } from "@backend/lib/ShoppingItem";
-import { ShoppingListItemWithoutId } from "../../../../backend/src/lib/schema";
+import {
+  AddShoppingItem,
+  ShoppingItem,
+} from "../../../../server/lib/ShoppingItem";
 import { COLON_SPLIT_REGEX, SPLIT_FIRST_WORD_REGEX } from "../constants";
 
 export function parseListInput(
   input: string,
   items: Array<ShoppingItem>
-): Omit<ShoppingListItemWithoutId, "quantity" | "unit"> {
+): Omit<AddShoppingItem, "quantity" | "unit"> {
   const [valuePart = "", commentPart = ""] = input.split(COLON_SPLIT_REGEX, 2);
   const match = findBestMatch(valuePart, items);
 

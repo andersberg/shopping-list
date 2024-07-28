@@ -1,4 +1,3 @@
-import { shoppingListsClient } from "@backend/routes/ShoppingLists";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { shoppingListsQueryOptions } from "./shoppingListsQueryOptions";
@@ -20,10 +19,4 @@ export function DisplayShoppingLists() {
       ))}
     </ul>
   );
-}
-
-export async function getShoppingLists() {
-  const result = await shoppingListsClient.index.$get();
-
-  return await result.json();
 }
