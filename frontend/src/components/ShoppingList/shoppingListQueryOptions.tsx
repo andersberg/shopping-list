@@ -10,11 +10,16 @@ export const shoppingListQueryOptions = (listId: ShoppingList["id"]) =>
         param: { id: listId },
       });
 
-      if (!result.ok) {
-        const error = await result.json();
-        throw new Error(result.json().error);
+      if (result.status === 404) {
+        const data = await result.json();
+        throw new Error(data.error);
       }
+
+      if (!result.ok) {
+        throw new Error("Failed to get list");
+      }
+
       const data = await result.json();
-      return data;
+      return data.item;
     },
   });

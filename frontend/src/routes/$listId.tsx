@@ -16,15 +16,27 @@ function ShoppingList() {
   const { listId } = Route.useParams();
   const { data: list } = useQuery(shoppingListQueryOptions(listId));
 
-  if (!list.item) {
+  if (!list) {
     return <div>Loading...</div>;
   }
 
   return (
     <main>
       <header>
-        <h2>{list.item?.name}</h2>
+        <h2>{list.name}</h2>
       </header>
+      <ul>
+        {list.items.map((item) => (
+          <li key={item.id}>
+            <p className="space-x-[1ch]">
+              <span>{item.quantity}</span>
+              <span>{item.unit}</span>
+              <span>{item.displayName}</span>
+              {item.comment && <span>{item.comment}</span>}
+            </p>
+          </li>
+        ))}
+      </ul>
     </main>
   );
 }

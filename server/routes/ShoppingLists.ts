@@ -12,7 +12,7 @@ export const shoppingListsRoute = new Hono()
       return c.json({ error: "not found" }, 404); // Specify 404
     }
 
-    return c.json({ item });
+    return c.json({ item }, 200);
   })
   .get("/", (c) => {
     return c.json(Array.from(SHOPPING_LISTS.values()));
