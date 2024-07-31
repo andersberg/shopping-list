@@ -15,7 +15,9 @@ export const Route = rootRouteWithContext({
         <header>
           <h1 className="text-3xl font-bold">Shopping List</h1>
         </header>
-        <Outlet />
+        <div className="p-4">
+          <Outlet />
+        </div>
       </main>
       <TanStackRouterDevtools position="top-right" />
       <ReactQueryDevtools position="bottom" buttonPosition="top-right" />

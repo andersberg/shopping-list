@@ -1,83 +1,58 @@
-import { parseShoppingItemInput } from "@/lib/parseShoppingItemInput";
 import { queryClient } from "@/main";
+import { EllipsisHorizontalIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { ShoppingItem } from "@server/lib/ShoppingItem";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import {
-  AddShoppingItem,
-  ShoppingItem,
-} from "../../../../server/lib/ShoppingItem";
-import { Input } from "../ui/input";
-import { addShoppingItem } from "./mutations";
-import { getShoppingItems } from "./resources";
+import { useState } from "react";
+import { ResponsiveDialog } from "../ResponsiveDialog";
+import { DeleteItemButton } from "./DeleteItemButton";
+import { deleteShoppingItem } from "./mutations";
+import { shoppingItemQueryOptions } from "./shoppingItemQueryOptions";
+import { shoppingItemsQueryOptions } from "./shoppingItemsQueryOptions";
 
-const INPUT_NAME = "input";
-
-const shoppingListsQueryKey = ["shopping-items"];
+const INPUT_NAME = "delete-item-id";
 
 export function ShoppingItemsList() {
-  const shoppingItemsQuery = useQuery<ShoppingItem[]>({
-    queryKey: shoppingListsQueryKey,
-    queryFn: getShoppingItems,
-  });
+  const { data: shoppingItems } = useQuery(shoppingItemsQueryOptions);
 
-  function handleSubmit(
-    event: React.FormEvent<HTMLFormElement>,
-    data: ShoppingItem[]
-  ) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const input = formData.get(INPUT_NAME);
-
-    if (typeof input === "string") {
-      const parsed = parseShoppingItemInput(input, data);
-      addItemMutation.mutate(parsed);
-      console.log(parsed);
-      event.currentTarget.reset();
-    }
-  }
-
-  const addItemMutation = useMutation({
-    mutationFn: async (item: AddShoppingItem) => {
-      const response = await addShoppingItem(item);
-      if (!response.ok) {
-        throw new Error("Failed to add item");
-      }
-      return await response.json();
-    },
-    onSettled: () =>
-      queryClient.invalidateQueries({
-        queryKey: shoppingListsQueryKey,
-      }),
-  });
-
-  if (!shoppingItemsQuery.data) {
+  if (!shoppingItems) {
     return <div>Loading...</div>;
   }
 
   return (
     <div className="">
       <ul>
-        {shoppingItemsQuery.data.map((item) => (
-          <li key={item.id}>
+        {shoppingItems.map((item) => (
+          <li key={item.id} className="flex items-center gap-4">
             <p className="space-x-[1ch]">
               <span>{item.quantity}</span>
               <span>{item.unit}</span>
               <span>{item.displayName}</span>
               {item.comment && <span>{item.comment}</span>}
             </p>
+
+            <ResponsiveDialog
+              closeText="Close"
+              description="Update item"
+              openText="Edit"
+              title="Edit item"
+            >
+              <UpdateItem itemId={item.id} />
+            </ResponsiveDialog>
+
+            <DeleteItemButton inputName={INPUT_NAME} itemId={item.id} />
           </li>
         ))}
       </ul>
-
-      <form
-        onSubmit={(event) => handleSubmit(event, shoppingItemsQuery.data)}
-        className="fixed inset-x-0 bottom-0 z-50 p-2 py-4 bg-primary/85 backdrop-blur-sm"
-      >
-        <Input
-          name={INPUT_NAME}
-          placeholder="Lägg till vara"
-          className="bg-primary-foreground"
-        />
-      </form>
     </div>
   );
+}
+
+function UpdateItem({ itemId }: { itemId: ShoppingItem["id"] }) {
+  const { data: shoppingItem } = useQuery(shoppingItemQueryOptions(itemId));
+
+  if (!shoppingItem) {
+    return <div>Loading...</div>;
+  }
+
+  return <span>UpdateItem</span>;
 }

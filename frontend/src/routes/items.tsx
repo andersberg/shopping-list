@@ -1,7 +1,8 @@
+import { AddShoppingItemForm } from "@/components/ShoppingItems/AddShoppingItemForm";
 import { ShoppingItemsList } from "@/components/ShoppingItems/ShoppingItemsList";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/items/")({
+export const Route = createFileRoute("/items")({
   component: ShoppingItems,
 });
 
@@ -11,7 +12,12 @@ function ShoppingItems() {
       <header>
         <h1>Shopping Items</h1>
       </header>
+
       <ShoppingItemsList />
+
+      <footer>
+        <AddShoppingItemForm />
+      </footer>
     </main>
   );
 }

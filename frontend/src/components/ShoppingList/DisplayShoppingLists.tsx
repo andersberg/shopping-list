@@ -9,10 +9,14 @@ export function DisplayShoppingLists() {
     return <div>Loading...</div>;
   }
   return (
-    <ul>
+    <ul className="divide-y ">
       {shoppingListsQuery.data.map((list) => (
-        <li key={list.id}>
-          <Link to="/$listId" params={{ listId: list.id }}>
+        <li key={list.id} className="py-2">
+          <Link
+            to="/$listId"
+            params={{ listId: list.id }}
+            className="text-2xl font-medium uppercase text-primary"
+          >
             {list.name}
           </Link>
         </li>

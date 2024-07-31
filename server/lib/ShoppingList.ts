@@ -10,7 +10,7 @@ export const ShoppingListSchema = z.object({
 });
 export type ShoppingList = z.infer<typeof ShoppingListSchema>;
 
-export const ShoppingListWithoutIdSchema = ShoppingListSchema.omit({
+export const AddShoppingListSchema = ShoppingListSchema.omit({
   id: true,
 });
-export type ShoppingListWithoutId = z.infer<typeof ShoppingListWithoutIdSchema>;
+export type AddShoppingList = z.infer<typeof AddShoppingListSchema>;
