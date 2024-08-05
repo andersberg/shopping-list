@@ -19,10 +19,7 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
-import { cn } from "@/lib/utils";
 
 export function ResponsiveDialog({
   closeText,
@@ -32,7 +29,7 @@ export function ResponsiveDialog({
   title,
 }: React.PropsWithChildren<{
   closeText: string;
-  openText: string;
+  openText: React.ReactNode;
   description: string;
   title: string;
 }>) {
@@ -43,7 +40,7 @@ export function ResponsiveDialog({
     return (
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
-          <Button variant="outline">{openText}</Button>
+          <Button variant="ghost">{openText}</Button>
         </DialogTrigger>
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
@@ -59,14 +56,16 @@ export function ResponsiveDialog({
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant="outline">{openText}</Button>
+        <Button variant="ghost">{openText}</Button>
       </DrawerTrigger>
       <DrawerContent>
         <DrawerHeader className="text-left">
           <DrawerTitle>{title}</DrawerTitle>
           <DrawerDescription>{description}</DrawerDescription>
         </DrawerHeader>
-        {children}
+
+        <div className="px-4">{children}</div>
+
         <DrawerFooter className="pt-2">
           <DrawerClose asChild>
             <Button variant="outline">{closeText}</Button>

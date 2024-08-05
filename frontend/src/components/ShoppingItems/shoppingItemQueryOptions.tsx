@@ -4,7 +4,7 @@ import { queryOptions } from "@tanstack/react-query";
 
 export const shoppingItemQueryOptions = (itemId: ShoppingItem["id"]) =>
   queryOptions({
-    queryKey: ["item", itemId],
+    queryKey: ["items", itemId],
     queryFn: async () => {
       const result = await ItemsApi[":id"].$get({
         param: { id: itemId },
