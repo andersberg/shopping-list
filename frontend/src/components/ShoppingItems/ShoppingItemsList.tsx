@@ -44,6 +44,7 @@ function ShoppingItemsListItem({ itemId }: { itemId: ShoppingItem["id"] }) {
         <span>{item.displayName}</span>
         {item.comment && <span>{item.comment}</span>}
       </p>
+      <p className="text-xs">{item.id}</p>
 
       <ResponsiveDialog
         closeText="Stäng"

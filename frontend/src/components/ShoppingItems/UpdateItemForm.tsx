@@ -130,6 +130,17 @@ export function UpdateItemForm({ item }: { item: ShoppingItem }) {
         )}
       />
 
+      <fieldset>
+        <Label htmlFor={item.id}>Namn</Label>
+        <Input
+          type="text"
+          id={item.id}
+          name={item.id}
+          defaultValue={item.id}
+          readOnly
+        />
+      </fieldset>
+
       <Button type="submit">Spara</Button>
     </form>
   );

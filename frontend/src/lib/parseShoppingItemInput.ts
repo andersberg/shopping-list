@@ -1,7 +1,4 @@
-import {
-  AddShoppingItem,
-  ShoppingItem,
-} from "../../../server/lib/ShoppingItem";
+import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
 import { parseListInput } from "./ParseLinstInput/parseListInput";
 import { parseListInputWithQuantity } from "./ParseLinstInput/parseListInputWithQuantity";
 import {
@@ -13,7 +10,7 @@ import {
 export function parseShoppingItemInput(
   input: string,
   items: Array<ShoppingItem>
-): AddShoppingItem {
+): AddShoppingItem | ShoppingItem {
   const startsWithQuantity = STARTS_WITH_NUMBER_REGEX.test(input);
 
   if (startsWithQuantity) {

@@ -10,6 +10,7 @@ import { SHOPPING_ITEMS } from "../mocks/shoppingItems";
 const shoppingItems = new Hono();
 
 const ShoppingItemPathParamSchema = z.object({ id: z.string().nanoid() });
+
 export const shoppingItemsRoute = shoppingItems
   .get("/:id", zValidator("param", ShoppingItemPathParamSchema), (c) => {
     const { id } = c.req.valid("param");

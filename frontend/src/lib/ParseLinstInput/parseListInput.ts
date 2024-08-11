@@ -1,13 +1,7 @@
-import {
-  AddShoppingItem,
-  ShoppingItem,
-} from "../../../../server/lib/ShoppingItem";
+import { ShoppingItem } from "@server/lib/ShoppingItem";
 import { COLON_SPLIT_REGEX, SPLIT_FIRST_WORD_REGEX } from "../constants";
 
-export function parseListInput(
-  input: string,
-  items: Array<ShoppingItem>
-): Omit<AddShoppingItem, "quantity" | "unit"> {
+export function parseListInput(input: string, items: Array<ShoppingItem>) {
   const [valuePart = "", commentPart = ""] = input.split(COLON_SPLIT_REGEX, 2);
   const match = findBestMatch(valuePart, items);
 
@@ -18,7 +12,7 @@ export function parseListInput(
     ].filter(Boolean);
 
     return {
-      // id: match.id,
+      id: match.id,
       comment: comment.length > 0 ? comment.join(", ") : undefined,
       displayName: match.displayName,
       value: match.value,
@@ -30,7 +24,6 @@ export function parseListInput(
   const comment = [commentPart.trim(), inputRest.trim()].filter(Boolean);
 
   return {
-    // id: nanoid(),
     comment: comment.length > 0 ? comment.join(", ") : undefined,
     displayName: value.trim(),
     value: value.trim(),

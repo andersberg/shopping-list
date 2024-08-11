@@ -1,10 +1,22 @@
+import { queryClient } from "@/main";
 import { Route as ListRoute } from "@/routes/$listId";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { AddShoppingItemForm } from "../ShoppingItems/AddShoppingItemForm";
+import { addNewShoppingItem } from "../ShoppingItems/mutations";
+import { shoppingItemsQueryOptions } from "../ShoppingItems/shoppingItemsQueryOptions";
 import { shoppingListQueryOptions } from "./shoppingListQueryOptions";
 
 export function DisplayShoppingList() {
   const { listId } = ListRoute.useParams();
   const { data: list } = useQuery(shoppingListQueryOptions(listId));
+
+  const addShoppingItemMutation = useMutation({
+    mutationFn: addNewShoppingItem,
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: shoppingItemsQueryOptions.queryKey,
+      }),
+  });
 
   if (!list) {
     return <div>Loading...</div>;
@@ -28,7 +40,7 @@ export function DisplayShoppingList() {
         ))}
       </ul>
       <footer>
-        <form></form>
+        <AddShoppingItemForm handleMutate={addShoppingItemMutation.mutate} />
       </footer>
     </main>
   );

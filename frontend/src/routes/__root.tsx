@@ -4,23 +4,24 @@ import { Outlet, createRootRouteWithContext } from "@tanstack/react-router";
 import { TanStackRouterDevtools } from "@tanstack/router-devtools";
 import { Fragment } from "react/jsx-runtime";
 
+const isDev = import.meta.env.DEV;
+
 const rootRouteWithContext = createRootRouteWithContext<{
   queryClient: QueryClient;
 }>();
 
 export const Route = rootRouteWithContext({
-  component: () => (
-    <Fragment>
-      <main className="space-y-4 grow">
-        <header>
-          <h1 className="text-3xl font-bold">Shopping List</h1>
-        </header>
-        <div className="p-4">
-          <Outlet />
-        </div>
-      </main>
-      <TanStackRouterDevtools position="top-right" />
-      <ReactQueryDevtools position="bottom" buttonPosition="top-right" />
-    </Fragment>
-  ),
+  component: () => {
+    return (
+      <Fragment>
+        {isDev && (
+          <Fragment>
+            <TanStackRouterDevtools position="top-right" />
+            <ReactQueryDevtools position="bottom" buttonPosition="top-left" />
+          </Fragment>
+        )}
+        <Outlet />
+      </Fragment>
+    );
+  },
 });

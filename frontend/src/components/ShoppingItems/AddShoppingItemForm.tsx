@@ -1,23 +1,19 @@
 import { parseShoppingItemInput } from "@/lib/parseShoppingItemInput";
-import { queryClient } from "@/main";
-import { ShoppingItem } from "@server/lib/ShoppingItem";
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
+import { useQuery } from "@tanstack/react-query";
 import { Input } from "../ui/input";
-import { addNewShoppingItem } from "./mutations";
 import { shoppingItemsQueryOptions } from "./shoppingItemsQueryOptions";
 
 const INPUT_NAME = "value";
 
-export function AddShoppingItemForm() {
+export function AddShoppingItemForm({
+  className,
+  handleMutate,
+}: {
+  className?: string;
+  handleMutate: (item: AddShoppingItem) => void;
+}) {
   const shoppingItemsQuery = useQuery(shoppingItemsQueryOptions);
-
-  const addNewShoppingItemMutation = useMutation({
-    mutationFn: addNewShoppingItem,
-    onSettled: () =>
-      queryClient.invalidateQueries({
-        queryKey: shoppingItemsQueryOptions.queryKey,
-      }),
-  });
 
   function handleOnSubmit(
     event: React.FormEvent<HTMLFormElement>,
@@ -29,8 +25,7 @@ export function AddShoppingItemForm() {
 
     if (typeof input === "string") {
       const parsed = parseShoppingItemInput(input, data);
-      addNewShoppingItemMutation.mutate(parsed);
-      console.log(parsed);
+      handleMutate(parsed);
       event.currentTarget.reset();
     }
   }
@@ -42,7 +37,7 @@ export function AddShoppingItemForm() {
   return (
     <form
       onSubmit={(event) => handleOnSubmit(event, shoppingItemsQuery.data)}
-      className="fixed inset-x-0 bottom-0 z-50 p-2 py-4 "
+      className={className}
     >
       <Input
         name={INPUT_NAME}
