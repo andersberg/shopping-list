@@ -1,6 +1,14 @@
 import { ItemsApi } from "@/lib/api";
 import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
 
+export function addOrUpdateShoppingItem(item: AddShoppingItem | ShoppingItem) {
+  if ("id" in item) {
+    return updateShoppingItem(item);
+  } else {
+    return addNewShoppingItem(item);
+  }
+}
+
 export async function addNewShoppingItem(item: AddShoppingItem) {
   const response = await ItemsApi.$post({
     json: item,

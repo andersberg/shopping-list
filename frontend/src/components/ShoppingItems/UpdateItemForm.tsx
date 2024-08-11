@@ -1,12 +1,5 @@
 import { queryClient } from "@/main";
 import { Label } from "@radix-ui/react-label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@radix-ui/react-select";
 import { UNITS } from "@server/lib/constants";
 import { ShoppingItem } from "@server/lib/ShoppingItem";
 import { useForm } from "@tanstack/react-form";
@@ -14,6 +7,13 @@ import { zodValidator } from "@tanstack/zod-form-adapter";
 import { z } from "zod";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../ui/select";
 import { updateShoppingItem } from "./mutations";
 import { shoppingItemsQueryOptions } from "./shoppingItemsQueryOptions";
 
@@ -22,8 +22,7 @@ export function UpdateItemForm({ item }: { item: ShoppingItem }) {
     defaultValues: item,
     validatorAdapter: zodValidator(),
     onSubmit: async (data) => {
-      const result = await updateShoppingItem(data.value);
-      console.log({ result });
+      await updateShoppingItem(data.value);
       queryClient.invalidateQueries({
         queryKey: shoppingItemsQueryOptions.queryKey,
       });

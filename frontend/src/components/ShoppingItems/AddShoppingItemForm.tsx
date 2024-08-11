@@ -39,11 +39,7 @@ export function AddShoppingItemForm({
       onSubmit={(event) => handleOnSubmit(event, shoppingItemsQuery.data)}
       className={className}
     >
-      <Input
-        name={INPUT_NAME}
-        placeholder="Lägg till vara"
-        // className="bg-primary-foreground"
-      />
+      <Input name={INPUT_NAME} placeholder="Lägg till vara" />
     </form>
   );
 }
