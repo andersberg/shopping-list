@@ -23,9 +23,9 @@ export function DisplayShoppingList() {
   }
 
   return (
-    <main>
-      <header>
-        <h2>{list.name}</h2>
+    <main className="space-y-4">
+      <header className="py-4">
+        <h2 className="text-2xl font-bold uppercase">{list.name}</h2>
       </header>
       <ul>
         {list.items.map((item) => (

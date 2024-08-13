@@ -6,8 +6,8 @@ export const shoppingListQueryOptions = (listId: ShoppingList["id"]) =>
   queryOptions({
     queryKey: ["list", listId],
     queryFn: async () => {
-      const result = await ListsApi[":id"].$get({
-        param: { id: listId },
+      const result = await ListsApi[":listId"].$get({
+        param: { listId },
       });
 
       if (result.status === 404) {
@@ -20,6 +20,6 @@ export const shoppingListQueryOptions = (listId: ShoppingList["id"]) =>
       }
 
       const data = await result.json();
-      return data.item;
+      return data.shoppingList;
     },
   });

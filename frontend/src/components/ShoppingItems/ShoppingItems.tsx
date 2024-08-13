@@ -1,9 +1,8 @@
 import { queryClient } from "@/main";
 import { useMutation } from "@tanstack/react-query";
-import { MainLayout } from "../MainLayout";
 import { AddShoppingItemForm } from "./AddShoppingItemForm";
-import { addOrUpdateShoppingItem } from "./mutations";
 import { ShoppingItemsList } from "./ShoppingItemsList";
+import { addOrUpdateShoppingItem } from "./mutations";
 import { shoppingItemsQueryOptions } from "./shoppingItemsQueryOptions";
 
 export function ShoppingItems() {
@@ -16,9 +15,9 @@ export function ShoppingItems() {
   });
 
   return (
-    <MainLayout title="Varor">
+    <div data-component="ShoppingItems">
       <ShoppingItemsList />
       <AddShoppingItemForm handleMutate={addNewShoppingItemMutation.mutate} />
-    </MainLayout>
+    </div>
   );
 }

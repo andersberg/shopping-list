@@ -1,9 +1,8 @@
-import { nanoid } from "nanoid";
 import { z } from "zod";
 import { UNITS } from "./constants";
 
 export const ShoppingItemSchema = z.object({
-  id: z.string().nanoid().default(nanoid),
+  id: z.string().uuid(),
   value: z.string().min(2, {
     message: "Item must be at least 2 characters.",
   }),
