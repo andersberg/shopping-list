@@ -1,5 +1,5 @@
-import { UNITS } from "@server/lib/constants";
 import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
+import { UNITS } from "@server/lib/constants";
 import { DEFAULT_QUANTITY, DEFAULT_UNIT } from "../constants";
 import { parseListInput } from "./parseListInput";
 
@@ -10,7 +10,7 @@ const isUnit = (value: unknown): value is Unit =>
 export function parseListInputWithQuantity(
   input: string,
   items: Array<ShoppingItem>
-): AddShoppingItem {
+): AddShoppingItem | ShoppingItem {
   const inputParts = input.split(" ");
   const quantityPart = inputParts.at(0)?.trim() ?? DEFAULT_QUANTITY;
   const quantity = Number(quantityPart);

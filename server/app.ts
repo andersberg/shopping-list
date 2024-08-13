@@ -1,8 +1,8 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { logger } from "hono/logger";
-import { shoppingItemsRoute } from "./routes/ShoppingItems";
-import { shoppingListsRoute } from "./routes/ShoppingLists";
+import { shoppingItemsRoute } from "./routes/ShoppingItemsRoute";
+import { shoppingListsRoute } from "./routes/ShoppingListsRoute";
 
 const FRONTEND_PORT = Bun.env.FRONTEND_PORT;
 

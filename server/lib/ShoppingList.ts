@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { ShoppingItemSchema } from "./ShoppingItem";
+import { AddShoppingItemSchema, ShoppingItemSchema } from "./ShoppingItem";
 
 export const ShoppingListSchema = z.object({
   id: z.string().uuid(),
@@ -15,3 +15,10 @@ export const AddShoppingListSchema = ShoppingListSchema.omit({
   id: true,
 });
 export type AddShoppingList = z.infer<typeof AddShoppingListSchema>;
+
+export const AddShoppingListItemSchema = z.union([
+  AddShoppingItemSchema,
+  ShoppingItemSchema,
+]);
+
+export type AddShoppingListItem = z.infer<typeof AddShoppingListItemSchema>;

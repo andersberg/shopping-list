@@ -14,9 +14,7 @@ export function parseShoppingItemInput(
   const startsWithQuantity = STARTS_WITH_NUMBER_REGEX.test(input);
 
   if (startsWithQuantity) {
-    const result = parseListInputWithQuantity(input, items);
-
-    return result;
+    return parseListInputWithQuantity(input, items);
   } else {
     const result = parseListInput(input, items);
 

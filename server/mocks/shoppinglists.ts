@@ -13,35 +13,6 @@ export const MOCK_SHOPPING_LISTS = [
         unit: "kg",
         quantity: 1,
       },
-      {
-        id: uuidv7(),
-        value: "mjölk",
-        displayName: "mjölk",
-        unit: "fpk",
-        quantity: 1,
-      },
-      {
-        id: uuidv7(),
-        value: "cola",
-        displayName: "Cola",
-        unit: "fpk",
-        quantity: 10,
-      },
-
-      {
-        id: uuidv7(),
-        value: "ketchup",
-        displayName: "ketchup",
-        unit: "st",
-        quantity: 1,
-      },
-      {
-        id: uuidv7(),
-        value: "cola zero",
-        displayName: "Cola Zero",
-        unit: "cl",
-        quantity: 33,
-      },
     ],
   },
   {

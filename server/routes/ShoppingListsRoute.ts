@@ -2,8 +2,11 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
-import { AddShoppingItemSchema, type ShoppingItem } from "../lib/ShoppingItem";
-import { ShoppingListSchema, type ShoppingList } from "../lib/ShoppingList";
+import { type ShoppingItem } from "../lib/ShoppingItem";
+import {
+  AddShoppingListItemSchema,
+  type ShoppingList,
+} from "../lib/ShoppingList";
 import { MOCK_SHOPPING_LISTS } from "../mocks/shoppinglists";
 
 const ShoppingListPathParamSchema = z.object({ listId: z.string().uuid() });
@@ -32,7 +35,15 @@ export const shoppingListsRoute = new Hono()
       return c.json({ error: "not found" }, 404); // Specify 404
     }
 
-    return c.json({ shoppingList }, 200);
+    return c.json(
+      {
+        shoppingList: {
+          ...shoppingList,
+          items: Array.from(shoppingList.items.values()),
+        },
+      },
+      200
+    );
   })
   .get("/", (c) => {
     return c.json(Array.from(SHOPPING_LIST_STORE.values()));
@@ -40,7 +51,7 @@ export const shoppingListsRoute = new Hono()
   .post(
     "/:listId/item",
     zValidator("param", ShoppingListPathParamSchema),
-    zValidator("json", AddShoppingItemSchema),
+    zValidator("json", AddShoppingListItemSchema),
     (c) => {
       const { listId } = c.req.valid("param");
       const item = c.req.valid("json");
@@ -51,9 +62,32 @@ export const shoppingListsRoute = new Hono()
         return c.json({ error: "not found" }, 404);
       }
 
-      const itemWithId = { ...item, id: uuidv7() };
-      list.items.set(itemWithId.id, itemWithId);
+      if ("id" in item) {
+        list.items.set(item.id, item);
+      } else {
+        const itemWithId = { ...item, id: uuidv7() };
+        list.items.set(itemWithId.id, itemWithId);
+      }
 
-      return c.json(item);
+      return c.json(item, 201);
+    }
+  )
+  .delete(
+    "/:listId/item/:itemId",
+    zValidator(
+      "param",
+      ShoppingListPathParamSchema.extend({ itemId: z.string().uuid() })
+    ),
+    (c) => {
+      const { listId, itemId } = c.req.valid("param");
+      const list = SHOPPING_LIST_STORE.get(listId);
+
+      if (list === undefined) {
+        return c.json({ error: "not found" }, 404);
+      }
+
+      list.items.delete(itemId);
+
+      return c.json({ deleted: itemId }, 200);
     }
   );

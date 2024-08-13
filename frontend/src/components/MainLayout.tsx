@@ -15,11 +15,15 @@ export function MainLayout({
       <footer className="w-full">
         <nav>
           <ul className="grid grid-cols-2 px-4 py-2 divide-x divide-slate-800 text-slate-800 bg-slate-300">
-            <li className="p-2 text-center">
-              <Link to="/">Listor</Link>
+            <li>
+              <Link to="/" className="block w-full h-full p-2 text-center">
+                Listor
+              </Link>
             </li>
-            <li className="p-2 text-center">
-              <Link to="/items">Varor</Link>
+            <li>
+              <Link to="/items" className="block w-full h-full p-2 text-center">
+                Varor
+              </Link>
             </li>
           </ul>
         </nav>
