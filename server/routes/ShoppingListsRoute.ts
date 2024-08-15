@@ -2,7 +2,7 @@ import { zValidator } from "@hono/zod-validator";
 import { Hono } from "hono";
 import { v7 as uuidv7 } from "uuid";
 import { z } from "zod";
-import { type ShoppingItem } from "../lib/ShoppingItem";
+import { ShoppingItemSchema, type ShoppingItem } from "../lib/ShoppingItem";
 import {
   AddShoppingListItemSchema,
   type ShoppingList,
@@ -26,6 +26,7 @@ const SHOPPING_LIST_STORE = new Map<
   ])
 );
 
+const ShoppingListItemPathParam = { itemId: z.string().uuid() };
 export const shoppingListsRoute = new Hono()
   .get("/:listId", zValidator("param", ShoppingListPathParamSchema), (c) => {
     const { listId } = c.req.valid("param");
@@ -72,11 +73,33 @@ export const shoppingListsRoute = new Hono()
       return c.json(item, 201);
     }
   )
+  .put(
+    "/:listId/item/:itemId",
+    zValidator(
+      "param",
+      ShoppingListPathParamSchema.extend(ShoppingListItemPathParam)
+    ),
+    zValidator("json", ShoppingItemSchema),
+    (c) => {
+      const { listId, itemId } = c.req.valid("param");
+      const item = c.req.valid("json");
+
+      const list = SHOPPING_LIST_STORE.get(listId);
+
+      if (list === undefined) {
+        return c.json({ error: "not found" }, 404);
+      }
+
+      list.items.set(itemId, item);
+
+      return c.json(item, 201);
+    }
+  )
   .delete(
     "/:listId/item/:itemId",
     zValidator(
       "param",
-      ShoppingListPathParamSchema.extend({ itemId: z.string().uuid() })
+      ShoppingListPathParamSchema.extend(ShoppingListItemPathParam)
     ),
     (c) => {
       const { listId, itemId } = c.req.valid("param");

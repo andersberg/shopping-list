@@ -3,9 +3,9 @@ import { TrashIcon } from "@heroicons/react/24/outline";
 import { ShoppingItem } from "@server/lib/ShoppingItem";
 import { ShoppingList } from "@server/lib/ShoppingList";
 import { useMutation } from "@tanstack/react-query";
+import { removeShoppingItemFromList } from "../ShoppingList/mutations";
+import { shoppingListQueryOptions } from "../ShoppingList/shoppingListQueryOptions";
 import { Button } from "../ui/button";
-import { removeShoppingItemFromList } from "./mutations";
-import { shoppingListQueryOptions } from "./shoppingListQueryOptions";
 
 export function RemoveListItemButton({
   inputName,

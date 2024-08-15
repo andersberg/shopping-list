@@ -1,12 +1,18 @@
 import { queryClient } from "@/main";
 import { Route as ListRoute } from "@/routes/$listId";
-import { PlusIcon, TrashIcon } from "@heroicons/react/24/outline";
-import { ShoppingItem } from "@server/lib/ShoppingItem";
+import { PlusIcon } from "@heroicons/react/24/outline";
+import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { ListItem } from "../ListItem/ListItem";
+import { RemoveListItemButton } from "../ListItem/RemoveListItemButton";
+import { AddShoppingItemForm } from "../ShoppingItems/AddShoppingItemForm";
 import { shoppingItemsQueryOptions } from "../ShoppingItems/shoppingItemsQueryOptions";
 import { Button } from "../ui/button";
-import { RemoveListItemButton } from "./RemoveListItemButton";
-import { addShoppingItemToList } from "./mutations";
+import {
+  addShoppingItemToList,
+  removeShoppingItemFromList,
+  updateShoppingListItem,
+} from "./mutations";
 import { shoppingListQueryOptions } from "./shoppingListQueryOptions";
 
 export function DisplayShoppingList() {
@@ -16,11 +22,29 @@ export function DisplayShoppingList() {
   const { data: items } = useQuery(shoppingItemsQueryOptions);
 
   const addShoppingItemMutation = useMutation({
-    mutationFn: async (item: ShoppingItem) =>
+    mutationFn: async (item: ShoppingItem | AddShoppingItem) =>
       addShoppingItemToList(listId, item),
     onSettled: () =>
       queryClient.invalidateQueries({
-        queryKey: listQueryOptions.queryKey,
+        queryKey: shoppingListQueryOptions(listId).queryKey,
+      }),
+  });
+
+  const editListItemMutation = useMutation({
+    mutationFn: async (item: ShoppingItem) =>
+      updateShoppingListItem(listId, item),
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: shoppingListQueryOptions(listId).queryKey,
+      }),
+  });
+
+  const removeListItemMutation = useMutation({
+    mutationFn: async (item: ShoppingItem) =>
+      removeShoppingItemFromList(listId, item),
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: shoppingListQueryOptions(listId).queryKey,
       }),
   });
 
@@ -36,16 +60,10 @@ export function DisplayShoppingList() {
       <ul>
         {list.items.map((item) => (
           <li key={item.id} className="flex gap-4">
-            <p className="space-x-[1ch]">
-              <span>{item.quantity}</span>
-              <span>{item.unit}</span>
-              <span>{item.displayName}</span>
-              {item.comment && <span>{item.comment}</span>}
-            </p>
-            <RemoveListItemButton
-              inputName={item.value}
-              itemId={item.id}
-              listId={list.id}
+            <ListItem
+              item={item}
+              onDelete={removeListItemMutation.mutate}
+              onEdit={editListItemMutation.mutate}
             />
           </li>
         ))}
@@ -80,8 +98,7 @@ export function DisplayShoppingList() {
       )}
 
       <footer>
-        <p>AddShoppingItemForm</p>
-        {/* <AddShoppingItemForm handleMutate={addShoppingItemMutation.mutate} /> */}
+        <AddShoppingItemForm handleMutate={addShoppingItemMutation.mutate} />
       </footer>
     </main>
   );
