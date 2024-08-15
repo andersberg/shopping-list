@@ -5,6 +5,7 @@ import { z } from "zod";
 import { ShoppingItemSchema, type ShoppingItem } from "../lib/ShoppingItem";
 import {
   AddShoppingListItemSchema,
+  CreateShoppingListSchema,
   type ShoppingList,
 } from "../lib/ShoppingList";
 import { MOCK_SHOPPING_LISTS } from "../mocks/shoppinglists";
@@ -13,7 +14,7 @@ const ShoppingListPathParamSchema = z.object({ listId: z.string().uuid() });
 
 const SHOPPING_LIST_STORE = new Map<
   string,
-  Omit<ShoppingList, "items"> & { items: Map<string, ShoppingItem> }
+  Omit<ShoppingList, "items"> & { items?: Map<string, ShoppingItem> }
 >(
   MOCK_SHOPPING_LISTS.map((list) => [
     list.id,
@@ -40,7 +41,7 @@ export const shoppingListsRoute = new Hono()
       {
         shoppingList: {
           ...shoppingList,
-          items: Array.from(shoppingList.items.values()),
+          items: Array.from(shoppingList.items?.values() ?? []),
         },
       },
       200
@@ -48,6 +49,17 @@ export const shoppingListsRoute = new Hono()
   })
   .get("/", (c) => {
     return c.json(Array.from(SHOPPING_LIST_STORE.values()));
+  })
+  .post("/new", zValidator("json", CreateShoppingListSchema), (c) => {
+    const list = c.req.valid("json");
+    const newList = {
+      id: uuidv7(),
+      name: list.name,
+    };
+
+    SHOPPING_LIST_STORE.set(newList.id, newList);
+
+    return c.json(newList);
   })
   .post(
     "/:listId/item",
@@ -64,10 +76,10 @@ export const shoppingListsRoute = new Hono()
       }
 
       if ("id" in item) {
-        list.items.set(item.id, item);
+        list.items?.set(item.id, item);
       } else {
         const itemWithId = { ...item, id: uuidv7() };
-        list.items.set(itemWithId.id, itemWithId);
+        list.items?.set(itemWithId.id, itemWithId);
       }
 
       return c.json(item, 201);
@@ -90,7 +102,7 @@ export const shoppingListsRoute = new Hono()
         return c.json({ error: "not found" }, 404);
       }
 
-      list.items.set(itemId, item);
+      list.items?.set(itemId, item);
 
       return c.json(item, 201);
     }
@@ -109,7 +121,7 @@ export const shoppingListsRoute = new Hono()
         return c.json({ error: "not found" }, 404);
       }
 
-      list.items.delete(itemId);
+      list.items?.delete(itemId);
 
       return c.json({ deleted: itemId }, 200);
     }

@@ -1,6 +1,17 @@
 import { ListsApi } from "@/lib/api";
 import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
-import { ShoppingList } from "@server/lib/ShoppingList";
+import { CreateShoppingList, ShoppingList } from "@server/lib/ShoppingList";
+
+export async function createShoppingList(list: CreateShoppingList) {
+  const response = await ListsApi["new"].$post({
+    json: list,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to create list");
+  }
+  return await response.json();
+}
 
 export async function addShoppingItemToList(
   listId: ShoppingList["id"],

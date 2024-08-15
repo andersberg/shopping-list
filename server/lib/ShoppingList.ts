@@ -11,10 +11,10 @@ export const ShoppingListSchema = z.object({
 
 export type ShoppingList = z.infer<typeof ShoppingListSchema>;
 
-export const AddShoppingListSchema = ShoppingListSchema.omit({
-  id: true,
+export const CreateShoppingListSchema = ShoppingListSchema.pick({
+  name: true,
 });
-export type AddShoppingList = z.infer<typeof AddShoppingListSchema>;
+export type CreateShoppingList = z.infer<typeof CreateShoppingListSchema>;
 
 export const AddShoppingListItemSchema = z.union([
   AddShoppingItemSchema,
