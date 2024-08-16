@@ -1,5 +1,5 @@
+import { ShoppingItem } from "@server/lib/ShoppingItem";
 import { describe, expect, it } from "bun:test";
-import { ShoppingListItem } from "../../../../server/src/lib/schema";
 import { MOCK_SHOPPING_ITEMS } from "../mocks";
 import { parseListInputWithQuantity } from "./parseListInputWithQuantity";
 
@@ -12,7 +12,7 @@ describe("parseListInputWithQuantity", () => {
       quantity: 2,
       unit: "st",
       value: "mjölk",
-    } as const satisfies Omit<ShoppingListItem, "id">;
+    } as const satisfies Omit<ShoppingItem, "id">;
 
     const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEMS);
     expect(result).toEqual(expected);
@@ -26,7 +26,7 @@ describe("parseListInputWithQuantity", () => {
       quantity: 2,
       unit: "st",
       value: "mjölk",
-    } as const satisfies Omit<ShoppingListItem, "id">;
+    } as const satisfies Omit<ShoppingItem, "id">;
 
     const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEMS);
     expect(result).toEqual(expected);
@@ -40,7 +40,7 @@ describe("parseListInputWithQuantity", () => {
       quantity: 2,
       unit: "kg",
       value: "mjöl",
-    } as const satisfies Omit<ShoppingListItem, "id">;
+    } as const satisfies Omit<ShoppingItem, "id">;
 
     const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEMS);
     expect(result).toEqual(expected);
@@ -55,7 +55,7 @@ describe("parseListInputWithQuantity", () => {
       quantity: 1,
       unit: "kg",
       value: "mjöl",
-    } as const satisfies Omit<ShoppingListItem, "id">;
+    } as const satisfies Omit<ShoppingItem, "id">;
 
     const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEMS);
     expect(result).toEqual(expected);

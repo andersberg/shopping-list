@@ -1,10 +1,6 @@
 import { queryClient } from "@/main";
 import { Route as ListRoute } from "@/routes/$listId";
-import {
-  EllipsisHorizontalIcon,
-  PlusIcon,
-  TrashIcon,
-} from "@heroicons/react/24/outline";
+import { EllipsisHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
 import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { RemoveListItemButton } from "../Lists/RemoveListItemButton";

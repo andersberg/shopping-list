@@ -1,5 +1,5 @@
+import { ShoppingItem } from "@server/lib/ShoppingItem";
 import { describe, expect, it } from "bun:test";
-import type { ShoppingListItem } from "../../../server/src/lib/schema";
 import { MOCK_SHOPPING_ITEMS } from "./mocks";
 import { parseShoppingItemInput } from "./parseShoppingItemInput";
 
@@ -13,7 +13,7 @@ describe("parseShoppingItemInput", () => {
       quantity: 1,
       unit: "kg",
       value: "mjöl",
-    } as const satisfies Omit<ShoppingListItem, "id">;
+    } as const satisfies Omit<ShoppingItem, "id">;
 
     const result = parseShoppingItemInput(input, MOCK_SHOPPING_ITEMS);
     expect(result).toEqual(expected);
@@ -27,7 +27,7 @@ describe("parseShoppingItemInput", () => {
       quantity: 1,
       unit: "st",
       value: "cola zero",
-    } as const satisfies Omit<ShoppingListItem, "id">;
+    } as const satisfies Omit<ShoppingItem, "id">;
 
     const result = parseShoppingItemInput(input, MOCK_SHOPPING_ITEMS);
     expect(result).toEqual(expected);
