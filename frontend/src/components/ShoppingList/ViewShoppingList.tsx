@@ -1,20 +1,29 @@
+import { cn } from "@/lib/utils";
 import { queryClient } from "@/main";
 import { Route as ListRoute } from "@/routes/$listId";
-import { EllipsisHorizontalIcon, PlusIcon } from "@heroicons/react/24/outline";
+import {
+  EllipsisHorizontalIcon,
+  PencilIcon,
+  PlusIcon,
+} from "@heroicons/react/24/outline";
 import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
 import { useMutation, useQuery } from "@tanstack/react-query";
+import { PropsWithChildren, useState } from "react";
 import { RemoveListItemButton } from "../Lists/RemoveListItemButton";
 import { ResponsiveDialog } from "../ResponsiveDialog";
 import { AddShoppingItemForm } from "../ShoppingItems/AddShoppingItemForm";
 import { EditItemForm } from "../ShoppingItems/EditItemForm";
 import { shoppingItemsQueryOptions } from "../ShoppingItems/shoppingItemsQueryOptions";
 import { Button } from "../ui/button";
+import { Input } from "../ui/input";
 import {
   addShoppingItemToList,
   removeShoppingItemFromList,
+  updateShoppingList,
   updateShoppingListItem,
 } from "./mutations";
 import { shoppingListQueryOptions } from "./shoppingListQueryOptions";
+import { shoppingListsQueryOptions } from "./shoppingListsQueryOptions";
 
 export function ViewShoppingList() {
   const { listId } = ListRoute.useParams();
@@ -49,6 +58,14 @@ export function ViewShoppingList() {
       }),
   });
 
+  const updateListMutation = useMutation({
+    mutationFn: updateShoppingList,
+    onSettled: () =>
+      queryClient.invalidateQueries({
+        queryKey: shoppingListsQueryOptions.queryKey,
+      }),
+  });
+
   if (!list) {
     return <div>Loading...</div>;
   }
@@ -56,7 +73,10 @@ export function ViewShoppingList() {
   return (
     <main className="space-y-4">
       <header className="py-4">
-        <h2 className="text-2xl font-bold uppercase">{list.name}</h2>
+        <EditableHeader
+          text={list.name}
+          onSave={(name) => updateListMutation.mutate({ ...list, name })}
+        />
       </header>
       <ul>
         {list.items.map((item) => (
@@ -117,5 +137,55 @@ export function ViewShoppingList() {
         <AddShoppingItemForm handleMutate={addShoppingItemMutation.mutate} />
       </footer>
     </main>
+  );
+}
+
+function EditableHeader({
+  className,
+  text,
+  onSave,
+}: {
+  className?: string;
+  text: string;
+  onSave: (text: string) => void;
+}) {
+  const [isEditing, setIsEditing] = useState(false);
+
+  if (!isEditing) {
+    return (
+      <div className={cn("flex items-center gap-4", className)}>
+        <h2 className="text-2xl font-bold uppercase">{text}</h2>
+        <Button variant="ghost" size="icon" onClick={() => setIsEditing(true)}>
+          <PencilIcon className="w-4 h-4" />
+        </Button>
+      </div>
+    );
+  }
+
+  return (
+    <form
+      onSubmit={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const formData = new FormData(event.currentTarget);
+        const input = formData.get("header");
+
+        if (typeof input === "string" && input.length > 0) {
+          onSave(input);
+        }
+
+        setIsEditing(false);
+      }}
+      className={cn("flex items-center gap-4", className)}
+    >
+      <Input
+        id="header"
+        name="header"
+        type="text"
+        defaultValue={text}
+        placeholder={text}
+      />
+      <Button type="submit">Spara</Button>
+    </form>
   );
 }

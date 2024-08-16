@@ -24,6 +24,18 @@ export async function deleteShoppingList(listId: ShoppingList["id"]) {
   return await response.json();
 }
 
+export async function updateShoppingList(list: ShoppingList) {
+  const response = await ListsApi[":listId"].$put({
+    param: { listId: list.id },
+    json: list,
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to update list");
+  }
+  return await response.json();
+}
+
 export async function addShoppingItemToList(
   listId: ShoppingList["id"],
   item: ShoppingItem | AddShoppingItem

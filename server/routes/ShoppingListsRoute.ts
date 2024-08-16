@@ -6,6 +6,7 @@ import { ShoppingItemSchema, type ShoppingItem } from "../lib/ShoppingItem";
 import {
   AddShoppingListItemSchema,
   CreateShoppingListSchema,
+  ShoppingListSchema,
   type ShoppingList,
 } from "../lib/ShoppingList";
 import { MOCK_SHOPPING_LISTS } from "../mocks/shoppinglists";
@@ -105,6 +106,22 @@ export const shoppingListsRoute = new Hono()
       list.items?.set(itemId, item);
 
       return c.json(item, 201);
+    }
+  )
+  .put(
+    "/:listId",
+    zValidator("param", ShoppingListPathParamSchema),
+    zValidator("json", ShoppingListSchema),
+    (c) => {
+      const { listId } = c.req.valid("param");
+      const list = c.req.valid("json");
+
+      SHOPPING_LIST_STORE.set(listId, {
+        ...list,
+        items: new Map(list.items.map((item) => [item.id, item])),
+      });
+
+      return c.json(list);
     }
   )
   .delete(
