@@ -4,7 +4,7 @@ import { ResponsiveDialog } from "../ResponsiveDialog";
 import { EditItemForm } from "../ShoppingItems/EditItemForm";
 import { Button } from "../ui/button";
 
-export function ListItem({
+export function ShoppingListItem({
   item,
   onDelete,
   onEdit,

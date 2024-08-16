@@ -125,4 +125,14 @@ export const shoppingListsRoute = new Hono()
 
       return c.json({ deleted: itemId }, 200);
     }
-  );
+  )
+  .delete("/:listId", zValidator("param", ShoppingListPathParamSchema), (c) => {
+    const { listId } = c.req.valid("param");
+
+    if (SHOPPING_LIST_STORE.has(listId)) {
+      SHOPPING_LIST_STORE.delete(listId);
+      return c.json({ deleted: true }, 204);
+    }
+
+    return c.json({ error: "not found" }, 404);
+  });

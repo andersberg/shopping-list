@@ -13,6 +13,17 @@ export async function createShoppingList(list: CreateShoppingList) {
   return await response.json();
 }
 
+export async function deleteShoppingList(listId: ShoppingList["id"]) {
+  const response = await ListsApi[":listId"].$delete({
+    param: { listId },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to delete list");
+  }
+  return await response.json();
+}
+
 export async function addShoppingItemToList(
   listId: ShoppingList["id"],
   item: ShoppingItem | AddShoppingItem

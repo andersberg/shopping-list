@@ -1,4 +1,4 @@
-import { DisplayShoppingList } from "@/components/ShoppingList/DisplayShoppingList";
+import { ViewShoppingList } from "@/components/ShoppingList/ViewShoppingList";
 import { shoppingListQueryOptions } from "@/components/ShoppingList/shoppingListQueryOptions";
 import { createFileRoute } from "@tanstack/react-router";
 
@@ -9,5 +9,5 @@ export const Route = createFileRoute("/$listId")({
 
     return queryClient.ensureQueryData(queryOptions);
   },
-  component: DisplayShoppingList,
+  component: ViewShoppingList,
 });

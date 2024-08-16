@@ -1,11 +1,16 @@
 import { queryClient } from "@/main";
 import { Route as ListRoute } from "@/routes/$listId";
-import { PlusIcon } from "@heroicons/react/24/outline";
+import {
+  EllipsisHorizontalIcon,
+  PlusIcon,
+  TrashIcon,
+} from "@heroicons/react/24/outline";
 import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { ListItem } from "../ListItem/ListItem";
-import { RemoveListItemButton } from "../ListItem/RemoveListItemButton";
+import { RemoveListItemButton } from "../Lists/RemoveListItemButton";
+import { ResponsiveDialog } from "../ResponsiveDialog";
 import { AddShoppingItemForm } from "../ShoppingItems/AddShoppingItemForm";
+import { EditItemForm } from "../ShoppingItems/EditItemForm";
 import { shoppingItemsQueryOptions } from "../ShoppingItems/shoppingItemsQueryOptions";
 import { Button } from "../ui/button";
 import {
@@ -15,7 +20,7 @@ import {
 } from "./mutations";
 import { shoppingListQueryOptions } from "./shoppingListQueryOptions";
 
-export function DisplayShoppingList() {
+export function ViewShoppingList() {
   const { listId } = ListRoute.useParams();
   const listQueryOptions = shoppingListQueryOptions(listId);
   const { data: list } = useQuery(listQueryOptions);
@@ -60,10 +65,25 @@ export function DisplayShoppingList() {
       <ul>
         {list.items.map((item) => (
           <li key={item.id} className="flex gap-4">
-            <ListItem
-              item={item}
-              onDelete={removeListItemMutation.mutate}
-              onEdit={editListItemMutation.mutate}
+            <p className="space-x-[1ch]">
+              <span>{item.quantity}</span>
+              <span>{item.unit}</span>
+              <span>{item.displayName}</span>
+              {item.comment && <span>{item.comment}</span>}
+            </p>
+            <p className="text-xs">{item.id}</p>
+
+            <ResponsiveDialog
+              closeText="Stäng"
+              description="Ändra standardvärden för varan"
+              openText={<EllipsisHorizontalIcon className="w-4 h-4" />}
+              title={item.displayName}
+            >
+              <EditItemForm item={item} onEdit={editListItemMutation.mutate} />
+            </ResponsiveDialog>
+
+            <RemoveListItemButton
+              onClick={() => removeListItemMutation.mutate(item)}
             />
           </li>
         ))}

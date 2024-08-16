@@ -1,4 +1,3 @@
-import { queryClient } from "@/main";
 import { Label } from "@radix-ui/react-label";
 import { ShoppingItem } from "@server/lib/ShoppingItem";
 import { UNITS } from "@server/lib/constants";
