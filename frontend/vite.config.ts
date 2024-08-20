@@ -1,7 +1,7 @@
 import { TanStackRouterVite } from "@tanstack/router-plugin/vite";
 import react from "@vitejs/plugin-react-swc";
 import { resolve } from "path";
-import { defineConfig, loadEnv } from "vite";
+import { defineConfig } from "vite";
 
 const BACKEND_PORT = import.meta.env.BACKEND_PORT ?? 5000;
 const FRONTEND_PORT = import.meta.env.FRONTEND_PORT ?? 3000;

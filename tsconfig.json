@@ -18,6 +18,10 @@
     "skipLibCheck": true,
     "strict": true,
     "noFallthroughCasesInSwitch": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "types": [
+      "@cloudflare/workers-types/2023-07-01",
+      "vite/client"
+    ],
   }
 }
