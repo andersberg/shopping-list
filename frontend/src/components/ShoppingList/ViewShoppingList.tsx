@@ -8,7 +8,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { AddShoppingItem, ShoppingItem } from "@server/lib/ShoppingItem";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { PropsWithChildren, useState } from "react";
+import { useState } from "react";
 import { RemoveListItemButton } from "../Lists/RemoveListItemButton";
 import { ResponsiveDialog } from "../ResponsiveDialog";
 import { AddShoppingItemForm } from "../ShoppingItems/AddShoppingItemForm";
