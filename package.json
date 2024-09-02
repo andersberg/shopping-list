@@ -3,28 +3,21 @@
 	"version": "0.0.1",
 	"private": true,
 	"scripts": {
+		"dev": "vite dev",
 		"build": "vite build",
+		"preview": "bun run build && wrangler pages dev",
+		"test": "npm run test:integration && npm run test:unit",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"dev": "vite dev",
-		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
-		"preview": "vite preview",
-		"preview:cf": "wrangler pages dev",
-		"test": "npm run test:integration && npm run test:unit",
+		"format": "prettier --write .",
 		"test:integration": "playwright test",
 		"test:unit": "vitest",
-		"cf:deploy": "wrangler pages deploy",
-		"d1:local:execute": "wrangler d1 execute shopping-list --local",
-		"d1:local:migrate": "wrangler d1 execute shopping-list --local",
-		"d1:remote:execute": "wrangler d1 execute shopping-list --remote",
-		"d1:remote:migrate": "wrangler d1 execute shopping-list --remote",
-		"db:generate": "drizzle-kit generate",
-		"deploy": "$npm_execpath run typecheck && $npm_execpath run build && $npm_execpath run cf:deploy",
-		"typecheck": "tsc --noEmit",
-		"typecheck:watch": "tsc --noEmit --watch"
+		"deploy": "bun run build && wrangler pages deploy",
+		"cf-typegen": "wrangler types && mv worker-configuration.d.ts src/"
 	},
 	"devDependencies": {
+		"@cloudflare/workers-types": "^4.20240821.1",
 		"@playwright/test": "^1.28.1",
 		"@sveltejs/adapter-auto": "^3.0.0",
 		"@sveltejs/adapter-cloudflare": "^4.7.2",
@@ -42,7 +35,8 @@
 		"typescript": "^5.0.0",
 		"typescript-eslint": "^8.0.0",
 		"vite": "^5.0.3",
-		"vitest": "^2.0.0"
+		"vitest": "^2.0.0",
+		"wrangler": "^3.73.0"
 	},
 	"type": "module"
 }
