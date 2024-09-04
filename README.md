@@ -1,38 +1,54 @@
-# create-svelte
+# Shopping List
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+## Database
 
-## Creating a project
+### Drizzle
 
-If you're seeing this, you've probably already done this step. Congrats!
+```sh
+# Generate a migraion file
+bun run db:generate
+```
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+### Cloudflare D1 Database
 
-# create a new project in my-app
-npm create svelte@latest my-app
+```sh
+# Create a new D1 database
+bunx wrangler d1 create shopping-list
+
+# Migrate Local D1 Database
+bun run d1:local:migrate -- --file=./drizzle/migrations/<migration_filename>.sql
+
+# Migrate Remote D1 Database
+bun run d1:remote:migrate -- --file=./drizzle/migrations/<migration_filename>.sql
+
+# Execute Local D1 Database
+bun run d1:local:execute -- <args>
+
+# Execute Remote D1 Database
+bun run d1:remote:execute -- <args>
+```
+
+## Install
+
+```sh
+bun install
 ```
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
+```sh
+bun run dev
 
 # or start the server and open the app in a new browser tab
-npm run dev -- --open
+bun run dev -- --open
 ```
 
 ## Building
 
 To create a production version of your app:
 
-```bash
-npm run build
+```sh
+bun run build
 ```
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+You can preview the production build with `bun run preview`.
