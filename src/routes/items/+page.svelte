@@ -57,6 +57,7 @@
 	<h2>Edit Item</h2>
 	<p>ID: {data.results[openItem]?.id}</p>
 	<ShoppingItemForm
+		actionName="edit"
 		commentValue={data.results[openItem]?.comment ?? ''}
 		nameValue={data.results[openItem]?.name}
 		quantityValue={data.results[openItem]?.quantity?.toString()}
@@ -67,6 +68,7 @@
 {:else}
 	<h2>Add Item</h2>
 	<ShoppingItemForm
+		actionName="add"
 		commentValue={form?.values?.comment}
 		nameValue={form?.values?.name}
 		quantityValue={form?.values?.quantity?.toString()}

@@ -9,9 +9,10 @@
 	export let quantityValue: string = '1';
 	export let units: string[];
 	export let unitValue: string = 'st';
+	export let actionName: string | undefined = undefined;
 </script>
 
-<form method="POST" action="?/add" use:enhance>
+<form method="POST" action={actionName ? `?/${actionName}` : undefined} use:enhance>
 	<TextInput name="name" label="Name" value={nameValue} placeholder="Item name" required />
 
 	<TextInput name="comment" label="Comment" placeholder="Comment" value={commentValue} />
@@ -19,6 +20,8 @@
 	<NumberInput name="quantity" label="Quantity" value={quantityValue} />
 
 	<SelectInput name="unit" label="Unit" value={unitValue} options={units} />
+
+	<slot />
 
 	<button type="submit">Add Item</button>
 </form>
