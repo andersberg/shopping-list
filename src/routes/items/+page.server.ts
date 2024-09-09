@@ -1,7 +1,7 @@
 import { UNITS } from '$lib/constants';
 import { error } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/d1';
-import { items } from '../db/schema/shoppingItem';
+import { items } from '../../db/schema/shoppingItem';
 import type { Actions, PageServerLoad } from './$types';
 import { add, remove } from './actions';
 
