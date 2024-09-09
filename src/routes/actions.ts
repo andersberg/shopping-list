@@ -1,9 +1,10 @@
 import { error, fail } from '@sveltejs/kit';
+import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import { insertItemSchema, items } from '../db/schema/shoppingItem';
 import type { RequestEvent } from './$types';
 
-export async function addShoppingItemAction({ request, platform }: RequestEvent) {
+export async function add({ request, platform }: RequestEvent) {
 	const env = platform?.env;
 
 	if (!env) {
@@ -43,7 +44,7 @@ export async function addShoppingItemAction({ request, platform }: RequestEvent)
 		console.log(errors, Object.fromEntries(errors));
 		return fail(422, {
 			errors: {
-				name: errors.get('value'),
+				name: errors.get('name'),
 				quantity: errors.get('quantity'),
 				unit: errors.get('unit')
 			},
@@ -65,6 +66,33 @@ export async function addShoppingItemAction({ request, platform }: RequestEvent)
 
 	return {
 		message: 'Item added',
+		result
+	};
+}
+
+export async function remove({ request, platform }: RequestEvent) {
+	const env = platform?.env;
+
+	if (!env) {
+		return error(500, 'Environment not found');
+	}
+
+	const formdata = await request.formData();
+	const id = formdata.get('id');
+
+	if (id === null) {
+		return error(400, 'id is required');
+	}
+
+	if (typeof id !== 'string') {
+		return error(400, 'id should be a string');
+	}
+
+	const db = drizzle(env.DB);
+	const result = await db.delete(items).where(eq(items.id, id)).returning();
+
+	return {
+		deleted: true,
 		result
 	};
 }

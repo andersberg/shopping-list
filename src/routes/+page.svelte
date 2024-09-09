@@ -6,6 +6,7 @@
 	export let form: ActionData;
 
 	const tableHeaders = Object.keys(data.results[0]);
+	const initialSelectedUnit = form?.values?.unit ?? 'st';
 </script>
 
 <h1>{data.message}</h1>
@@ -30,12 +31,12 @@
 				<td>{result.created}</td>
 				<td>{result.updated}</td>
 				<td>
-					<form method="POST" action="?/delete" use:enhance>
+					<form method="POST" action="?/remove" use:enhance>
 						<input type="hidden" name="id" value={result.id} />
 						<button type="submit">Delete</button>
 					</form>
-				</td></tr
-			>
+				</td>
+			</tr>
 		{/each}
 	</tbody>
 </table>
@@ -72,7 +73,7 @@
 	<label for="unit">Unit</label>
 	<select name="unit">
 		{#each data.units as unit}
-			<option value={unit} selected={form?.values?.unit === unit}>{unit}</option>
+			<option value={unit} selected={initialSelectedUnit === unit}>{unit}</option>
 		{/each}
 	</select>
 	{#if form?.errors?.unit}
@@ -82,7 +83,9 @@
 	<button type="submit">Add Item</button>
 </form>
 
-<pre>{JSON.stringify(form, null, 2)}</pre>
+{#if form}
+	<pre>{JSON.stringify(form, null, 2)}</pre>
+{/if}
 
 <style>
 	form {
