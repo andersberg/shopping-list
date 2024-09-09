@@ -1,7 +1,7 @@
 INSERT INTO
   items (
     id,
-    value,
+    name,
     displayName,
     quantity,
     unit,

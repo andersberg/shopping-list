@@ -9,7 +9,7 @@ export const items = sqliteTable('items', {
 		.primaryKey()
 		.$defaultFn(() => createId())
 		.notNull(),
-	value: text('value').notNull(),
+	name: text('name').notNull(),
 	displayName: text('displayName').notNull(),
 	unit: text('unit', { enum: UNITS }).notNull(),
 	quantity: integer('quantity').notNull().default(1),

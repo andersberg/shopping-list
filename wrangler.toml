@@ -21,8 +21,7 @@ pages_build_output_dir = ".svelte-kit/cloudflare"
 [[d1_databases]]
 binding = "DB" # i.e. available in your Worker on env.DB
 database_name = "shopping-list"
-database_id = "b93c68e1-524b-4161-9f5e-5d98d41ab970"
-# migrations_dir = "drizzle/migrations"
+database_id = "52ee560e-d23b-4fd5-a432-9b717b639e4d"
 
 # Bind a Durable Object. Durable objects are a scale-to-zero compute primitive based on the actor model.
 # Durable Objects can live for as long as needed. Use these when you need a long-running "server", such as in realtime apps.
