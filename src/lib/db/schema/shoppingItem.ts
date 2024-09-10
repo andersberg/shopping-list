@@ -1,8 +1,9 @@
+import { UNITS } from '$lib/constants';
 import { createId } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { UNITS } from '../../lib/constants';
+import type { z } from 'zod';
 
 export const items = sqliteTable('items', {
 	id: text('id')
@@ -28,3 +29,8 @@ export type NewItem = typeof items.$inferInsert;
 export const insertItemSchema = createInsertSchema(items);
 
 export const selectItemSchema = createSelectSchema(items);
+
+type InsertShoppingItem = z.infer<typeof insertItemSchema>;
+type SelectShoppingItem = z.infer<typeof selectItemSchema>;
+
+export type ShoppingItem = InsertShoppingItem | SelectShoppingItem;
