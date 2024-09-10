@@ -1,13 +1,12 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import ShoppingItemForm from '$lib/components/ShoppingItemForm.svelte';
 	import type { PageData } from './$types';
 
 	export let data: PageData;
 
-	console.log($page);
-	console.log(data);
+	// console.log($page);
+	// console.log(data);
 </script>
 
 <h1>{data.list?.name}</h1>

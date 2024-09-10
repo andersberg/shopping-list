@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { ShoppingItem } from '../server/ShoppingItem';
 import { MOCK_SHOPPING_ITEMS } from './mocks';
 import { parseShoppingItemInput } from './parseShoppingItemInput';
+import { ShoppingItem } from './server/ShoppingItem';
 
 describe('parseShoppingItemInput', () => {
 	it('1 kg mjöl 3 för 2', () => {

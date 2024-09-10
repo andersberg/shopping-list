@@ -19,7 +19,7 @@ export async function add({ request, platform }: RequestEvent) {
 	const comment = formData.get('comment')?.toString().trim();
 
 	const values = {
-		name: String(name),
+		name: String(name).toLowerCase(),
 		displayName: String(name),
 		quantity: Number(quantity) > 0 ? Number(quantity) : undefined,
 		comment: comment ? String(comment) : undefined,
@@ -41,7 +41,6 @@ export async function add({ request, platform }: RequestEvent) {
 	}
 
 	if (errors.size > 0) {
-		console.log(errors, Object.fromEntries(errors));
 		return fail(422, {
 			errors: {
 				name: errors.get('name'),
@@ -54,13 +53,7 @@ export async function add({ request, platform }: RequestEvent) {
 
 	const db = drizzle(env.DB);
 
-	const newItem = insertItemSchema.parse({
-		name: String(name),
-		displayName: String(name),
-		quantity: Number(quantity) > 0 ? Number(quantity) : undefined,
-		comment: comment ? String(comment) : undefined,
-		unit: String(unit)
-	});
+	const newItem = insertItemSchema.parse(values);
 
 	const result = await db.insert(items).values(newItem).returning();
 
