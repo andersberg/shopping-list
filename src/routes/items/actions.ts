@@ -1,7 +1,8 @@
 import { error, fail } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
-import { insertItemSchema, items } from '../../db/schema/shoppingItem';
+
+import { insertItemSchema, items } from '$lib/db/schema/shoppingItem';
 import type { RequestEvent } from './$types';
 
 export async function add({ request, platform }: RequestEvent) {

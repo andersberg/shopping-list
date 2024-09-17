@@ -1,8 +1,8 @@
+import { UNITS } from '$lib/constants';
 import { createId } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import { UNITS } from '../../lib/constants';
 import { items } from './shoppingItem';
 import { lists } from './shoppingList';
 

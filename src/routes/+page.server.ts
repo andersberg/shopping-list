@@ -1,6 +1,6 @@
+import { insertListSchema, lists } from '$lib/db/schema/shoppingList';
 import { error, fail } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/d1';
-import { insertListSchema, lists } from '../db/schema/shoppingList';
 import type { Actions } from './$types';
 
 export async function load({ platform }) {
