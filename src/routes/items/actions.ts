@@ -5,7 +5,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import { insertItemSchema, items } from '$lib/db/schema/shoppingItem';
 import type { RequestEvent } from './$types';
 
-export async function add({ request, platform }: RequestEvent) {
+export async function addItemAction({ request, platform }: RequestEvent) {
 	const env = platform?.env;
 
 	if (!env) {

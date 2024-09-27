@@ -1,7 +1,8 @@
 import { UNITS } from '$lib/constants';
-import { items } from '$lib/db/schema/shoppingItem';
+import { insertItemSchema, items } from '$lib/db/schema/shoppingItem';
 import { lists } from '$lib/db/schema/shoppingList';
 import { insertListItemSchema, listItems } from '$lib/db/schema/shoppingListItem';
+import { isValidUnit } from '$lib/db/schema/utils';
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
@@ -55,26 +56,62 @@ export const actions = {
 			return error(400, 'listId is required');
 		}
 
+		if (typeof comment !== 'string') {
+			return error(400, 'comment is required');
+		}
+
+		if (typeof unit !== 'string' || !isValidUnit(unit)) {
+			return error(400, 'unit is required');
+		}
+
+		if (typeof quantity !== 'string') {
+			return error(400, 'quantity is required');
+		}
+
 		const db = drizzle(env.DB);
 
 		const [existingItem] = await db.select().from(items).where(eq(items.name, name));
 
-		if (!existingItem) {
-			return error(404, 'Item not found');
+		if (existingItem) {
+			const newListItemValues = insertListItemSchema.parse({
+				name: name ?? existingItem.name,
+				listId,
+				itemId: existingItem.id,
+				displayName: name ?? existingItem.displayName,
+				quantity: Number(quantity) > 0 ? Number(quantity) : existingItem.quantity,
+				comment: comment.length ? comment : existingItem.comment,
+				unit: unit ?? existingItem.unit
+			});
+
+			const result = await db.insert(listItems).values(newListItemValues).returning();
+
+			return {
+				message: 'Item added',
+				result
+			};
 		}
 
-		const newListItem = insertListItemSchema.parse({
-			name,
-			listId,
-			itemId: existingItem.id,
+		const newItemValues = insertItemSchema.parse({
+			name: name,
 			displayName: name,
+			unit: unit,
 			quantity: Number(quantity) > 0 ? Number(quantity) : undefined,
-			comment: comment ? String(comment) : existingItem.comment,
-			unit
+			comment: comment ? String(comment) : undefined
 		});
 
+		const [newItem] = await db.insert(items).values(newItemValues).returning();
 
-		const result = await db.insert(listItems).values(newListItem).returning();
+		const newListItemValues = insertListItemSchema.parse({
+			name: newItem.name,
+			itemId: newItem.id,
+			displayName: newItem.displayName,
+			quantity: Number(quantity) > 0 ? Number(quantity) : undefined,
+			comment: comment ? String(comment) : undefined,
+			unit: unit,
+			listId
+		});
+
+		const result = await db.insert(listItems).values(newListItemValues).returning();
 
 		return {
 			message: 'Item added',
@@ -91,10 +128,10 @@ export const actions = {
 		const id = formData.get('id');
 		const name = formData.get('name');
 		const listId = formData.get('listId');
-		const quantity = formData.get('quantity');
-		const unit = formData.get('unit');
-		const comment = formData.get('comment');
-		
+		// const quantity = formData.get('quantity');
+		// const unit = formData.get('unit');
+		// const comment = formData.get('comment');
+
 		if (typeof id !== 'string') {
 			return error(400, 'id is required');
 		}
@@ -111,9 +148,8 @@ export const actions = {
 
 		const [existingItem] = await db.select().from(listItems).where(eq(listItems.id, id));
 
-		if (!existingItem) {
+		if (!existingItem || existingItem.listId !== listId) {
+			return error(404, 'Item not found');
 		}
-		
-		
 	}
 } satisfies Actions;

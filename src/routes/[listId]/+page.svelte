@@ -4,11 +4,11 @@
 	import type { PageData } from './$types';
 
 	export let data: PageData;
-	export let form: FormData;
+	// export let form: FormData;
 
-	console.log(form);
-	console.log($page);
-	console.log(data);
+	// console.log(form);
+	// console.log($page);
+	// console.log(data);
 </script>
 
 <h1>{data.list?.name}</h1>

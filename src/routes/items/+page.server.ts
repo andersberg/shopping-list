@@ -3,7 +3,7 @@ import { items } from '$lib/db/schema/shoppingItem';
 import { error } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/d1';
 import type { Actions, PageServerLoad } from './$types';
-import { add, remove } from './actions';
+import { addItemAction, remove } from './actions';
 
 export const load: PageServerLoad = async (context) => {
 	const message = 'Hello World';
@@ -24,6 +24,6 @@ export const load: PageServerLoad = async (context) => {
 };
 
 export const actions = {
-	add,
+	add: addItemAction,
 	remove
 } satisfies Actions;
