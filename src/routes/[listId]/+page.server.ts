@@ -1,7 +1,7 @@
 import { UNITS } from '$lib/constants';
-import { insertItemSchema, items } from '$lib/db/schema/shoppingItem';
-import { lists } from '$lib/db/schema/shoppingList';
-import { insertListItemSchema, listItems } from '$lib/db/schema/shoppingListItem';
+import { insertItemSchema, items } from '$lib/db/schema/items';
+import { insertListItemSchema, listItems } from '$lib/db/schema/listItems';
+import { lists } from '$lib/db/schema/lists';
 import { isValidUnit } from '$lib/db/schema/utils';
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
@@ -21,6 +21,7 @@ export async function load({ params, platform }) {
 
 	const db = drizzle(env.DB);
 	const [list] = await db.select().from(lists).where(eq(lists.id, listId));
+	console.log('list', list);
 	const items = await db.select().from(listItems).where(eq(listItems.listId, listId));
 
 	return {
@@ -73,11 +74,12 @@ export const actions = {
 		const [existingItem] = await db.select().from(items).where(eq(items.name, name));
 
 		if (existingItem) {
+			console.log('existingItem', existingItem);
+
 			const newListItemValues = insertListItemSchema.parse({
 				name: name ?? existingItem.name,
 				listId,
 				itemId: existingItem.id,
-				displayName: name ?? existingItem.displayName,
 				quantity: Number(quantity) > 0 ? Number(quantity) : existingItem.quantity,
 				comment: comment.length ? comment : existingItem.comment,
 				unit: unit ?? existingItem.unit
@@ -85,6 +87,7 @@ export const actions = {
 
 			const result = await db.insert(listItems).values(newListItemValues).returning();
 
+			console.log('new list item', result);
 			return {
 				message: 'Item added',
 				result
@@ -104,7 +107,6 @@ export const actions = {
 		const newListItemValues = insertListItemSchema.parse({
 			name: newItem.name,
 			itemId: newItem.id,
-			displayName: newItem.displayName,
 			quantity: Number(quantity) > 0 ? Number(quantity) : undefined,
 			comment: comment ? String(comment) : undefined,
 			unit: unit,

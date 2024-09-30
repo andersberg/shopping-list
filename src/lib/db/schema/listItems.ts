@@ -1,17 +1,23 @@
-import { UNITS } from '$lib/constants';
 import { createId } from '@paralleldrive/cuid2';
 import { sql } from 'drizzle-orm';
 import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
-import type { z } from 'zod';
+import { UNITS } from '../../constants';
+import { items } from './items';
+import { lists } from './lists';
 
-export const items = sqliteTable('items', {
+export const listItems = sqliteTable('list_items', {
 	id: text('id')
 		.primaryKey()
 		.$defaultFn(() => createId())
 		.notNull(),
+	itemId: text('item_id')
+		.notNull()
+		.references(() => items.id),
+	listId: text('list_id')
+		.notNull()
+		.references(() => lists.id),
 	name: text('name').notNull(),
-	displayName: text('displayName').notNull(),
 	unit: text('unit', { enum: UNITS }).notNull(),
 	quantity: integer('quantity').notNull().default(1),
 	comment: text('comment'),
@@ -24,13 +30,8 @@ export const items = sqliteTable('items', {
 		.notNull()
 });
 
-export type NewItem = typeof items.$inferInsert;
+export type NewListItem = typeof listItems.$inferInsert;
 
-export const insertItemSchema = createInsertSchema(items);
+export const insertListItemSchema = createInsertSchema(listItems);
 
-export const selectItemSchema = createSelectSchema(items);
-
-type InsertShoppingItem = z.infer<typeof insertItemSchema>;
-type SelectShoppingItem = z.infer<typeof selectItemSchema>;
-
-export type ShoppingItem = InsertShoppingItem | SelectShoppingItem;
+export const selectListItemSchema = createSelectSchema(listItems);

@@ -12,13 +12,12 @@
 </script>
 
 <h1>{data.list?.name}</h1>
-<span>List ID: {data.list?.id}</span>
+<p>List ID: {$page.params.listId}</p>
 
 <table>
 	<thead>
 		<tr>
 			<th>Name</th>
-			<th>Display Name</th>
 			<th>Quantity</th>
 			<th>Unit</th>
 			<th>Comment</th>
@@ -33,7 +32,6 @@
 		{#each data.items as item}
 			<tr>
 				<td>{item.name}</td>
-				<td>{item.displayName}</td>
 				<td>{item.quantity}</td>
 				<td>{item.unit}</td>
 				<td>{item.comment}</td>
@@ -52,5 +50,5 @@
 </table>
 
 <ShoppingItemForm units={[...data.units]} actionName="add">
-	<input type="hidden" name="listId" value={data.list?.id} />
+	<input type="hidden" name="listId" id="listId" value={$page.params.listId} />
 </ShoppingItemForm>

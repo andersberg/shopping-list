@@ -1,6 +1,6 @@
 import { parseListInput } from './ParseLinstInput/parseListInput';
 import { parseListInputWithQuantity } from './ParseLinstInput/parseListInputWithQuantity';
-import type { ShoppingItem } from './db/schema/shoppingItem';
+import type { ShoppingItem } from './db/schema/items';
 import { DEFAULT_QUANTITY, DEFAULT_UNIT, STARTS_WITH_NUMBER_REGEX } from './frontend/constants';
 
 export function parseShoppingItemInput(input: string, items: Array<ShoppingItem>): ShoppingItem {

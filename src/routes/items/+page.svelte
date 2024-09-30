@@ -29,7 +29,6 @@
 		{#each data.results as result, index}
 			<tr>
 				<td>{result.name}</td>
-				<td>{result.displayName}</td>
 				<td>{result.quantity}</td>
 				<td>{result.unit}</td>
 				<td>{result.comment}</td>
@@ -50,7 +49,7 @@
 </table>
 
 {#if form?.deleted === true}
-	<p>Deleted item {form?.result[0].displayName ?? form?.result[0].name}</p>
+	<p>Deleted item {form?.result[0].name}</p>
 {/if}
 
 {#if openItem !== undefined}

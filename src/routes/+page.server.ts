@@ -1,4 +1,4 @@
-import { insertListSchema, lists } from '$lib/db/schema/shoppingList';
+import { insertListSchema, lists } from '$lib/db/schema/lists';
 import { error, fail } from '@sveltejs/kit';
 import { drizzle } from 'drizzle-orm/d1';
 import type { Actions } from './$types';
