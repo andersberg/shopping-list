@@ -21,7 +21,7 @@ export async function load({ params, platform }) {
 
 	const db = drizzle(env.DB);
 	const [list] = await db.select().from(lists).where(eq(lists.id, listId));
-	console.log('list', list);
+
 	const items = await db.select().from(listItems).where(eq(listItems.listId, listId));
 
 	return {
@@ -74,8 +74,6 @@ export const actions = {
 		const [existingItem] = await db.select().from(items).where(eq(items.name, name));
 
 		if (existingItem) {
-			console.log('existingItem', existingItem);
-
 			const newListItemValues = insertListItemSchema.parse({
 				name: name ?? existingItem.name,
 				listId,
@@ -87,7 +85,6 @@ export const actions = {
 
 			const result = await db.insert(listItems).values(newListItemValues).returning();
 
-			console.log('new list item', result);
 			return {
 				message: 'Item added',
 				result
@@ -130,9 +127,9 @@ export const actions = {
 		const id = formData.get('id');
 		const name = formData.get('name');
 		const listId = formData.get('listId');
-		// const quantity = formData.get('quantity');
-		// const unit = formData.get('unit');
-		// const comment = formData.get('comment');
+		const quantity = formData.get('quantity');
+		const unit = formData.get('unit');
+		const comment = formData.get('comment');
 
 		if (typeof id !== 'string') {
 			return error(400, 'id is required');
@@ -146,6 +143,18 @@ export const actions = {
 			return error(400, 'listId is required');
 		}
 
+		if (typeof quantity !== 'string') {
+			return error(400, 'quantity is required');
+		}
+
+		if (typeof unit !== 'string' || !isValidUnit(unit)) {
+			return error(400, 'unit is required');
+		}
+
+		if (typeof comment !== 'string') {
+			return error(400, 'comment is required');
+		}
+
 		const db = drizzle(env.DB);
 
 		const [existingItem] = await db.select().from(listItems).where(eq(listItems.id, id));
@@ -153,5 +162,49 @@ export const actions = {
 		if (!existingItem || existingItem.listId !== listId) {
 			return error(404, 'Item not found');
 		}
+
+		const updatedListItem = insertListItemSchema.parse({
+			name: name ?? existingItem.name,
+			itemId: existingItem.itemId,
+			quantity: Number(quantity) > 0 ? Number(quantity) : existingItem.quantity,
+			comment: comment.length ? comment : existingItem.comment,
+			unit: unit ?? existingItem.unit,
+			listId
+		});
+
+		const result = await db.update(listItems).set(updatedListItem).where(eq(listItems.id, id));
+
+		return {
+			message: 'Item updated',
+			result
+		};
+	},
+	delete: async ({ request, platform }) => {
+		const env = platform?.env;
+		if (!env) {
+			return error(500, 'Environment not found');
+		}
+
+		const formData = await request.formData();
+		const id = formData.get('id');
+
+		if (typeof id !== 'string') {
+			return error(400, 'id is required');
+		}
+
+		const db = drizzle(env.DB);
+
+		const [existingItem] = await db.select().from(listItems).where(eq(listItems.id, id));
+
+		if (!existingItem) {
+			return error(404, 'Item not found');
+		}
+
+		const result = await db.delete(listItems).where(eq(listItems.id, id)).returning();
+
+		return {
+			message: 'Item deleted',
+			result
+		};
 	}
 } satisfies Actions;

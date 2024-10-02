@@ -15,7 +15,6 @@
 	<thead>
 		<tr>
 			<th>Name</th>
-			<th>Display Name</th>
 			<th>Quantity</th>
 			<th>Unit</th>
 			<th>Comment</th>
@@ -56,18 +55,21 @@
 	<h2>Edit Item</h2>
 	<p>ID: {data.results[openItem]?.id}</p>
 	<ShoppingItemForm
-		actionName="edit"
+		actionName="editItem"
+		buttonText="Edit Item"
 		commentValue={data.results[openItem]?.comment ?? ''}
 		nameValue={data.results[openItem]?.name}
 		quantityValue={data.results[openItem]?.quantity?.toString()}
 		units={[...data.units]}
 		unitValue={data.results[openItem]?.unit}
-	/>
+	>
+		<input type="hidden" name="id" value={data.results[openItem]?.id} />
+	</ShoppingItemForm>
 	<button on:click={() => (openItem = undefined)}>Close</button>
 {:else}
 	<h2>Add Item</h2>
 	<ShoppingItemForm
-		actionName="add"
+		actionName="addItem"
 		commentValue={form?.values?.comment}
 		nameValue={form?.values?.name}
 		quantityValue={form?.values?.quantity?.toString()}

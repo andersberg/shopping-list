@@ -10,6 +10,8 @@
 	export let units: string[];
 	export let unitValue: string = 'st';
 	export let actionName: string | undefined = undefined;
+
+	export let buttonText: string = 'Add Item';
 </script>
 
 <form method="POST" action={actionName ? `?/${actionName}` : undefined} use:enhance>
@@ -23,7 +25,7 @@
 
 	<slot />
 
-	<button type="submit">Add Item</button>
+	<button type="submit">{buttonText}</button>
 </form>
 
 <style>
