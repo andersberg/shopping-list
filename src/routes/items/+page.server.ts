@@ -1,5 +1,5 @@
 import { UNITS } from '$lib/constants';
-import { insertItemSchema, items } from '$lib/db/schema/items';
+import { insertItemSchema, items, selectItemSchema } from '$lib/db/schema/items';
 import { isValidUnit } from '$lib/db/schema/utils';
 import { error, fail, type RequestEvent } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
@@ -16,6 +16,8 @@ export const load: PageServerLoad = async (context) => {
 	const db = drizzle(env.DB);
 
 	const results = (await db.select().from(items).all()) ?? [];
+
+	// const form = superValidate(formData, selectItemSchema);
 
 	return {
 		message,
