@@ -29,6 +29,7 @@
 	});
 
 	$: console.log('data.editListForm', data.editListForm);
+	$: console.log('data.editListForm', data.addItemForm);
 
 	let openItem: number;
 </script>

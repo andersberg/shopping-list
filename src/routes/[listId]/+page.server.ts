@@ -52,86 +52,73 @@ export const actions = {
 			return error(500, 'Environment not found');
 		}
 
-		const form = superValidate(request, zod(insertListItemSchema));
+		const form = await superValidate(request, zod(insertListItemSchema));
 
-		const formData = await request.formData();
-		const name = formData.get('name');
-		const listId = formData.get('listId');
-		const quantity = formData.get('quantity');
-		const unit = formData.get('unit');
-		const comment = formData.get('comment');
-
-		if (typeof name !== 'string') {
-			return error(400, 'name is required');
+		if (!form.valid) {
+			return message(form, 'Item not added');
 		}
 
-		if (name.length < 3) {
-			return error(400, 'Name should be at least 3 characters');
-		}
+		// const formData = await request.formData();
+		// const name = formData.get('name');
+		// const listId = formData.get('listId');
+		// const quantity = formData.get('quantity');
+		// const unit = formData.get('unit');
+		// const comment = formData.get('comment');
 
-		if (typeof listId !== 'string') {
-			return error(400, 'listId is required');
-		}
+		// if (typeof name !== 'string') {
+		// 	return error(400, 'name is required');
+		// }
 
-		if (typeof comment !== 'string') {
-			return error(400, 'comment is required');
-		}
+		// if (name.length < 3) {
+		// 	return error(400, 'Name should be at least 3 characters');
+		// }
 
-		if (typeof unit !== 'string' || !isValidUnit(unit)) {
-			return error(400, 'unit is required');
-		}
+		// if (typeof listId !== 'string') {
+		// 	return error(400, 'listId is required');
+		// }
 
-		if (typeof quantity !== 'string') {
-			return error(400, 'quantity is required');
-		}
+		// if (typeof comment !== 'string') {
+		// 	return error(400, 'comment is required');
+		// }
+
+		// if (typeof unit !== 'string' || !isValidUnit(unit)) {
+		// 	return error(400, 'unit is required');
+		// }
+
+		// if (typeof quantity !== 'string') {
+		// 	return error(400, 'quantity is required');
+		// }
 
 		const db = drizzle(env.DB);
 
-		const [existingItem] = await db.select().from(items).where(eq(items.name, name));
+		const [existingItem] = await db.select().from(items).where(eq(items.name, form.data.name));
 
 		if (existingItem) {
+			const name = form.data.name;
+			const listId = form.data.listId;
+			const quantity = form.data.quantity;
+			const unit = form.data.unit;
+			const comment = form.data.comment;
+
 			const newListItemValues = insertListItemSchema.parse({
 				name: name ?? existingItem.name,
 				listId,
 				itemId: existingItem.id,
 				quantity: Number(quantity) > 0 ? Number(quantity) : existingItem.quantity,
-				comment: comment.length ? comment : existingItem.comment,
+				comment: comment && comment.length ? comment : existingItem.comment,
 				unit: unit ?? existingItem.unit
 			});
 
-			const result = await db.insert(listItems).values(newListItemValues).returning();
+			await db.insert(listItems).values(newListItemValues);
 
-			return {
-				message: 'Item added',
-				result
-			};
+			return message(form, 'Item added');
 		}
 
-		const newItemValues = insertItemSchema.parse({
-			name: name,
-			displayName: name,
-			unit: unit,
-			quantity: Number(quantity) > 0 ? Number(quantity) : undefined,
-			comment: comment ? String(comment) : undefined
-		});
+		const [newItem] = await db.insert(items).values(form.data).returning();
 
-		const [newItem] = await db.insert(items).values(newItemValues).returning();
+		await db.insert(listItems).values({ ...form.data, itemId: newItem.id });
 
-		const newListItemValues = insertListItemSchema.parse({
-			name: newItem.name,
-			itemId: newItem.id,
-			quantity: Number(quantity) > 0 ? Number(quantity) : undefined,
-			comment: comment ? String(comment) : undefined,
-			unit: unit,
-			listId
-		});
-
-		const result = await db.insert(listItems).values(newListItemValues).returning();
-
-		return {
-			message: 'Item added',
-			result
-		};
+		return message(form, 'Item added');
 	},
 	// edit: async ({ request, platform }) => {
 	// 	const env = platform?.env;
