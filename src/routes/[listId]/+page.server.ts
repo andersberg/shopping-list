@@ -1,9 +1,8 @@
 import { UNITS } from '$lib/constants';
-import { insertItemSchema, items } from '$lib/db/schema/items';
-import { insertListItemSchema, listItems } from '$lib/db/schema/listItems';
-import { insertListSchema, lists, selectListSchema } from '$lib/db/schema/lists';
-import { isValidUnit } from '$lib/db/schema/utils';
-import { error, fail } from '@sveltejs/kit';
+import { items } from '$lib/db/schema/items';
+import { insertListItemSchema, listItems, selectListItemSchema } from '$lib/db/schema/listItems';
+import { lists, selectListSchema } from '$lib/db/schema/lists';
+import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import { zod } from 'sveltekit-superforms/adapters';
@@ -30,23 +29,24 @@ export async function load({ params, platform }) {
 
 	const items = await db.select().from(listItems).where(eq(listItems.listId, listId));
 
-	const editListForm = await superValidate(list, zod(selectListSchema), {
-		id: LIST_FORM_ID
-	});
+	const editListForm = await superValidate(list, zod(selectListSchema));
 
-	const addItemForm = await superValidate(zod(insertListItemSchema));
+	const addListItemForm = await superValidate(zod(insertListItemSchema));
+
+	const editListItemForm = await superValidate(zod(selectListItemSchema));
 
 	return {
 		// list,
 		editListForm,
-		addItemForm,
+		addListItemForm,
+		editListItemForm,
 		items,
 		units: UNITS
 	};
 }
 
 export const actions = {
-	add: async ({ request, platform }) => {
+	addItem: async ({ request, platform }) => {
 		const env = platform?.env;
 		if (!env) {
 			return error(500, 'Environment not found');
@@ -58,158 +58,96 @@ export const actions = {
 			return message(form, 'Item not added');
 		}
 
-		// const formData = await request.formData();
-		// const name = formData.get('name');
-		// const listId = formData.get('listId');
-		// const quantity = formData.get('quantity');
-		// const unit = formData.get('unit');
-		// const comment = formData.get('comment');
-
-		// if (typeof name !== 'string') {
-		// 	return error(400, 'name is required');
-		// }
-
-		// if (name.length < 3) {
-		// 	return error(400, 'Name should be at least 3 characters');
-		// }
-
-		// if (typeof listId !== 'string') {
-		// 	return error(400, 'listId is required');
-		// }
-
-		// if (typeof comment !== 'string') {
-		// 	return error(400, 'comment is required');
-		// }
-
-		// if (typeof unit !== 'string' || !isValidUnit(unit)) {
-		// 	return error(400, 'unit is required');
-		// }
-
-		// if (typeof quantity !== 'string') {
-		// 	return error(400, 'quantity is required');
-		// }
-
 		const db = drizzle(env.DB);
 
-		const [existingItem] = await db.select().from(items).where(eq(items.name, form.data.name));
+		const [existingItem] = await db
+			.select()
+			.from(items)
+			.where(eq(items.name, form.data.name))
+			.limit(1);
 
 		if (existingItem) {
-			const name = form.data.name;
-			const listId = form.data.listId;
-			const quantity = form.data.quantity;
-			const unit = form.data.unit;
 			const comment = form.data.comment;
 
-			const newListItemValues = insertListItemSchema.parse({
-				name: name ?? existingItem.name,
-				listId,
-				itemId: existingItem.id,
-				quantity: Number(quantity) > 0 ? Number(quantity) : existingItem.quantity,
+			await db.insert(listItems).values({
 				comment: comment && comment.length ? comment : existingItem.comment,
-				unit: unit ?? existingItem.unit
+				itemId: existingItem.id,
+				listId: form.data.listId,
+				name: form.data.name,
+				quantity: form.data.quantity ?? existingItem.quantity,
+				unit: form.data.unit ?? existingItem.unit
 			});
-
-			await db.insert(listItems).values(newListItemValues);
 
 			return message(form, 'Item added');
 		}
 
 		const [newItem] = await db.insert(items).values(form.data).returning();
 
-		await db.insert(listItems).values({ ...form.data, itemId: newItem.id });
+		await db.insert(listItems).values({
+			comment: form.data.comment,
+			itemId: newItem.id,
+			listId: form.data.listId,
+			name: form.data.name,
+			quantity: form.data.quantity,
+			unit: form.data.unit
+		});
 
 		return message(form, 'Item added');
 	},
-	// edit: async ({ request, platform }) => {
-	// 	const env = platform?.env;
-	// 	if (!env) {
-	// 		return error(500, 'Environment not found');
-	// 	}
+	updateItem: async ({ request, platform }) => {
+		const env = platform?.env;
+		if (!env) {
+			return error(500, 'Environment not found');
+		}
 
-	// 	const formData = await request.formData();
-	// 	const id = formData.get('id');
-	// 	const name = formData.get('name');
-	// 	const listId = formData.get('listId');
-	// 	const quantity = formData.get('quantity');
-	// 	const unit = formData.get('unit');
-	// 	const comment = formData.get('comment');
+		const form = await superValidate(request, zod(selectListItemSchema));
 
-	// 	if (typeof id !== 'string') {
-	// 		return error(400, 'id is required');
-	// 	}
+		if (!form.valid) {
+			return message(form, 'Item not updated', { status: 400 });
+		}
 
-	// 	if (typeof name !== 'string') {
-	// 		return error(400, 'name is required');
-	// 	}
+		const db = drizzle(env.DB);
 
-	// 	if (typeof listId !== 'string') {
-	// 		return error(400, 'listId is required');
-	// 	}
+		const comment = form.data.comment;
+		await db
+			.update(listItems)
+			.set({
+				comment: comment?.length ? comment : undefined,
+				itemId: form.data.itemId,
+				listId: form.data.listId,
+				name: form.data.name,
+				quantity: form.data.quantity,
+				unit: form.data.unit
+			})
+			.where(eq(listItems.id, form.data.id));
 
-	// 	if (typeof quantity !== 'string') {
-	// 		return error(400, 'quantity is required');
-	// 	}
+		return message(form, 'Item updated');
+	},
+	deleteItem: async ({ request, platform }) => {
+		const env = platform?.env;
 
-	// 	if (typeof unit !== 'string' || !isValidUnit(unit)) {
-	// 		return error(400, 'unit is required');
-	// 	}
+		if (!env) {
+			return error(500, 'Environment not found');
+		}
 
-	// 	if (typeof comment !== 'string') {
-	// 		return error(400, 'comment is required');
-	// 	}
+		const form = await superValidate(request, zod(selectListItemSchema));
 
-	// 	const db = drizzle(env.DB);
+		if (!form.valid) {
+			return message(form, 'Item not deleted');
+		}
 
-	// 	const [existingItem] = await db.select().from(listItems).where(eq(listItems.id, id));
+		const db = drizzle(env.DB);
 
-	// 	if (!existingItem || existingItem.listId !== listId) {
-	// 		return error(404, 'Item not found');
-	// 	}
+		const [existingItem] = await db.select().from(listItems).where(eq(listItems.id, form.data.id));
 
-	// 	const updatedListItem = insertListItemSchema.parse({
-	// 		name: name ?? existingItem.name,
-	// 		itemId: existingItem.itemId,
-	// 		quantity: Number(quantity) > 0 ? Number(quantity) : existingItem.quantity,
-	// 		comment: comment.length ? comment : existingItem.comment,
-	// 		unit: unit ?? existingItem.unit,
-	// 		listId
-	// 	});
+		if (!existingItem) {
+			return error(404, 'Item not found');
+		}
 
-	// 	const result = await db.update(listItems).set(updatedListItem).where(eq(listItems.id, id));
+		await db.delete(listItems).where(eq(listItems.id, form.data.id));
 
-	// 	return {
-	// 		message: 'Item updated',
-	// 		result
-	// 	};
-	// },
-	// delete: async ({ request, platform }) => {
-	// 	const env = platform?.env;
-	// 	if (!env) {
-	// 		return error(500, 'Environment not found');
-	// 	}
-
-	// 	const formData = await request.formData();
-	// 	const id = formData.get('id');
-
-	// 	if (typeof id !== 'string') {
-	// 		return error(400, 'id is required');
-	// 	}
-
-	// 	const db = drizzle(env.DB);
-
-	// 	const [existingItem] = await db.select().from(listItems).where(eq(listItems.id, id));
-
-	// 	if (!existingItem) {
-	// 		return error(404, 'Item not found');
-	// 	}
-
-	// 	const result = await db.delete(listItems).where(eq(listItems.id, id)).returning();
-
-	// 	return {
-	// 		message: 'Item deleted',
-	// 		result
-	// 	};
-	// },
+		return message(form, 'Item deleted');
+	},
 	editList: async ({ request, platform }) => {
 		const env = platform?.env;
 		if (!env) {

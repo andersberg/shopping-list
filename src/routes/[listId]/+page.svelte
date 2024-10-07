@@ -1,7 +1,6 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
-	import ShoppingItemForm from '$lib/components/ShoppingItemForm.svelte';
+	import { insertListItemSchema, selectListItemSchema } from '$lib/db/schema/listItems';
 	import { selectListSchema } from '$lib/db/schema/lists';
 	import SuperDebug from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
@@ -10,28 +9,28 @@
 
 	export let data: PageData;
 
-	const LIST_FORM_ID = 'list-form';
-
 	const { enhance: editListFormEnhance, form: editListForm } = superForm(data.editListForm, {
 		validators: zod(selectListSchema),
-		// resetForm: true,
-		// applyAction: true,
 		invalidateAll: 'force',
-		id: LIST_FORM_ID
+		resetForm: true
 	});
 
-	const { enhance: addItemFormEnhance, form: addItemForm } = superForm(data.addItemForm, {
-		validators: zod(selectListSchema)
-		// resetForm: true,
-		// applyAction: true,
-		// invalidateAll: 'force',
-		// id: LIST_FORM_ID
+	const { enhance: addItemFormEnhance, form: addItemForm } = superForm(data.addListItemForm, {
+		validators: zod(insertListItemSchema),
+		resetForm: true
 	});
 
-	$: console.log('data.editListForm', data.editListForm);
-	$: console.log('data.editListForm', data.addItemForm);
+	const {
+		enhance: editListItemFormEnhance,
+		form: editListItemForm,
+		tainted: editListItemFormTainted,
+		reset: resetEditListItemForm
+	} = superForm(data.editListItemForm, {
+		validators: zod(selectListItemSchema),
+		resetForm: true
+	});
 
-	let openItem: number;
+	// $: console.log('data', data);
 </script>
 
 <h1>{data.editListForm.data.name}</h1>
@@ -46,7 +45,7 @@
 			<th>Comment</th>
 			<th>Created</th>
 			<th>Updated</th>
-			<th>Edit</th>
+			<th>Update</th>
 			<th>Delete</th>
 		</tr>
 	</thead>
@@ -57,13 +56,25 @@
 				<td>{item.quantity}</td>
 				<td>{item.unit}</td>
 				<td>{item.comment}</td>
-				<td>{item.created}</td>
-				<td>{item.updated}</td>
+				<td
+					>{new Date(item.created).toLocaleString('sv-se', {
+						timeZone: 'Europe/Stockholm'
+					})}</td
+				>
+				<td
+					>{new Date(item.updated).toLocaleString('sv-se', {
+						timeZoneName: 'short'
+					})}</td
+				>
 				<td>
-					<button on:click={() => (openItem = index)}>Edit</button>
+					<button
+						on:click={() => {
+							editListItemForm.set(item);
+						}}>Update</button
+					>
 				</td>
 				<td>
-					<form method="POST" action="?/delete" use:enhance>
+					<form method="POST" action="?/deleteItem" use:editListItemFormEnhance>
 						<input type="hidden" name="id" value={item.id} />
 						<button type="submit">Delete</button>
 					</form>
@@ -73,46 +84,94 @@
 	</tbody>
 </table>
 
-<h2>Add item</h2>
-<form method="POST" action="?/addItem" use:addItemFormEnhance>
-	<label>
-		<p>Name</p>
-		<input type="text" name="name" placeholder="Item name" bind:value={$addItemForm.name} />
-	</label>
+{#if $editListItemFormTainted}
+	<h2>Update Item</h2>
+	<form method="POST" action="?/updateItem" use:editListItemFormEnhance>
+		<input type="hidden" name="id" bind:value={$editListItemForm.id} />
+		<input type="hidden" name="listId" bind:value={$editListItemForm.listId} />
+		<input type="hidden" name="itemId" bind:value={$editListItemForm.itemId} />
 
-	<label>
-		<p>Quantity</p>
-		<input
-			type="number"
-			name="quantity"
-			placeholder="Quantity"
-			bind:value={$addItemForm.quantity}
-		/>
-	</label>
+		<label>
+			<p>Name</p>
+			<input type="text" name="name" placeholder="Item name" bind:value={$editListItemForm.name} />
+		</label>
 
-	<label>
-		<p>Unit</p>
-		<select name="unit" bind:value={$addItemForm.unit}>
-			{#each data.units as unit}
-				<option value={unit}>{unit}</option>
-			{/each}
-		</select>
-	</label>
+		<label>
+			<p>Quantity</p>
+			<input
+				type="number"
+				name="quantity"
+				placeholder="Quantity"
+				bind:value={$editListItemForm.quantity}
+			/>
+		</label>
 
-	<label>
-		<p>Comment</p>
-		<input type="text" name="comment" placeholder="Comment" bind:value={$addItemForm.comment} />
-	</label>
+		<label>
+			<p>Unit</p>
+			<select name="unit" bind:value={$editListItemForm.unit}>
+				{#each data.units as unit}
+					<option value={unit}>{unit}</option>
+				{/each}
+			</select>
+		</label>
 
-	<input type="hidden" name="listId" id="listId" bind:value={data.editListForm.data.id} />
-	<br />
-	<br />
-	<button type="submit">Add Item</button>
-</form>
+		<label>
+			<p>Comment</p>
+			<input
+				type="text"
+				name="comment"
+				placeholder="Comment"
+				bind:value={$editListItemForm.comment}
+			/>
+		</label>
+
+		<button type="submit">Update Item</button>
+	</form>
+	<button on:click={() => resetEditListItemForm()}>Reset</button>
+	<SuperDebug data={editListItemForm} label={'Edit Item Form'} />
+{:else}
+	<h2>Add item</h2>
+	<form method="POST" action="?/addItem" use:addItemFormEnhance>
+		<label>
+			<p>Name</p>
+			<input type="text" name="name" placeholder="Item name" bind:value={$addItemForm.name} />
+		</label>
+
+		<label>
+			<p>Quantity</p>
+			<input
+				type="number"
+				name="quantity"
+				placeholder="Quantity"
+				bind:value={$addItemForm.quantity}
+			/>
+		</label>
+
+		<label>
+			<p>Unit</p>
+			<select name="unit" bind:value={$addItemForm.unit}>
+				{#each data.units as unit}
+					<option value={unit}>{unit}</option>
+				{/each}
+			</select>
+		</label>
+
+		<label>
+			<p>Comment</p>
+			<input type="text" name="comment" placeholder="Comment" bind:value={$addItemForm.comment} />
+		</label>
+
+		<input type="hidden" name="listId" id="listId" bind:value={data.editListForm.data.id} />
+		<br />
+		<br />
+		<button type="submit">Add Item</button>
+	</form>
+	<SuperDebug data={addItemForm} label={'Add Item Form'} />
+{/if}
 
 <!-- {#if openItem}
 	<ShoppingItemForm
-		actionName="edit"
+		actionName="updateItem"
 		buttonText="Edit Item"
 		commentValue={data.items[openItem]?.comment ?? ''}
 		nameValue={data.items[openItem]?.name}

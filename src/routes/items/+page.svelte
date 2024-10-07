@@ -1,12 +1,22 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
-	import ShoppingItemForm from '$lib/components/ShoppingItemForm.svelte';
-	import type { ActionData, PageData } from './$types';
+	import { insertItemSchema, selectItemSchema } from '$lib/db/schema/items';
+	import { superForm } from 'sveltekit-superforms';
+	import { zod } from 'sveltekit-superforms/adapters';
+	import type { PageData } from './$types';
 
 	export let data: PageData;
-	export let form: ActionData;
 
-	let openItem: number | undefined;
+	const { form: addItemForm, enhance: addItemFormEnhance } = superForm(data.addItemForm, {
+		validators: zod(insertItemSchema)
+	});
+
+	const {
+		form: editItemForm,
+		enhance: editItemFormEnhance,
+		tainted: editItemFormTainted
+	} = superForm(data.editItemForm, {
+		validators: zod(selectItemSchema)
+	});
 </script>
 
 <h1>Shopping Items</h1>
@@ -20,25 +30,32 @@
 			<th>Comment</th>
 			<th>Created</th>
 			<th>Updated</th>
-			<th>Edit</th>
+			<th>Update</th>
 			<th>Delete</th>
 		</tr>
 	</thead>
 	<tbody>
-		{#each data.results as result, index}
+		{#each data.items as item, index}
 			<tr>
-				<td>{result.name}</td>
-				<td>{result.quantity}</td>
-				<td>{result.unit}</td>
-				<td>{result.comment}</td>
-				<td>{result.created}</td>
-				<td>{result.updated}</td>
+				<td>{item.name}</td>
+				<td>{item.quantity}</td>
+				<td>{item.unit}</td>
+				<td>{item.comment}</td>
+				<td>{item.created}</td>
+				<td>{item.updated}</td>
 				<td>
-					<button on:click={() => (openItem = index)}>Edit</button>
+					<button
+						on:click={() => {
+							editItemForm.set(item);
+						}}>Update</button
+					>
 				</td>
 				<td>
-					<form method="POST" action="?/remove" use:enhance>
-						<input type="hidden" name="id" value={result.id} />
+					<form method="POST" action="?/deleteItem" use:editItemFormEnhance>
+						{#each Object.entries(item) as [key, value]}
+							<input type="hidden" name={key} {value} />
+						{/each}
+
 						<button type="submit">Delete</button>
 					</form>
 				</td>
@@ -47,39 +64,78 @@
 	</tbody>
 </table>
 
-{#if form?.deleted === true}
-	<p>Deleted item {form?.result[0].name}</p>
-{/if}
+{#if $editItemFormTainted}
+	<h2>Update Item</h2>
+	<form method="POST" action="?/updateItem" use:editItemFormEnhance>
+		<input type="hidden" name="id" placeholder="ID" bind:value={$editItemForm.id} />
 
-{#if openItem !== undefined}
-	<h2>Edit Item</h2>
-	<p>ID: {data.results[openItem]?.id}</p>
-	<ShoppingItemForm
-		actionName="editItem"
-		buttonText="Edit Item"
-		commentValue={data.results[openItem]?.comment ?? ''}
-		nameValue={data.results[openItem]?.name}
-		quantityValue={data.results[openItem]?.quantity?.toString()}
-		units={[...data.units]}
-		unitValue={data.results[openItem]?.unit}
-	>
-		<input type="hidden" name="id" value={data.results[openItem]?.id} />
-	</ShoppingItemForm>
-	<button on:click={() => (openItem = undefined)}>Close</button>
+		<label>
+			<p>Name</p>
+			<input type="text" name="name" placeholder="Item name" bind:value={$editItemForm.name} />
+		</label>
+
+		<label>
+			<p>Comment</p>
+			<input type="text" name="comment" placeholder="Comment" bind:value={$editItemForm.comment} />
+		</label>
+
+		<label>
+			<p>Quantity</p>
+			<input
+				type="number"
+				name="quantity"
+				placeholder="Quantity"
+				bind:value={$editItemForm.quantity}
+			/>
+		</label>
+
+		<label>
+			<p>Unit</p>
+			<select name="unit" bind:value={$editItemForm.unit}>
+				{#each data.units as unit}
+					<option value={unit}>{unit}</option>
+				{/each}
+			</select>
+		</label>
+
+		<br />
+		<button type="submit">Update Item</button>
+	</form>
 {:else}
 	<h2>Add Item</h2>
-	<ShoppingItemForm
-		actionName="addItem"
-		commentValue={form?.values?.comment}
-		nameValue={form?.values?.name}
-		quantityValue={form?.values?.quantity?.toString()}
-		units={[...data.units]}
-		unitValue={form?.values?.unit}
-	/>
-{/if}
+	<form method="POST" action="?/addItem" use:addItemFormEnhance>
+		<label>
+			<p>Name</p>
+			<input type="text" name="name" placeholder="Item name" bind:value={$addItemForm.name} />
+		</label>
 
-{#if form}
-	<pre>{JSON.stringify(form, null, 2)}</pre>
+		<label>
+			<p>Comment</p>
+			<input type="text" name="comment" placeholder="Comment" bind:value={$addItemForm.comment} />
+		</label>
+
+		<label>
+			<p>Quantity</p>
+			<input
+				type="number"
+				name="quantity"
+				placeholder="Quantity"
+				bind:value={$addItemForm.quantity}
+			/>
+		</label>
+
+		<label>
+			<p>Unit</p>
+			<select name="unit" bind:value={$addItemForm.unit}>
+				{#each data.units as unit}
+					<option value={unit}>{unit}</option>
+				{/each}
+			</select>
+		</label>
+
+		<br />
+		<button type="submit">Add Item</button>
+	</form>
 {/if}
 
 <style>
