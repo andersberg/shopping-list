@@ -25,8 +25,8 @@ export const UNITS = [
 	'stycken'
 ] as const;
 
-export const DEFAULT_UNIT = 'st';
-export const DEFAULT_QUANTITY = 1;
+export const DEFAULT_UNIT = 'st' as const;
+export const DEFAULT_QUANTITY = 1 as const;
 
 // /(\d+)?\s?+([a-zA-Z]+)\s?+([a-zA-Z]+)?/i;
 // /(\d+)\s+(\p{L}+)\s+(\p{L}+)/iu;

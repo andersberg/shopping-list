@@ -1,15 +1,18 @@
-import { parseListInput } from './ParseLinstInput/parseListInput';
+import { parseListInput, type ShoppingItemNames } from './ParseLinstInput/parseListInput';
 import { parseListInputWithQuantity } from './ParseLinstInput/parseListInputWithQuantity';
-import type { ShoppingItem } from './db/schema/items';
-import { DEFAULT_QUANTITY, DEFAULT_UNIT, STARTS_WITH_NUMBER_REGEX } from './frontend/constants';
+import { DEFAULT_QUANTITY, DEFAULT_UNIT, STARTS_WITH_NUMBER_REGEX } from './constants';
+import type { InsertShoppingItem } from './db/schema/items';
 
-export function parseShoppingItemInput(input: string, items: Array<ShoppingItem>): ShoppingItem {
+export function parseShoppingItemInput(
+	input: string,
+	itemNames: ShoppingItemNames
+): Omit<InsertShoppingItem, 'id' | 'created' | 'updated'> {
 	const startsWithQuantity = STARTS_WITH_NUMBER_REGEX.test(input);
 
 	if (startsWithQuantity) {
-		return parseListInputWithQuantity(input, items);
+		return parseListInputWithQuantity(input, itemNames);
 	} else {
-		const result = parseListInput(input, items);
+		const result = parseListInput(input, itemNames);
 
 		return {
 			...result,

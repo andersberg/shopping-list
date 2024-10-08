@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { MOCK_SHOPPING_ITEMS } from './mocks';
+import type { InsertShoppingItem } from './db/schema/items';
 import { parseShoppingItemInput } from './parseShoppingItemInput';
-import { ShoppingItem } from './server/ShoppingItem';
+
+const MOCK_SHOPPING_ITEM_NAMES = ['cola', 'cola zero', 'coca cola', 'ketchup', 'sandwich'];
 
 describe('parseShoppingItemInput', () => {
 	it('1 kg mjöl 3 för 2', () => {
@@ -9,13 +10,12 @@ describe('parseShoppingItemInput', () => {
 
 		const expected = {
 			comment: '3 för 2',
-			displayName: 'mjöl',
 			quantity: 1,
 			unit: 'kg',
-			value: 'mjöl'
-		} as const satisfies Omit<ShoppingItem, 'id'>;
+			name: 'mjöl'
+		} as const satisfies Omit<InsertShoppingItem, 'id'>;
 
-		const result = parseShoppingItemInput(input, MOCK_SHOPPING_ITEMS);
+		const result = parseShoppingItemInput(input, MOCK_SHOPPING_ITEM_NAMES);
 		expect(result).toEqual(expected);
 	});
 
@@ -23,13 +23,12 @@ describe('parseShoppingItemInput', () => {
 		const input = 'cola zero rabatt';
 		const expected = {
 			comment: 'rabatt',
-			displayName: 'Cola Zero',
 			quantity: 1,
 			unit: 'st',
-			value: 'cola zero'
-		} as const satisfies Omit<ShoppingItem, 'id'>;
+			name: 'cola zero'
+		} as const satisfies Omit<InsertShoppingItem, 'id'>;
 
-		const result = parseShoppingItemInput(input, MOCK_SHOPPING_ITEMS);
+		const result = parseShoppingItemInput(input, MOCK_SHOPPING_ITEM_NAMES);
 		expect(result).toEqual(expected);
 	});
 });

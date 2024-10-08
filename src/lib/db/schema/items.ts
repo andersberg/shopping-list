@@ -27,7 +27,7 @@ export const insertItemSchema = createInsertSchema(items);
 
 export const selectItemSchema = createSelectSchema(items);
 
-type InsertShoppingItem = z.infer<typeof insertItemSchema>;
-type SelectShoppingItem = z.infer<typeof selectItemSchema>;
+export type InsertShoppingItem = z.infer<typeof insertItemSchema>;
+export type SelectShoppingItem = z.infer<typeof selectItemSchema>;
 
 export type ShoppingItem = InsertShoppingItem | SelectShoppingItem;

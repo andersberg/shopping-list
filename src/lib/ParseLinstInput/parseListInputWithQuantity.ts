@@ -1,28 +1,27 @@
-import { UNITS } from '$lib/constants';
-import type { ShoppingItem } from '$lib/db/schema/shoppingItem';
-import { DEFAULT_QUANTITY, DEFAULT_UNIT } from '../frontend/constants';
-import { parseListInput } from './parseListInput';
+import { DEFAULT_QUANTITY, DEFAULT_UNIT } from '$lib/constants';
+import type { InsertShoppingItem } from '$lib/db/schema/items';
+import { isValidUnit } from '$lib/db/schema/utils';
+import { parseListInput, type ShoppingItemNames } from './parseListInput';
 
-type Unit = (typeof UNITS)[number];
-const isUnit = (value: unknown): value is Unit =>
-	typeof value === 'string' && UNITS.includes(value as Unit);
-
-export function parseListInputWithQuantity(input: string, items: Array<ShoppingItem>) {
+export function parseListInputWithQuantity(
+	input: string,
+	itemNames: ShoppingItemNames
+): Pick<InsertShoppingItem, 'name' | 'comment' | 'quantity' | 'unit'> {
 	const inputParts = input.split(' ');
 	const quantityPart = inputParts.at(0)?.trim() ?? DEFAULT_QUANTITY;
 	const quantity = Number(quantityPart);
 
 	let value = inputParts.slice(1).join(' ').trim() ?? input;
-	let unit: Unit = DEFAULT_UNIT;
+	let unit: InsertShoppingItem['unit'] = DEFAULT_UNIT;
 
 	const maybeUnit = inputParts.at(1)?.trim();
 
-	if (isUnit(maybeUnit)) {
+	if (isValidUnit(maybeUnit)) {
 		unit = maybeUnit;
 		value = inputParts.slice(2).join(' ').trim();
 	}
 
-	const match = parseListInput(value, items);
+	const match = parseListInput(value, itemNames);
 
 	const result = {
 		...match,

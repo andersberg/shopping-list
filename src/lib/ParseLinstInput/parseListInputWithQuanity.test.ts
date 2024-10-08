@@ -1,63 +1,60 @@
-import { ShoppingItem } from "@server/lib/ShoppingItem";
-import { describe, expect, it } from "bun:test";
-import { MOCK_SHOPPING_ITEMS } from "../mocks";
-import { parseListInputWithQuantity } from "./parseListInputWithQuantity";
+import type { InsertShoppingItem } from '$lib/db/schema/items';
+import { describe, expect, it } from 'vitest';
+import { parseListInputWithQuantity } from './parseListInputWithQuantity';
 
-describe("parseListInputWithQuantity", () => {
-  it("2 mjölk", () => {
-    const input = "2 mjölk";
-    const expected = {
-      comment: undefined,
-      displayName: "mjölk",
-      quantity: 2,
-      unit: "st",
-      value: "mjölk",
-    } as const satisfies Omit<ShoppingItem, "id">;
+const MOCK_SHOPPING_ITEM_NAMES = ['cola', 'cola zero', 'coca cola', 'ketchup', 'sandwich'];
 
-    const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEMS);
-    expect(result).toEqual(expected);
-  });
+describe('parseListInputWithQuantity', () => {
+	it('2 mjölk', () => {
+		const input = '2 mjölk';
+		const expected = {
+			comment: undefined,
+			quantity: 2,
+			unit: 'st',
+			name: 'mjölk'
+		} as const satisfies Omit<InsertShoppingItem, 'id'>;
 
-  it("2 mjölk stor eko", () => {
-    const input = "2 mjölk stor eko";
-    const expected = {
-      comment: "stor eko",
-      displayName: "mjölk",
-      quantity: 2,
-      unit: "st",
-      value: "mjölk",
-    } as const satisfies Omit<ShoppingItem, "id">;
+		const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEM_NAMES);
+		expect(result).toEqual(expected);
+	});
 
-    const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEMS);
-    expect(result).toEqual(expected);
-  });
+	it('2 mjölk stor eko', () => {
+		const input = '2 mjölk stor eko';
+		const expected = {
+			comment: 'stor eko',
+			quantity: 2,
+			unit: 'st',
+			name: 'mjölk'
+		} as const satisfies Omit<InsertShoppingItem, 'id'>;
 
-  it("2 kg mjöl", () => {
-    const input = "2 kg mjöl";
-    const expected = {
-      comment: undefined,
-      displayName: "mjöl",
-      quantity: 2,
-      unit: "kg",
-      value: "mjöl",
-    } as const satisfies Omit<ShoppingItem, "id">;
+		const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEM_NAMES);
+		expect(result).toEqual(expected);
+	});
 
-    const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEMS);
-    expect(result).toEqual(expected);
-  });
+	it('2 kg mjöl', () => {
+		const input = '2 kg mjöl';
+		const expected = {
+			comment: undefined,
+			quantity: 2,
+			unit: 'kg',
+			name: 'mjöl'
+		} as const satisfies Omit<InsertShoppingItem, 'id'>;
 
-  it("1 kg mjöl 3 för 2", () => {
-    const input = "1 kg mjöl 3 för 2";
+		const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEM_NAMES);
+		expect(result).toEqual(expected);
+	});
 
-    const expected = {
-      comment: "3 för 2",
-      displayName: "mjöl",
-      quantity: 1,
-      unit: "kg",
-      value: "mjöl",
-    } as const satisfies Omit<ShoppingItem, "id">;
+	it('1 kg mjöl 3 för 2', () => {
+		const input = '1 kg mjöl 3 för 2';
 
-    const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEMS);
-    expect(result).toEqual(expected);
-  });
+		const expected = {
+			comment: '3 för 2',
+			quantity: 1,
+			unit: 'kg',
+			name: 'mjöl'
+		} as const satisfies Omit<InsertShoppingItem, 'id'>;
+
+		const result = parseListInputWithQuantity(input, MOCK_SHOPPING_ITEM_NAMES);
+		expect(result).toEqual(expected);
+	});
 });
