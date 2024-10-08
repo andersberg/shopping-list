@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ef86ee18-1b93-462a-942b-9ddd5451817d",
+  "id": "1eb45001-37ed-4cec-82d4-0eab01ffbc57",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "items": {
@@ -49,7 +49,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "CURRENT_TIMESTAMP"
         },
         "updated": {
           "name": "updated",
@@ -57,7 +57,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "CURRENT_TIMESTAMP"
         }
       },
       "indexes": {},
@@ -75,15 +75,15 @@
           "notNull": true,
           "autoincrement": false
         },
-        "item_id": {
-          "name": "item_id",
+        "itemId": {
+          "name": "itemId",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
         },
-        "list_id": {
-          "name": "list_id",
+        "listId": {
+          "name": "listId",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
@@ -124,7 +124,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "CURRENT_TIMESTAMP"
         },
         "updated": {
           "name": "updated",
@@ -132,17 +132,17 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "CURRENT_TIMESTAMP"
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "list_items_item_id_items_id_fk": {
-          "name": "list_items_item_id_items_id_fk",
+        "list_items_itemId_items_id_fk": {
+          "name": "list_items_itemId_items_id_fk",
           "tableFrom": "list_items",
           "tableTo": "items",
           "columnsFrom": [
-            "item_id"
+            "itemId"
           ],
           "columnsTo": [
             "id"
@@ -150,12 +150,12 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "list_items_list_id_lists_id_fk": {
-          "name": "list_items_list_id_lists_id_fk",
+        "list_items_listId_lists_id_fk": {
+          "name": "list_items_listId_lists_id_fk",
           "tableFrom": "list_items",
           "tableTo": "lists",
           "columnsFrom": [
-            "list_id"
+            "listId"
           ],
           "columnsTo": [
             "id"
@@ -190,7 +190,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "CURRENT_TIMESTAMP"
         },
         "updated": {
           "name": "updated",
@@ -198,7 +198,7 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false,
-          "default": "(CURRENT_TIMESTAMP)"
+          "default": "CURRENT_TIMESTAMP"
         }
       },
       "indexes": {},

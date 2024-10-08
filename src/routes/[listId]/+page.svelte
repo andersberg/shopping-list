@@ -2,6 +2,7 @@
 	import { page } from '$app/stores';
 	import { insertListItemSchema, selectListItemSchema } from '$lib/db/schema/listItems';
 	import { selectListSchema } from '$lib/db/schema/lists';
+	import { formatUTCToTimezone as formatUTCToBrowserTimezone } from '$lib/formatUTCToTimezone';
 	import SuperDebug from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { superForm } from 'sveltekit-superforms/client';
@@ -56,16 +57,8 @@
 				<td>{item.quantity}</td>
 				<td>{item.unit}</td>
 				<td>{item.comment}</td>
-				<td
-					>{new Date(item.created).toLocaleString('sv-se', {
-						timeZone: 'Europe/Stockholm'
-					})}</td
-				>
-				<td
-					>{new Date(item.updated).toLocaleString('sv-se', {
-						timeZoneName: 'short'
-					})}</td
-				>
+				<td>{formatUTCToBrowserTimezone(item.created)}</td>
+				<td>{formatUTCToBrowserTimezone(item.updated)}</td>
 				<td>
 					<button
 						on:click={() => {

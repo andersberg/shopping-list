@@ -35,6 +35,8 @@ export async function load({ params, platform }) {
 
 	const editListItemForm = await superValidate(zod(selectListItemSchema));
 
+	console.log(items);
+
 	return {
 		// list,
 		editListForm,
