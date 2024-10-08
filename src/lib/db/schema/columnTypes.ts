@@ -27,7 +27,7 @@ export function createQuantityColumn() {
 }
 
 export function createUnitColumn() {
-	return text({ enum: UNITS }).notNull();
+	return text({ enum: UNITS }).notNull().default('st');
 }
 
 export function createCommentColumn() {

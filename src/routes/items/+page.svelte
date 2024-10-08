@@ -128,7 +128,7 @@
 			<p>Unit</p>
 			<select name="unit" bind:value={$addItemForm.unit}>
 				{#each data.units as unit}
-					<option value={unit}>{unit}</option>
+					<option value={unit} selected={unit === 'st'}>{unit}</option>
 				{/each}
 			</select>
 		</label>
