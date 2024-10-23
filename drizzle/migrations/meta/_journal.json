@@ -8,6 +8,13 @@
       "when": 1728479266030,
       "tag": "0000_right_secret_warriors",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1729691639134,
+      "tag": "0001_lazy_sentry",
+      "breakpoints": true
     }
   ]
 }

@@ -37,3 +37,7 @@ export function createCommentColumn() {
 export function createNameColumn() {
 	return text().notNull();
 }
+
+export function createCheckedColumn(checked = false) {
+	return integer({ mode: 'boolean' }).default(checked);
+}

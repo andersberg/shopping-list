@@ -3,6 +3,7 @@ import { sqliteTable } from 'drizzle-orm/sqlite-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
 import { z } from 'zod';
 import {
+	createCheckedColumn,
 	createCommentColumn,
 	createDateTimeColumn,
 	createForeignKeyColumn,
@@ -22,7 +23,8 @@ export const listItems = sqliteTable('list_items', {
 	quantity: createQuantityColumn(),
 	comment: createCommentColumn(),
 	created: createDateTimeColumn(),
-	updated: createDateTimeColumn().$onUpdate(() => sql`(CURRENT_TIMESTAMP)`)
+	updated: createDateTimeColumn().$onUpdate(() => sql`(CURRENT_TIMESTAMP)`),
+	checked: createCheckedColumn()
 });
 
 export const insertListItemSchema = createInsertSchema(listItems, {

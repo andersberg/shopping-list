@@ -42,8 +42,9 @@
 	{#each data.items as item}
 		<li class="list-item">
 			<form>
-				<input type="checkbox" name="id" value={item.id} />
+				<input type="checkbox" name="id" value={item.checked} />
 			</form>
+
 			<span>
 				{item.name}
 			</span>
