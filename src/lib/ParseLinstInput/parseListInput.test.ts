@@ -48,4 +48,15 @@ describe('parseListInput', () => {
 		const result = parseListInput(input, MOCK_SHOPPING_ITEM_NAMES);
 		expect(result).toEqual(expected);
 	});
+
+	it('krossade tomater', () => {
+		const input = 'krossade tomater';
+		const expected = {
+			comment: undefined,
+			name: 'krossade tomater'
+		} as const satisfies Omit<InsertShoppingItem, 'id' | 'quantity' | 'unit'>;
+
+		const result = parseListInput(input, MOCK_SHOPPING_ITEM_NAMES);
+		expect(result).toEqual(expected);
+	});
 });

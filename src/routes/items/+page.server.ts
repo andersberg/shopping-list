@@ -1,6 +1,5 @@
 import { UNITS } from '$lib/constants';
 import { insertItemSchema, items, selectItemSchema } from '$lib/db/schema/items';
-import { listItems } from '$lib/db/schema/listItems';
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
@@ -64,7 +63,15 @@ export const actions = {
 
 		const db = drizzle(env.DB);
 
-		await db.update(items).set(form.data).where(eq(items.id, form.data.id));
+		await db
+			.update(items)
+			.set({
+				name: form.data.name,
+				unit: form.data.unit,
+				quantity: form.data.quantity,
+				comment: form.data.comment
+			})
+			.where(eq(items.id, form.data.id));
 
 		return message(form, 'Item updated');
 	},
@@ -82,19 +89,6 @@ export const actions = {
 		}
 
 		const db = drizzle(env.DB);
-
-		const linkedListItems = await db
-			.select()
-			.from(listItems)
-			.where(eq(listItems.itemId, form.data.id));
-
-		if (linkedListItems.length > 0) {
-			return message(
-				form,
-				`Item ${form.data.name} is linked to ${linkedListItems.length} list items`,
-				{ status: 400 }
-			);
-		}
 
 		await db.delete(items).where(eq(items.id, form.data.id));
 

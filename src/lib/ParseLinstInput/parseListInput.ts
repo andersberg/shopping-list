@@ -1,5 +1,5 @@
 import type { InsertShoppingItem, SelectShoppingItem } from '$lib/db/schema/items';
-import { COLON_SPLIT_REGEX, SPLIT_FIRST_WORD_REGEX } from '../constants';
+import { COLON_SPLIT_REGEX } from '../constants';
 
 export type ShoppingItemNames = Array<SelectShoppingItem['name']>;
 
@@ -19,12 +19,9 @@ export function parseListInput(
 		};
 	}
 
-	const [, name, inputRest = ''] = namePart.match(SPLIT_FIRST_WORD_REGEX) ?? [];
-	const comment = [commentPart.trim(), inputRest.trim()].filter(Boolean);
-
 	return {
-		comment: comment.length > 0 ? comment.join(', ') : undefined,
-		name: name.trim()
+		comment: undefined,
+		name: input
 	};
 }
 

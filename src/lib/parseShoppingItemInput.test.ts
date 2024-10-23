@@ -9,10 +9,10 @@ describe('parseShoppingItemInput', () => {
 		const input = '1 kg mjöl 3 för 2';
 
 		const expected = {
-			comment: '3 för 2',
+			comment: undefined,
 			quantity: 1,
 			unit: 'kg',
-			name: 'mjöl'
+			name: 'mjöl 3 för 2'
 		} as const satisfies Omit<InsertShoppingItem, 'id'>;
 
 		const result = parseShoppingItemInput(input, MOCK_SHOPPING_ITEM_NAMES);

@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "1eb45001-37ed-4cec-82d4-0eab01ffbc57",
+  "id": "0eff5dc1-a002-448f-a419-6a47b1004e12",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "items": {
@@ -26,7 +26,8 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'st'"
         },
         "quantity": {
           "name": "quantity",
@@ -75,13 +76,6 @@
           "notNull": true,
           "autoincrement": false
         },
-        "itemId": {
-          "name": "itemId",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
         "listId": {
           "name": "listId",
           "type": "text",
@@ -101,7 +95,8 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
+          "autoincrement": false,
+          "default": "'st'"
         },
         "quantity": {
           "name": "quantity",
@@ -137,19 +132,6 @@
       },
       "indexes": {},
       "foreignKeys": {
-        "list_items_itemId_items_id_fk": {
-          "name": "list_items_itemId_items_id_fk",
-          "tableFrom": "list_items",
-          "tableTo": "items",
-          "columnsFrom": [
-            "itemId"
-          ],
-          "columnsTo": [
-            "id"
-          ],
-          "onDelete": "no action",
-          "onUpdate": "no action"
-        },
         "list_items_listId_lists_id_fk": {
           "name": "list_items_listId_lists_id_fk",
           "tableFrom": "list_items",

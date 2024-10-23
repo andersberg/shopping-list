@@ -11,10 +11,9 @@ export const lists = sqliteTable('lists', {
 	updated: createDateTimeColumn().$onUpdate(() => sql`(CURRENT_TIMESTAMP)`)
 });
 
-export type NewList = typeof lists.$inferInsert;
-
 export const insertListSchema = createInsertSchema(lists, {
 	name: z.string().min(3)
 });
 
 export const selectListSchema = createSelectSchema(lists);
+export type List = z.infer<typeof selectListSchema>;

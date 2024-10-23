@@ -1,6 +1,7 @@
 import { sql } from 'drizzle-orm';
 import { sqliteTable } from 'drizzle-orm/sqlite-core';
 import { createInsertSchema, createSelectSchema } from 'drizzle-zod';
+import { z } from 'zod';
 import {
 	createCommentColumn,
 	createDateTimeColumn,
@@ -10,12 +11,11 @@ import {
 	createQuantityColumn,
 	createUnitColumn
 } from './columnTypes';
-import { items } from './items';
 import { lists } from './lists';
+import { idString, nameString } from './primitives';
 
 export const listItems = sqliteTable('list_items', {
 	id: createIdAsPrimaryKeyColumn(),
-	itemId: createForeignKeyColumn(items.id),
 	listId: createForeignKeyColumn(lists.id),
 	name: createNameColumn(),
 	unit: createUnitColumn(),
@@ -25,8 +25,21 @@ export const listItems = sqliteTable('list_items', {
 	updated: createDateTimeColumn().$onUpdate(() => sql`(CURRENT_TIMESTAMP)`)
 });
 
-export type NewListItem = typeof listItems.$inferInsert;
+export const insertListItemSchema = createInsertSchema(listItems, {
+	name: z.string().min(2).max(255)
+});
 
-export const insertListItemSchema = createInsertSchema(listItems);
+export const addListItemSchema = insertListItemSchema
+	.pick({
+		listId: true
+	})
+	.extend({
+		value: z.string().min(2).max(255)
+	});
 
-export const selectListItemSchema = createSelectSchema(listItems);
+export type AddListItem = z.infer<typeof addListItemSchema>;
+
+export const selectListItemSchema = createSelectSchema(listItems, {
+	name: nameString,
+	listId: idString
+});
