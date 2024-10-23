@@ -41,6 +41,9 @@
 <ul class="list">
 	{#each data.items as item}
 		<li class="list-item">
+			<form>
+				<input type="checkbox" name="id" value={item.id} />
+			</form>
 			<span>
 				{item.name}
 			</span>
@@ -145,7 +148,7 @@
 	.list {
 		max-width: fit-content;
 		display: grid;
-		grid-template-columns: auto auto 1fr auto auto;
+		grid-template-columns: auto auto auto 1fr auto auto;
 		column-gap: 1rem;
 		row-gap: 0.5rem;
 		padding-left: 0;
