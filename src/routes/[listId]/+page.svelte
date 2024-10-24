@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
+	import { invalidate } from '$app/navigation';
 	import { addListItemSchema, selectListItemSchema } from '$lib/db/schema/listItems';
-	import { formatUTCToTimezone as formatUTCToBrowserTimezone } from '$lib/formatUTCToTimezone';
-	import SuperDebug from 'sveltekit-superforms';
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { superForm } from 'sveltekit-superforms/client';
 	import type { PageData } from './$types';
+	import EditListItem from './EditListItem.svelte';
 	import ListHeader from './ListHeader.svelte';
 
 	export let data: PageData;
@@ -21,28 +20,43 @@
 		validators: zod(addListItemSchema)
 	});
 
-	const {
-		enhance: editListItemFormEnhance,
-		form: editListItemForm,
-		tainted: editListItemFormTainted,
-		reset: resetEditListItemForm
-	} = superForm(data.forms.editListItem, {
-		validators: zod(selectListItemSchema)
-	});
+	async function toggleChecked(event: Event) {
+		event.preventDefault();
 
+		if (event.currentTarget instanceof HTMLFormElement) {
+			const form = event.currentTarget;
+			const data = new FormData(form);
+
+			await fetch(form.action, {
+				method: 'POST',
+				body: new FormData(form)
+			});
+
+			// Invalidate the current page data
+			await invalidate('app:list');
+		}
+	}
 	// $: console.log('data', data);
 	// $: console.log('data.forms.addListItem', data.forms.addListItem);
 	// $: console.log('$addItemForm', $addItemForm);
 	// $: console.log('$editListItemForm,', $editListItemForm);
+
+	let openItem: number | undefined = undefined;
+	function toggleOpenItem(index?: number) {
+		openItem = index;
+	}
 </script>
 
 <ListHeader form={data.forms.editList} title={data.list.name} />
 
 <ul class="list">
-	{#each data.items as item}
-		<li class="list-item">
-			<form>
-				<input type="checkbox" name="id" value={item.checked} />
+	{#each data.items as item, index}
+		<li class="list-item" class:checked={item.checked}>
+			<form on:change={toggleChecked} action="?/updateItem" method="POST">
+				<input type="hidden" name="id" value={item.id} />
+				<input type="hidden" name="listId" value={item.listId} />
+				<input type="hidden" name="checked" value="false" />
+				<input type="checkbox" name="checked" bind:checked={item.checked} value={item.checked} />
 			</form>
 
 			<span>
@@ -59,78 +73,32 @@
 
 			<button
 				on:click={() => {
-					editListItemForm.set(item);
+					toggleOpenItem(index);
 				}}>Edit</button
 			>
-
-			<form method="POST" action="?/deleteItem" use:enhance>
-				<input type="hidden" name="id" value={item.id} />
-				<button type="submit">Delete</button>
-			</form>
 		</li>
 	{/each}
 </ul>
 
-{#if $editListItemFormTainted}
-	<h2>Edit Item</h2>
-	<form method="POST" action="?/updateItem" use:editListItemFormEnhance>
-		<input type="hidden" name="id" bind:value={$editListItemForm.id} />
-		<input type="hidden" name="listId" bind:value={$editListItemForm.listId} />
-
-		<label>
-			<p>Name</p>
-			<input type="text" name="name" placeholder="Item name" bind:value={$editListItemForm.name} />
-		</label>
-
-		<label>
-			<p>Quantity</p>
-			<input
-				type="number"
-				name="quantity"
-				placeholder="Quantity"
-				bind:value={$editListItemForm.quantity}
-			/>
-		</label>
-
-		<label>
-			<p>Unit</p>
-			<select name="unit" bind:value={$editListItemForm.unit}>
-				{#each data.units as unit}
-					<option value={unit}>{unit}</option>
-				{/each}
-			</select>
-		</label>
-
-		<label>
-			<p>Comment</p>
-			<input
-				type="text"
-				name="comment"
-				placeholder="Comment"
-				bind:value={$editListItemForm.comment}
-			/>
-		</label>
-
-		<p>Created: {formatUTCToBrowserTimezone($editListItemForm.created)}</p>
-		<p>Updated: {formatUTCToBrowserTimezone($editListItemForm.updated)}</p>
-
-		<button type="submit">Save</button>
-	</form>
-
-	<button on:click={() => resetEditListItemForm()}>Close</button>
+{#if openItem !== undefined}
+	<EditListItem
+		item={data.items[openItem]}
+		units={data.units}
+		handleDelete={() => {
+			invalidate('app:list');
+			toggleOpenItem();
+		}}
+		handleClose={() => {
+			toggleOpenItem();
+		}}
+	/>
 
 	<!-- <SuperDebug data={$editListItemForm} label={'Edit List Item Form'} /> -->
 {:else}
 	<h2>Add item</h2>
 	<form method="POST" action="?/addItem" use:addItemFormEnhance>
 		<input type="hidden" name="listId" value={data.list.id} />
-		<input
-			type="text"
-			name="value"
-			placeholder="List Item value"
-			bind:value={$addItemForm.value}
-			{...$addItemFormConstraints.value}
-		/>
+		<input type="text" name="value" placeholder="List Item value" bind:value={$addItemForm.value} />
 
 		{#if $addItemErrors.value && $addItemFormTainted?.value}
 			<small class="text-red-500">{$addItemErrors.value}</small>
@@ -159,6 +127,14 @@
 		display: grid;
 		grid-column: 1 / -1;
 		grid-template-columns: subgrid;
+	}
+
+	.list-item.checked *:not(button) {
+		opacity: 0.5;
+	}
+
+	.list-item.checked:hover * {
+		opacity: 1;
 	}
 
 	/* .list-item + .list-item {

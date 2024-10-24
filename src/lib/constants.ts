@@ -25,6 +25,8 @@ export const UNITS = [
 	'stycken'
 ] as const;
 
+export type Units = typeof UNITS;
+
 export const DEFAULT_UNIT = 'st' as const;
 export const DEFAULT_QUANTITY = 1 as const;
 

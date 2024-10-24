@@ -1,16 +1,22 @@
 import { UNITS } from '$lib/constants';
 import { items } from '$lib/db/schema/items';
-import { addListItemSchema, listItems, selectListItemSchema } from '$lib/db/schema/listItems';
+import {
+	addListItemSchema,
+	listItems,
+	selectListItemSchema,
+	updateListItemSchema
+} from '$lib/db/schema/listItems';
 import { lists, selectListSchema } from '$lib/db/schema/lists';
 import { parseShoppingItemInput } from '$lib/parseShoppingItemInput';
 import { error, fail } from '@sveltejs/kit';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import { zod } from 'sveltekit-superforms/adapters';
 import { message, superValidate } from 'sveltekit-superforms/server';
 import type { Actions } from './$types';
 
-export async function load({ params, platform }) {
+export async function load({ params, platform, depends }) {
+	depends('app:list');
 	const env = platform?.env;
 	if (!env) {
 		return error(500, 'Environment not found');
@@ -18,31 +24,27 @@ export async function load({ params, platform }) {
 
 	const db = drizzle(env.DB);
 	const [list] = await db.select().from(lists).where(eq(lists.id, params.listId));
-	const items = await db.select().from(listItems).where(eq(listItems.listId, params.listId));
+	const items = await db
+		.select()
+		.from(listItems)
+		.where(eq(listItems.listId, params.listId))
+		.orderBy(asc(listItems.checked));
 
 	const addListItemForm = await superValidate(
 		{
 			listId: list.id
 		},
-		zod(addListItemSchema),
-		{
-			// id: 'add-list-item-form'
-		}
+		zod(addListItemSchema)
 	);
 
-	const editListForm = await superValidate(list, zod(selectListSchema), {
-		// id: 'edit-list-form'
-	});
+	const editListForm = await superValidate(list, zod(selectListSchema));
 
-	const editListItemForm = await superValidate(zod(selectListItemSchema), {
-		// id: 'edit-list-item-form'
-	});
+	// const editListItemForm = await superValidate(zod(selectListItemSchema));
 
 	return {
 		forms: {
 			addListItem: addListItemForm,
-			editList: editListForm,
-			editListItem: editListItemForm
+			editList: editListForm
 		},
 		items,
 		list,
@@ -96,23 +98,22 @@ export const actions = {
 			return error(500, 'Environment not found');
 		}
 
-		const form = await superValidate(request, zod(selectListItemSchema));
-
+		const form = await superValidate(request, zod(updateListItemSchema));
 		if (!form.valid) {
 			return message(form, 'Item not updated', { status: 400 });
 		}
 
 		const db = drizzle(env.DB);
-
 		const comment = form.data.comment;
+
 		await db
 			.update(listItems)
 			.set({
 				comment: comment?.length ? comment : undefined,
-				listId: form.data.listId,
 				name: form.data.name,
 				quantity: form.data.quantity,
-				unit: form.data.unit
+				unit: form.data.unit,
+				checked: form.data.checked
 			})
 			.where(eq(listItems.id, form.data.id));
 

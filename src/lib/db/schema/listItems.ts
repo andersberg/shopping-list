@@ -28,7 +28,7 @@ export const listItems = sqliteTable('list_items', {
 });
 
 export const insertListItemSchema = createInsertSchema(listItems, {
-	name: z.string().min(2).max(255)
+	name: nameString
 });
 
 export const addListItemSchema = insertListItemSchema
@@ -36,7 +36,7 @@ export const addListItemSchema = insertListItemSchema
 		listId: true
 	})
 	.extend({
-		value: z.string().min(2).max(255)
+		value: nameString
 	});
 
 export type AddListItem = z.infer<typeof addListItemSchema>;
@@ -45,3 +45,14 @@ export const selectListItemSchema = createSelectSchema(listItems, {
 	name: nameString,
 	listId: idString
 });
+
+export type ListItem = z.infer<typeof selectListItemSchema>;
+
+export const updateListItemSchema = insertListItemSchema.partial().merge(
+	z.object({
+		id: idString,
+		listId: idString
+	})
+);
+
+export type UpdateListItem = z.infer<typeof updateListItemSchema>;
