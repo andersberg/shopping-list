@@ -61,7 +61,6 @@ export const actions = {
 		}
 
 		const form = await superValidate(request, zod(addListItemSchema));
-		console.log('form', JSON.stringify(form, null, 2));
 
 		if (!form.valid) {
 			return fail(400, { form });

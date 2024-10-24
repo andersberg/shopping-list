@@ -91,6 +91,9 @@
 		handleClose={() => {
 			toggleOpenItem();
 		}}
+		handleSubmit={() => {
+			toggleOpenItem();
+		}}
 	/>
 
 	<!-- <SuperDebug data={$editListItemForm} label={'Edit List Item Form'} /> -->

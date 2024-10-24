@@ -11,13 +11,19 @@
 	export let units: Units;
 	export let handleClose: (event: Event) => void;
 	export let handleDelete: () => void;
+	export let handleSubmit: () => void;
 
 	const {
 		enhance: editItemFormEnhance,
 		form: editItemForm,
 		reset
 	} = superForm(item, {
-		validators: zod(selectListItemSchema)
+		validators: zod(selectListItemSchema),
+		onResult: ({ result }) => {
+			if (result.type === 'success') {
+				handleSubmit();
+			}
+		}
 	});
 </script>
 
