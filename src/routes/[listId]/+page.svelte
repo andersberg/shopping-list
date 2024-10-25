@@ -81,10 +81,10 @@
 	{/each}
 </ul>
 
-<Autocomplete
+<!-- <Autocomplete
 	items={data.items.map((item) => item.name)}
 	onSubmit={(value) => console.log(value)}
-/>
+/> -->
 
 {#if openItem !== undefined}
 	<EditListItem
