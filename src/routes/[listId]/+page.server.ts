@@ -1,8 +1,8 @@
 import { UNITS } from '$lib/constants';
-import { items } from '$lib/db/schema/items';
+import { items, items as itemsTable } from '$lib/db/schema/items';
 import {
 	addListItemSchema,
-	listItems,
+	listItems as listItemsTable,
 	selectListItemSchema,
 	updateListItemSchema
 } from '$lib/db/schema/listItems';
@@ -24,11 +24,14 @@ export async function load({ params, platform, depends }) {
 
 	const db = drizzle(env.DB);
 	const [list] = await db.select().from(lists).where(eq(lists.id, params.listId));
-	const items = await db
+
+	const listItems = await db
 		.select()
-		.from(listItems)
-		.where(eq(listItems.listId, params.listId))
-		.orderBy(asc(listItems.checked));
+		.from(listItemsTable)
+		.where(eq(listItemsTable.listId, params.listId))
+		.orderBy(asc(listItemsTable.checked));
+
+	const items = await db.select().from(itemsTable);
 
 	const addListItemForm = await superValidate(
 		{
@@ -47,6 +50,7 @@ export async function load({ params, platform, depends }) {
 			editList: editListForm
 		},
 		items,
+		listItems,
 		list,
 		units: UNITS
 	};
@@ -81,7 +85,7 @@ export const actions = {
 
 		const item = parseShoppingItemInput(value, itemNames);
 
-		await db.insert(listItems).values({
+		await db.insert(listItemsTable).values({
 			name: item.name,
 			comment: item.comment,
 			quantity: item.quantity,
@@ -106,7 +110,7 @@ export const actions = {
 		const comment = form.data.comment;
 
 		await db
-			.update(listItems)
+			.update(listItemsTable)
 			.set({
 				comment: comment?.length ? comment : undefined,
 				name: form.data.name,
@@ -114,7 +118,7 @@ export const actions = {
 				unit: form.data.unit,
 				checked: form.data.checked
 			})
-			.where(eq(listItems.id, form.data.id));
+			.where(eq(listItemsTable.id, form.data.id));
 
 		return message(form, 'Item updated');
 	},
@@ -140,13 +144,16 @@ export const actions = {
 
 		const db = drizzle(env.DB);
 
-		const [existingItem] = await db.select().from(listItems).where(eq(listItems.id, form.data.id));
+		const [existingItem] = await db
+			.select()
+			.from(listItemsTable)
+			.where(eq(listItemsTable.id, form.data.id));
 
 		if (!existingItem) {
 			return error(404, 'Item not found');
 		}
 
-		await db.delete(listItems).where(eq(listItems.id, form.data.id));
+		await db.delete(listItemsTable).where(eq(listItemsTable.id, form.data.id));
 
 		return message(form, 'Item deleted');
 	},

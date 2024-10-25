@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
+	import Autocomplete from '$lib/components/Autocomplete.svelte';
 	import { addListItemSchema, selectListItemSchema } from '$lib/db/schema/listItems';
 	import { zod } from 'sveltekit-superforms/adapters';
 	import { superForm } from 'sveltekit-superforms/client';
@@ -50,7 +51,7 @@
 <ListHeader form={data.forms.editList} title={data.list.name} />
 
 <ul class="list">
-	{#each data.items as item, index}
+	{#each data.listItems as item, index}
 		<li class="list-item" class:checked={item.checked}>
 			<form on:change={toggleChecked} action="?/updateItem" method="POST">
 				<input type="hidden" name="id" value={item.id} />
@@ -80,9 +81,14 @@
 	{/each}
 </ul>
 
+<Autocomplete
+	items={data.items.map((item) => item.name)}
+	onSubmit={(value) => console.log(value)}
+/>
+
 {#if openItem !== undefined}
 	<EditListItem
-		item={data.items[openItem]}
+		item={data.listItems[openItem]}
 		units={data.units}
 		handleDelete={() => {
 			invalidate('app:list');
