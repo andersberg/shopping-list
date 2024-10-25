@@ -10,13 +10,23 @@ export function parseListInput(
 	const [namePart = '', commentPart = ''] = input.split(COLON_SPLIT_REGEX, 2);
 	const match = findBestMatch(namePart, itemNames);
 
-	if (match) {
-		const comment = commentPart ? commentPart.trim() : input.replace(match, '').trim();
+	console.log('match', match, { input, itemNames });
 
-		return {
+	if (match) {
+		const comment = commentPart
+			? commentPart.trim()
+			: input.replace(new RegExp(match, 'i'), '').trim();
+
+		console.log({ comment, commentPart: !!commentPart, input });
+
+		const result = {
 			name: match,
 			comment: comment.length > 0 ? comment : undefined
 		};
+
+		console.log({ result });
+
+		return result;
 	}
 
 	return {
@@ -26,13 +36,18 @@ export function parseListInput(
 }
 
 // Create a regular expression to match whole words
-const wordBoundaryPattern = (value: string) => new RegExp(`\\b${value}\\b`, 'i');
+// const wordBoundaryPattern = (value: string) => new RegExp(`\\b${value}\\b`, 'i');
 
 export function findBestMatch(input: string, itemNames: ShoppingItemNames): string | null {
+	const inputLowerCase = input.toLowerCase();
 	const sortedItemNames = itemNames.toSorted((a, b) => b.length - a.length);
 
 	for (const name of sortedItemNames) {
-		if (wordBoundaryPattern(name).test(input)) {
+		const nameLowerCase = name.toLowerCase();
+
+		console.log(inputLowerCase, nameLowerCase, inputLowerCase.startsWith(nameLowerCase));
+
+		if (inputLowerCase.startsWith(nameLowerCase)) {
 			return name;
 		}
 	}
