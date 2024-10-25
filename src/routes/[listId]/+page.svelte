@@ -48,38 +48,40 @@
 	}
 </script>
 
-<ListHeader form={data.forms.editList} title={data.list.name} />
+<div class="layout">
+	<ListHeader form={data.forms.editList} title={data.list.name} />
 
-<ul class="list">
-	{#each data.listItems as item, index}
-		<li class="list-item" class:checked={item.checked}>
-			<form on:change={toggleChecked} action="?/updateItem" method="POST">
-				<input type="hidden" name="id" value={item.id} />
-				<input type="hidden" name="listId" value={item.listId} />
-				<input type="hidden" name="checked" value="false" />
-				<input type="checkbox" name="checked" bind:checked={item.checked} value={item.checked} />
-			</form>
+	<ul class="list">
+		{#each data.listItems as item, index}
+			<li class="list-item" class:checked={item.checked}>
+				<form on:change={toggleChecked} action="?/updateItem" method="POST">
+					<input type="hidden" name="id" value={item.id} />
+					<input type="hidden" name="listId" value={item.listId} />
+					<input type="hidden" name="checked" value="false" />
+					<input type="checkbox" name="checked" bind:checked={item.checked} value={item.checked} />
+				</form>
 
-			<span>
-				{item.name}
-			</span>
-			<span>
-				{item.quantity}
+				<span>
+					{item.name}
+				</span>
+				<span>
+					{item.quantity}
 
-				{item.unit}
-			</span>
-			<span>
-				{item.comment}
-			</span>
+					{item.unit}
+				</span>
+				<span>
+					{item.comment}
+				</span>
 
-			<button
-				on:click={() => {
-					toggleOpenItem(index);
-				}}>Edit</button
-			>
-		</li>
-	{/each}
-</ul>
+				<button
+					on:click={() => {
+						toggleOpenItem(index);
+					}}>Edit</button
+				>
+			</li>
+		{/each}
+	</ul>
+</div>
 
 <!-- <Autocomplete
 	items={data.items.map((item) => item.name)}
