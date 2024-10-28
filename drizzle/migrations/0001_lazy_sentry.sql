@@ -1,1 +1,0 @@
-ALTER TABLE `list_items` ADD `checked` integer DEFAULT false;

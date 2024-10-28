@@ -17,6 +17,7 @@ CREATE TABLE `list_items` (
 	`comment` text,
 	`created` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
 	`updated` text DEFAULT CURRENT_TIMESTAMP NOT NULL,
+	`checked` integer DEFAULT false,
 	FOREIGN KEY (`listId`) REFERENCES `lists`(`id`) ON UPDATE no action ON DELETE no action
 );
 --> statement-breakpoint
