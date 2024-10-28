@@ -17,27 +17,60 @@
 
 <h1>Shopping Lists</h1>
 
-<ul>
-	{#each data.lists as list}
-		<li>
-			<a href="/{list.id}">{list.name}</a>
-			<form method="POST" action="?/delete" use:enhance>
-				<input type="hidden" name="id" value={list.id} />
-				<button type="submit">Delete</button>
-			</form>
-		</li>
-	{/each}
-</ul>
+<div class="container">
+	<ul>
+		{#each data.lists as list}
+			<li>
+				<a href="/{list.id}">{list.name}</a>
+				<form method="POST" action="?/delete" use:enhance>
+					<input type="hidden" name="id" value={list.id} />
+					<button type="submit">Delete</button>
+				</form>
+			</li>
+		{/each}
+	</ul>
 
-<h2>Add List</h2>
-<form method="POST" action="?/add" use:addFormEnhance>
-	<input type="text" name="name" placeholder="List name" bind:value={$addForm.name} />
-	{#if $addFormErrors.name}
-		<small class="text-red-500">{$addFormErrors.name}</small>
-	{/if}
-	<button type="submit">Create List</button>
-</form>
+	<form method="POST" action="?/add" use:addFormEnhance>
+		<input type="text" name="name" placeholder="Skapa ny lista" bind:value={$addForm.name} />
+		<button type="submit">Skapa</button>
 
-{#if $addFormTainted}
-	<SuperDebug data={$addForm} label={'Add list Form'} />
-{/if}
+		{#if $addFormErrors.name}
+			<small class="text-red-500">{$addFormErrors.name}</small>
+		{/if}
+	</form>
+</div>
+
+<style>
+	.container {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr auto;
+	}
+
+	ul {
+		padding: 0;
+		margin: 0;
+		grid-column: 1 / -1;
+		grid-template-columns: subgrid;
+		display: grid;
+		gap: 1rem;
+	}
+
+	li {
+		display: grid;
+		grid-template-columns: subgrid;
+		grid-column: 1 / -1;
+		gap: 1rem;
+	}
+
+	form:not(ul form) {
+		display: grid;
+		grid-template-columns: subgrid;
+		grid-column: 1 / -1;
+		gap: 1rem;
+
+		& > small {
+			grid-column: 1;
+		}
+	}
+</style>
