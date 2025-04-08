@@ -8,7 +8,7 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"include": ["server/src", "client/src"],
+		"include": ["server/src", "client/src", "lib"],
 		"ignore": [
 			"node_modules",
 			"dist",
@@ -41,21 +41,33 @@
 						"conventions": [
 							{
 								"selector": {
-									"kind": "variable"
-								},
-								"formats": ["snake_case"]
-							},
-							{
-								"selector": {
 									"kind": "const"
 								},
 								"formats": ["CONSTANT_CASE", "snake_case"]
 							},
 							{
 								"selector": {
+									"kind": "variable"
+								},
+								"formats": ["snake_case"]
+							},
+							{
+								"selector": {
 									"kind": "function"
 								},
-								"formats": ["PascalCase"]
+								"formats": ["snake_case"]
+							},
+							{
+								"selector": {
+									"kind": "functionParameter"
+								},
+								"formats": ["snake_case"]
+							},
+							{
+								"selector": {
+									"kind": "objectLiteralMember"
+								},
+								"formats": ["snake_case"]
 							},
 							{
 								"selector": {
@@ -80,6 +92,12 @@
 									"kind": "interface"
 								},
 								"formats": ["PascalCase"]
+							},
+							{
+								"selector": {
+									"kind": "typeMember"
+								},
+								"formats": ["snake_case"]
 							}
 						]
 					}
