@@ -1,6 +1,6 @@
+import react from "@vitejs/plugin-react";
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path/posix";
-import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 const server_workspace = resolve("../server");
@@ -28,5 +28,9 @@ export default defineConfig({
 				changeOrigin: true,
 			},
 		},
+	},
+	define: {
+		__SERVER_HOST__: JSON.stringify(server_host),
+		__SERVER_PORT__: JSON.stringify(server_port),
 	},
 });

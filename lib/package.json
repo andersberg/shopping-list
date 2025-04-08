@@ -2,5 +2,14 @@
   "name": "lib",
   "version": "1.0.0",
   "main": "index.js",
-  "private": true
+  "private": true,
+  "scripts": {
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@hono/zod-validator": "^0.4.3",
+    "hono": "^4.7.6",
+    "vitest": "^3.1.1",
+    "zod": "^3.24.2"
+  }
 }

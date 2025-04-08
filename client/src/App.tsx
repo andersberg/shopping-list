@@ -1,10 +1,16 @@
+import { hc } from "hono/client";
+import type { ApiRouterType } from "lib/api";
 import { MESSAGE } from "lib/constants";
 import { useEffect } from "react";
+
 import "./App.css";
 
-function App() {
+const api_client = hc<ApiRouterType>("/api");
+
+export function App() {
 	useEffect(() => {
-		fetch("/api")
+		api_client.index
+			.$get()
 			.then((res) => res.text())
 			.then((data) => {
 				console.log(data);
@@ -17,5 +23,3 @@ function App() {
 		</div>
 	);
 }
-
-export default App;
