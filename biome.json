@@ -1,0 +1,99 @@
+{
+	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+
+	"vcs": {
+		"enabled": false,
+		"clientKind": "git",
+		"useIgnoreFile": false
+	},
+	"files": {
+		"ignoreUnknown": false,
+		"include": ["server/src", "client/src"],
+		"ignore": [
+			"node_modules",
+			"dist",
+			"build",
+			"public",
+			"./package.json",
+			"legacy"
+		]
+	},
+	"formatter": {
+		"enabled": true,
+		"indentStyle": "tab",
+		"indentWidth": 2,
+		"lineEnding": "lf",
+		"attributePosition": "multiline"
+	},
+	"organizeImports": {
+		"enabled": true
+	},
+	"linter": {
+		"enabled": true,
+		"rules": {
+			"recommended": true,
+			"style": {
+				"noNonNullAssertion": "error",
+				"useNamingConvention": {
+					"level": "error",
+					"options": {
+						"strictCase": true,
+						"conventions": [
+							{
+								"selector": {
+									"kind": "variable"
+								},
+								"formats": ["snake_case"]
+							},
+							{
+								"selector": {
+									"kind": "const"
+								},
+								"formats": ["CONSTANT_CASE", "snake_case"]
+							},
+							{
+								"selector": {
+									"kind": "function"
+								},
+								"formats": ["PascalCase"]
+							},
+							{
+								"selector": {
+									"kind": "class"
+								},
+								"formats": ["PascalCase"]
+							},
+							{
+								"selector": {
+									"kind": "classMember"
+								},
+								"formats": ["snake_case"]
+							},
+							{
+								"selector": {
+									"kind": "typeAlias"
+								},
+								"formats": ["PascalCase"]
+							},
+							{
+								"selector": {
+									"kind": "interface"
+								},
+								"formats": ["PascalCase"]
+							}
+						]
+					}
+				}
+			},
+			"a11y": {
+				"all": true
+			}
+		}
+	},
+	"javascript": {
+		"formatter": {
+			"quoteStyle": "double",
+			"trailingCommas": "all"
+		}
+	}
+}

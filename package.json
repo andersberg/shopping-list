@@ -1,59 +1,16 @@
 {
-	"name": "shopping-list",
-	"version": "0.0.1",
-	"private": true,
-	"type": "module",
-	"scripts": {
-		"dev": "vite dev",
-		"build": "vite build",
-		"preview": "bun run build && wrangler pages dev",
-		"test": "npm run test:integration && npm run test:unit",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
-		"lint": "prettier --check . && eslint .",
-		"format": "prettier --write .",
-		"test:integration": "playwright test",
-		"test:unit": "vitest",
-		"deploy": "bun run build && wrangler pages deploy",
-		"cf-typegen": "wrangler types && mv worker-configuration.d.ts src/",
-		"db:generate": "drizzle-kit generate",
-		"d1:local:migrate": "wrangler d1 execute shopping-list --local",
-		"d1:local:execute": "wrangler d1 execute shopping-list --local",
-		"d1:remote:migrate": "wrangler d1 execute shopping-list --remote",
-		"d1:remote:execute": "wrangler d1 execute shopping-list --remote"
-	},
-	"devDependencies": {
-		"@cloudflare/workers-types": "^4.20240903.0",
-		"@playwright/test": "^1.28.1",
-		"@sveltejs/adapter-auto": "^3.0.0",
-		"@sveltejs/adapter-cloudflare": "^4.7.2",
-		"@sveltejs/kit": "^2.0.0",
-		"@sveltejs/vite-plugin-svelte": "^4.0.0-next.6",
-		"@types/eslint": "^9.6.0",
-		"@types/uuid": "^10.0.0",
-		"drizzle-kit": "^0.25.0",
-		"eslint": "^9.0.0",
-		"eslint-config-prettier": "^9.1.0",
-		"eslint-plugin-svelte": "^2.36.0",
-		"globals": "^15.0.0",
-		"prettier": "^3.1.1",
-		"prettier-plugin-svelte": "^3.1.2",
-		"svelte": "^5.0.0-next.1",
-		"svelte-check": "^3.6.0",
-		"typescript": "^5.0.0",
-		"typescript-eslint": "^8.0.0",
-		"vite": "^5.0.3",
-		"vitest": "^2.0.0",
-		"wrangler": "^3.75.0"
-	},
-	"dependencies": {
-		"@paralleldrive/cuid2": "^2.2.2",
-		"date-fns": "^4.1.0",
-		"date-fns-tz": "^3.2.0",
-		"drizzle-orm": "^0.34.0",
-		"drizzle-zod": "^0.5.1",
-		"sveltekit-superforms": "^2.19.0",
-		"zod": "^3.23.8",
-		"zod-validation-error": "^3.3.1"
-	}
+  "name": "shopping-list",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "client:dev": "pnpm --filter client dev",
+    "client:build": "pnpm --filter client build",
+    "server:dev": "pnpm --filter server dev",
+    "server:deploy": "pnpm --filter server cf:deploy",
+    "build": "pnpm run client:build",
+    "deploy": "pnpm run build && pnpm run server:deploy"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.9.4"
+  }
 }

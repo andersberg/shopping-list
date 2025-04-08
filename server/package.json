@@ -1,0 +1,15 @@
+{
+  "name": "server",
+  "scripts": {
+    "dev": "wrangler dev",
+    "cf:deploy": "wrangler deploy --minify --name shopping-list"
+  },
+  "dependencies": {
+    "lib": "workspace:^",
+    "hono": "^4.7.6"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20250407.0",
+    "wrangler": "^4.9.0"
+  }
+}
