@@ -1,1 +1,1 @@
-export const MESSAGE = String("🖖");
+export const MESSAGE = String("🛒");

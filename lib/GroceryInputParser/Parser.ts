@@ -1,5 +1,9 @@
 import type { GroceryItem } from "../GroceryItem";
 
+export interface ParsedGroceryItem extends GroceryItem {
+	input: string;
+}
+
 /**
  * Parses grocery list text into structured objects.
  *
@@ -19,8 +23,8 @@ export class GroceryInputParser {
 	readonly known_units: string[];
 	readonly modifiers: string[];
 
-	constructor(known_units: string[], modifiers: string[]) {
-		this.known_units = known_units;
+	constructor(knownUnits: string[], modifiers: string[]) {
+		this.known_units = knownUnits;
 		this.modifiers = modifiers;
 	}
 
@@ -100,18 +104,18 @@ export class GroceryInputParser {
 	 * @param sorted_modifiers - Modifiers sorted by descending word count.
 	 * @returns Object containing remaining tokens and found modifiers.
 	 */
-	private remove_modifiers(tokens: string[], sorted_modifiers: string[]) {
+	private remove_modifiers(tokens: string[], sortedModifiers: string[]) {
 		const found_modifiers: string[] = [];
 		let processed_count = 0;
 		while (processed_count < tokens.length) {
 			let matched = false;
-			for (const mod of sorted_modifiers) {
+			for (const mod of sortedModifiers) {
 				const mod_tokens = mod.split(" ");
 				// Check if the modifier fits at position i.
 				if (
 					processed_count + mod_tokens.length <= tokens.length &&
 					mod_tokens.every(
-						(mod_token, index) => tokens[processed_count + index] === mod_token,
+						(modToken, index) => tokens[processed_count + index] === modToken,
 					)
 				) {
 					found_modifiers.push(mod);
@@ -128,7 +132,11 @@ export class GroceryInputParser {
 		return { tokens, found_modifiers };
 	}
 
-	public parse(input: string): GroceryItem {
-		return this.parse_grocery_input(input);
+	public parse(input: string): ParsedGroceryItem {
+		const parsed_item = this.parse_grocery_input(input);
+		return {
+			...parsed_item,
+			input,
+		};
 	}
 }

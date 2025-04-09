@@ -7,8 +7,11 @@ import {
 	GROCERY_ITEM_MODIFIERS,
 } from "../GroceryInputParser/constants";
 
+const grocery_item_input_schema = z.string().nonempty();
+export type GroceryItemInput = z.infer<typeof grocery_item_input_schema>;
+
 const grocery_item_parse_body_schema = z.object({
-	input: z.string().nonempty(),
+	input: grocery_item_input_schema,
 });
 
 const parser = new GroceryInputParser(

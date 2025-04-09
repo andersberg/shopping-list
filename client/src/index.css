@@ -1,25 +1,26 @@
 :root {
-	font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-	line-height: 1.5;
-	font-weight: 400;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
 
-	color: hsla(0, 0%, 100%, 0.87);
-	background-color: hsla(0, 0%, 14%, 1);
+  /* color: hsla(0, 0%, 100%, 0.87);
+  background-color: hsla(0, 0%, 14%, 1); */
 
-	font-synthesis: none;
-	text-rendering: optimizeLegibility;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-body {
-	margin: 0;
-	padding: 0;
-	box-sizing: border-box;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
+html,
+body,
 #root {
-	width: 100svw;
-	height: 100svh;
-	align-content: center;
+  margin: 0;
+  padding: 0;
 }

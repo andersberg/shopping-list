@@ -55,19 +55,7 @@
 								"selector": {
 									"kind": "function"
 								},
-								"formats": ["snake_case"]
-							},
-							{
-								"selector": {
-									"kind": "functionParameter"
-								},
-								"formats": ["snake_case"]
-							},
-							{
-								"selector": {
-									"kind": "objectLiteralMember"
-								},
-								"formats": ["snake_case"]
+								"formats": ["PascalCase", "camelCase", "snake_case"]
 							},
 							{
 								"selector": {
@@ -97,11 +85,14 @@
 								"selector": {
 									"kind": "typeMember"
 								},
-								"formats": ["snake_case"]
+								"formats": ["snake_case", "PascalCase"]
 							}
 						]
 					}
 				}
+			},
+			"correctness": {
+				"noUnusedVariables": "info"
 			},
 			"a11y": {
 				"all": true

@@ -5,11 +5,11 @@
     "cf:deploy": "wrangler deploy --minify --name shopping-list"
   },
   "dependencies": {
-    "lib": "workspace:^",
-    "hono": "^4.7.6"
+    "hono": "^4.7.6",
+    "lib": "workspace:^"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250407.0",
-    "wrangler": "^4.9.0"
+    "@cloudflare/workers-types": "^4.20250409.0",
+    "wrangler": "^4.9.1"
   }
 }
