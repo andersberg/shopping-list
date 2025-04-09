@@ -42,7 +42,7 @@ export function App() {
 						<input
 							type="text"
 							name="input"
-							placeholder="Lägg till vara"
+							placeholder={'"1 kg mjöl"'}
 							enterKeyHint="send"
 						/>
 						<button
