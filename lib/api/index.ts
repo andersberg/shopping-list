@@ -1,9 +1,9 @@
 import { Hono } from "hono";
 import { MESSAGE } from "../constants";
-import { grocery_item_router } from "./grocery-item";
+import { grocery_list_router } from "./grocery-list";
 
 export const api_router = new Hono()
-	.route("/grocery-item", grocery_item_router)
+	.route("/grocery-list", grocery_list_router)
 	.get("/", (c) => {
 		return c.json({
 			message: MESSAGE,

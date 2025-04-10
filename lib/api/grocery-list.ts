@@ -6,11 +6,12 @@ import {
 	GROCERY_ITEM_KNOWN_UNITS,
 	GROCERY_ITEM_MODIFIERS,
 } from "../GroceryInputParser/constants";
+import { grocery_list_db } from "./db";
 
 const grocery_item_input_schema = z.string().nonempty();
 export type GroceryItemInput = z.infer<typeof grocery_item_input_schema>;
 
-const grocery_item_parse_body_schema = z.object({
+const grocery_list_item_add_body_schema = z.object({
 	input: grocery_item_input_schema,
 });
 
@@ -19,14 +20,16 @@ const parser = new GroceryInputParser(
 	GROCERY_ITEM_MODIFIERS,
 );
 
-export const grocery_item_router = new Hono().post(
-	"/parse",
-	zValidator("json", grocery_item_parse_body_schema),
-	(c) => {
-		const item = c.req.valid("json");
+export const grocery_list_router = new Hono()
+	.get("/", (c) => {
+		return c.json(grocery_list_db.get_items());
+	})
+	.post("/add", zValidator("json", grocery_list_item_add_body_schema), (c) => {
+		const data = c.req.valid("json");
 
-		const parsed_item = parser.parse(item.input);
+		const parsed_item = parser.parse(data.input);
 
-		return c.json(parsed_item);
-	},
-);
+		const item = grocery_list_db.add_item(parsed_item);
+
+		return c.json(item);
+	});

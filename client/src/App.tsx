@@ -1,13 +1,12 @@
-import { hc } from "hono/client";
-import type { ApiRouterType } from "lib/Api";
-import type { ParsedGroceryItem } from "lib/GroceryInputParser/Parser";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import "./App.css";
-
-const api_client = hc<ApiRouterType>("/api");
+import { useGroceryList } from "./queries";
 
 export function App() {
-	const [grocery_items, set_grocery_items] = useState<ParsedGroceryItem[]>([]);
+	const { query, mutation } = useGroceryList();
+	const { data: grocery_items, isFetching } = query;
+	const { mutate: add_grocery_item } = mutation;
+
 	const form_ref = useRef<HTMLFormElement>(null);
 
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -16,19 +15,8 @@ export function App() {
 		const input = form_data.get("input");
 		if (!input || input.toString().trim() === "") return;
 
-		api_client["grocery-item"].parse
-			.$post({
-				json: {
-					input: input.toString().trim(),
-				},
-			})
-			.then((res) => res.json())
-			.then((data) => {
-				set_grocery_items((prev) => [data, ...prev]);
-			})
-			.finally(() => {
-				form_ref.current?.reset();
-			});
+		add_grocery_item(input.toString().trim());
+		form_ref.current?.reset();
 	}
 
 	return (
@@ -56,7 +44,11 @@ export function App() {
 				</form>
 			</header>
 			<main>
-				{grocery_items.length === 0 ? (
+				{isFetching ? (
+					<div className="placeholder">
+						<h2>Laddar...</h2>
+					</div>
+				) : grocery_items?.length === 0 ? (
 					<div className="placeholder">
 						<h2>Din inköpslista är tom.</h2>
 						<p>Lägg till en vara för att börja.</p>
@@ -78,8 +70,8 @@ export function App() {
 					</div>
 				) : (
 					<ul className="grocery-items">
-						{grocery_items.map((grocery) => (
-							<li key={grocery.input}>
+						{grocery_items?.map((grocery) => (
+							<li key={grocery.id}>
 								<dl>
 									<dt>Vara:</dt>
 									<dd>{grocery.item}</dd>

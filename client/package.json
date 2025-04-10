@@ -10,6 +10,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.72.2",
     "hono": "^4.7.6",
     "lib": "workspace:*",
     "react": "^19.0.0",

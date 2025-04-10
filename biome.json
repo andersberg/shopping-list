@@ -71,6 +71,12 @@
 							},
 							{
 								"selector": {
+									"kind": "objectLiteralProperty"
+								},
+								"formats": ["camelCase", "snake_case"]
+							},
+							{
+								"selector": {
 									"kind": "typeAlias"
 								},
 								"formats": ["PascalCase"]
