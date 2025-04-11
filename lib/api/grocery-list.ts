@@ -1,13 +1,11 @@
+import type { D1Database } from "@cloudflare/workers-types";
 import { zValidator } from "@hono/zod-validator";
+import { drizzle } from "drizzle-orm/d1";
 import { Hono } from "hono";
 import { z } from "zod";
 import { GroceryInputParser } from "../GroceryInputParser/Parser";
-import {
-	GROCERY_ITEM_KNOWN_UNITS,
-	GROCERY_ITEM_MODIFIERS,
-} from "../GroceryInputParser/constants";
+import { GROCERY_ITEM_KNOWN_UNITS, GROCERY_ITEM_MODIFIERS } from "../constants";
 import { grocery_list_db } from "./db";
-
 const grocery_item_input_schema = z.string().nonempty();
 export type GroceryItemInput = z.infer<typeof grocery_item_input_schema>;
 
@@ -20,8 +18,13 @@ const parser = new GroceryInputParser(
 	GROCERY_ITEM_MODIFIERS,
 );
 
-export const grocery_list_router = new Hono()
+interface Bindings {
+	Database: D1Database;
+}
+
+export const grocery_list_router = new Hono<{ Bindings: Bindings }>()
 	.get("/", (c) => {
+		const db = drizzle(c.env.Database);
 		return c.json(grocery_list_db.get_items());
 	})
 	.post("/add", zValidator("json", grocery_list_item_add_body_schema), (c) => {

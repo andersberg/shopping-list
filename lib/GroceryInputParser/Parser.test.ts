@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { GROCERY_ITEM_KNOWN_UNITS, GROCERY_ITEM_MODIFIERS } from "../constants";
 import { GroceryInputParser } from "./Parser";
-import { GROCERY_ITEM_KNOWN_UNITS, GROCERY_ITEM_MODIFIERS } from "./constants";
 
 const parser = new GroceryInputParser(
 	GROCERY_ITEM_KNOWN_UNITS,

@@ -9,5 +9,12 @@
 	"dev": {
 		"port": 5180,
 		"host": "0.0.0.0"
-	}
+	},
+	"d1_databases": [
+{
+			"binding": "DB",
+			"database_name": "shopping-list",
+			"database_id": "c976d27c-61a0-448e-9532-c537bee1d760"
+		}
+	]
 }
