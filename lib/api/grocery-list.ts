@@ -31,5 +31,7 @@ export const grocery_list_router = new Hono()
 
 		const item = grocery_list_db.add_item(parsed_item);
 
+		console.log("/add", item);
+
 		return c.json(item);
 	});

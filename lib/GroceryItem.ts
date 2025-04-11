@@ -19,7 +19,7 @@ export type GroceryItem = z.infer<typeof grocery_item_schema>;
 
 export const grocery_list_item_schema = grocery_item_schema.extend({
 	id: z.string().uuid(),
-	created_at: z.date(),
+	added_at: z.date(),
 	updated_at: z.date(),
 	checked: z.boolean().default(false),
 });
@@ -32,3 +32,7 @@ export const grocery_list_schema = z.object({
 });
 
 export type GroceryList = z.infer<typeof grocery_list_schema>;
+
+export function sort_grocery_list_items(items: GroceryListItem[]) {
+	return items.sort((a, b) => b.updated_at.getTime() - a.updated_at.getTime());
+}

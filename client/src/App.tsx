@@ -1,12 +1,14 @@
 import { useRef } from "react";
 import "./App.css";
 import { useGroceryList } from "./queries";
+import { useMinLoadingTime } from "./useMinLoadingTime";
 
 export function App() {
 	const { query, mutation } = useGroceryList();
-	const { data: grocery_items, isFetching } = query;
+	const { data: grocery_items, isLoading } = query;
 	const { mutate: add_grocery_item } = mutation;
 
+	const is_loading_delayed = useMinLoadingTime(isLoading, 500);
 	const form_ref = useRef<HTMLFormElement>(null);
 
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -44,7 +46,7 @@ export function App() {
 				</form>
 			</header>
 			<main>
-				{isFetching ? (
+				{is_loading_delayed ? (
 					<div className="placeholder">
 						<h2>Laddar...</h2>
 					</div>

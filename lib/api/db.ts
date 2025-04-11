@@ -1,5 +1,7 @@
 import type { ParsedGroceryItem } from "../GroceryInputParser/Parser";
 import type { GroceryListItem } from "../GroceryItem";
+import { sort_grocery_list_items } from "../GroceryItem";
+
 class GroceryListDb {
 	private items = new Map<string, GroceryListItem>();
 
@@ -8,7 +10,7 @@ class GroceryListDb {
 		const item = {
 			...parsedItem,
 			id,
-			created_at: new Date(),
+			added_at: new Date(),
 			updated_at: new Date(),
 			checked: false,
 		};
@@ -19,7 +21,7 @@ class GroceryListDb {
 	}
 
 	public get_items() {
-		return [...this.items.values()];
+		return sort_grocery_list_items([...this.items.values()]);
 	}
 
 	public get_item(id: string) {
