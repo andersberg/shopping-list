@@ -8,9 +8,23 @@
     "server:dev": "pnpm --filter server dev",
     "server:deploy": "pnpm --filter server cf:deploy",
     "build": "pnpm run client:build",
-    "deploy": "pnpm run build && pnpm run server:deploy"
+    "deploy": "pnpm run build && pnpm run server:deploy",
+    "db:generate": "pnpm --filter lib db:generate",
+    "db:migrate:local": "wrangler d1 migrations apply shopping-list --local --config=server/wrangler.json",
+    "db:migrate:remote": "wrangler d1 migrations apply shopping-list --remote --config=server/wrangler.json",
+    "db:execute:local": "wrangler d1 execute shopping-list --local --config=server/wrangler.json",
+    "db:execute:remote": "wrangler d1 execute shopping-list --remote --config=server/wrangler.json"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4"
+    "@biomejs/biome": "1.9.4",
+		"wrangler": "^4.10.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "@biomejs/biome",
+      "esbuild",
+      "sharp",
+      "workerd"
+    ]
   }
 }

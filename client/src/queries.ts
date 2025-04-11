@@ -6,7 +6,7 @@ import {
 } from "@tanstack/react-query";
 import type { GroceryListItem } from "lib/GroceryItem";
 import type { GroceryItemInput } from "lib/api/grocery-list";
-import { api_client } from "./api-client";
+import { api_client, grocery_list_client } from "./api-client";
 
 export const query_client = new QueryClient();
 
@@ -15,7 +15,10 @@ const grocery_list_query_key = ["grocery-list"];
 const grocery_list_query_options = queryOptions({
 	queryKey: grocery_list_query_key,
 	queryFn: async () => {
-		const res = await api_client["grocery-list"].$get();
+		const res = await grocery_list_client.index.$get();
+		if (!res.ok) {
+			throw new Error("Failed to fetch grocery list");
+		}
 		return res.json();
 	},
 });

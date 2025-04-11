@@ -3,17 +3,25 @@
   "version": "1.0.0",
   "main": "index.js",
   "private": true,
+  "type": "module",
   "scripts": {
-    "test": "vitest"
+    "test": "vitest",
+    "db:generate": "drizzle-kit generate --config=./db/drizzle.config.ts",
+    "db:studio": "drizzle-kit studio --config=./db/drizzle.config.ts",
+    "db:exec:local": "wrangler d1 execute --config=./db/drizzle.config.ts --local",
+    "db:exec:remote": "wrangler d1 execute --config=./db/drizzle.config.ts --remote"
   },
   "dependencies": {
     "@hono/zod-validator": "^0.4.3",
+    "dotenv": "^16.5.0",
     "drizzle-orm": "^0.41.0",
+    "drizzle-zod": "^0.7.1",
     "hono": "^4.7.6",
     "vitest": "^3.1.1",
     "zod": "^3.24.2"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20250409.0"
+    "@cloudflare/workers-types": "^4.20250409.0",
+    "drizzle-kit": "^0.30.6"
   }
 }

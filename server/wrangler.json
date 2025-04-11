@@ -11,10 +11,11 @@
 		"host": "0.0.0.0"
 	},
 	"d1_databases": [
-{
-			"binding": "DB",
+		{
+			"binding": "Database",
 			"database_name": "shopping-list",
-			"database_id": "c976d27c-61a0-448e-9532-c537bee1d760"
+			"database_id": "c976d27c-61a0-448e-9532-c537bee1d760",
+			"migrations_dir": "../lib/db/migrations"
 		}
 	]
 }

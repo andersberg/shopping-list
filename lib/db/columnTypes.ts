@@ -1,5 +1,6 @@
 import { sql } from "drizzle-orm";
 import { type SQLiteColumn, integer, text } from "drizzle-orm/sqlite-core";
+import type { GroceryItemDiscountPrice } from "../GroceryItem";
 import { GROCERY_ITEM_KNOWN_UNITS } from "../constants";
 
 export function createIdAsPrimaryKeyColumn() {
@@ -10,7 +11,7 @@ export function createIdAsPrimaryKeyColumn() {
 }
 
 export function createDateTimeColumn() {
-	return text().default(sql`CURRENT_TIMESTAMP`).notNull();
+	return text().notNull().default(sql`CURRENT_TIMESTAMP`);
 }
 
 export function createForeignKeyColumn<T extends SQLiteColumn>(column: T) {
@@ -39,6 +40,10 @@ export function createNameColumn() {
 	return text().notNull().unique();
 }
 
-export function createCheckedColumn(checked = false) {
-	return integer({ mode: "boolean" }).default(checked);
+export function createBooleanColumn(defaultValue = false) {
+	return integer({ mode: "boolean" }).notNull().default(defaultValue);
+}
+
+export function createDiscountPriceColumn() {
+	return text({ mode: "json" }).$type<GroceryItemDiscountPrice>();
 }

@@ -5,7 +5,7 @@ import { useMinLoadingTime } from "./useMinLoadingTime";
 
 export function App() {
 	const { query, mutation } = useGroceryList();
-	const { data: grocery_items, isLoading } = query;
+	const { data, isLoading, error } = query;
 	const { mutate: add_grocery_item } = mutation;
 
 	const is_loading_delayed = useMinLoadingTime(isLoading, 500);
@@ -19,6 +19,10 @@ export function App() {
 
 		add_grocery_item(input.toString().trim());
 		form_ref.current?.reset();
+	}
+
+	if (error) {
+		return <div>Error: {error.message}</div>;
 	}
 
 	return (
@@ -50,9 +54,9 @@ export function App() {
 					<div className="placeholder">
 						<h2>Laddar...</h2>
 					</div>
-				) : grocery_items?.length === 0 ? (
+				) : data?.items.length === 0 ? (
 					<div className="placeholder">
-						<h2>Din inköpslista är tom.</h2>
+						<h2>Inköpslistan "{data?.name}" är tom.</h2>
 						<p>Lägg till en vara för att börja.</p>
 						<h3>Exempel:</h3>
 						<ul>
@@ -72,11 +76,11 @@ export function App() {
 					</div>
 				) : (
 					<ul className="grocery-items">
-						{grocery_items?.map((grocery) => (
+						{data?.items.map((grocery) => (
 							<li key={grocery.id}>
 								<dl>
 									<dt>Vara:</dt>
-									<dd>{grocery.item}</dd>
+									<dd>{grocery.name}</dd>
 								</dl>
 								<dl>
 									<dt>Antal:</dt>

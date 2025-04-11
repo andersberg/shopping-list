@@ -1,7 +1,7 @@
 import type { GroceryItem } from "../GroceryItem";
 
-export interface ParsedGroceryItem extends GroceryItem {
-	input: string;
+export interface ParsedGroceryItem extends Omit<GroceryItem, "unit"> {
+	unit: string | undefined;
 }
 
 /**
@@ -20,10 +20,10 @@ export interface ParsedGroceryItem extends GroceryItem {
  * console.log(item);
  */
 export class GroceryInputParser {
-	readonly known_units: string[];
-	readonly modifiers: string[];
+	readonly known_units: readonly string[];
+	readonly modifiers: readonly string[];
 
-	constructor(knownUnits: string[], modifiers: string[]) {
+	constructor(knownUnits: readonly string[], modifiers: readonly string[]) {
 		this.known_units = knownUnits;
 		this.modifiers = modifiers;
 	}
@@ -34,7 +34,7 @@ export class GroceryInputParser {
 	 * @param input - The grocery list line (e.g., "4 pkt pasta ekologisk")
 	 * @returns Object containing quantity, unit, item, comment, and discount_price.
 	 */
-	private parse_grocery_input(input: string): GroceryItem {
+	private parse_grocery_input(input: string) {
 		// Normalize input: lowercase and trim whitespace.
 		let tokens = input.trim().toLowerCase().split(/\s+/);
 
@@ -86,12 +86,12 @@ export class GroceryInputParser {
 		tokens = tokens_without_modifiers;
 
 		// 5. The remaining tokens form the core item name.
-		const item = tokens.join(" ").trim() || "";
+		const name = tokens.join(" ").trim() || "";
 
 		return {
 			quantity,
 			unit,
-			item,
+			name,
 			comment: found_modifiers.length ? found_modifiers.join(", ") : undefined,
 			discount_price,
 		};
@@ -133,10 +133,6 @@ export class GroceryInputParser {
 	}
 
 	public parse(input: string): ParsedGroceryItem {
-		const parsed_item = this.parse_grocery_input(input);
-		return {
-			...parsed_item,
-			input,
-		};
+		return this.parse_grocery_input(input);
 	}
 }

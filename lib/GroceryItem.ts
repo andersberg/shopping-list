@@ -1,21 +1,27 @@
 import { z } from "zod";
-import { quantity_schema } from "./schema";
+import { grocery_list_item_insert_schema } from "./db/schema";
 
 const grocery_item_discount_price_schema = z.object({
-	quantity: quantity_schema,
+	quantity: z.number().min(1),
 	price: z.number().min(0),
 	currency: z.string().nonempty().max(3),
 });
 
-export const grocery_item_schema = z.object({
-	comment: z.string().optional(),
-	discount_price: grocery_item_discount_price_schema.optional(),
-	item: z.string().nonempty(),
-	quantity: quantity_schema,
-	unit: z.string().optional(),
-});
+export type GroceryItemDiscountPrice = z.infer<
+	typeof grocery_item_discount_price_schema
+>;
+
+
+export const grocery_item_schema = grocery_list_item_insert_schema.pick({
+	name: true,
+	comment: true,
+	discount_price: true,
+	quantity: true,
+	unit: true,
+})
 
 export type GroceryItem = z.infer<typeof grocery_item_schema>;
+
 
 export const grocery_list_item_schema = grocery_item_schema.extend({
 	id: z.string().uuid(),
