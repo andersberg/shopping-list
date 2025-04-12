@@ -4,7 +4,7 @@ import {
 	useMutation,
 	useQuery,
 } from "@tanstack/react-query";
-import type { GroceryListItem } from "lib/GroceryItem";
+import type { GroceryList } from "lib/GroceryItem";
 import type { GroceryItemInput } from "lib/api/grocery-list";
 import { api_client, grocery_list_client } from "./api-client";
 
@@ -29,16 +29,25 @@ export function useGroceryList() {
 	const mutation = useMutation({
 		mutationKey: ["grocery-list:add"],
 		mutationFn: (input: GroceryItemInput) =>
-			api_client["grocery-list"].add
+			api_client["grocery-list"].items.add
 				.$post({
 					json: { input },
 				})
-				.then((res) => res.json()),
+				.then((res) => {
+					if (!res.ok) {
+						throw new Error("Failed to add item");
+					}
+					return res.json();
+				}),
 		onSuccess: (newItem) => {
+			console.log("onSuccess", newItem);
 			query_client.setQueryData(
 				grocery_list_query_key,
-				(oldList: GroceryListItem[] = []) => {
-					return [newItem, ...oldList];
+				(oldData: GroceryList | undefined) => {
+					return {
+						...oldData,
+						items: [newItem, ...(oldData?.items ?? [])],
+					};
 				},
 			);
 		},

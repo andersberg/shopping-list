@@ -73,3 +73,20 @@ pnpm run db:execute:remote --command="SELECT * FROM grocery_list;"
 ### Drizzle Studio Local Wrangler fix
 
 `https://kevinkipp.com/blog/going-full-stack-on-astro-with-cloudflare-d1-and-drizzle/`
+
+### Example SQL Commands
+
+Here are some useful SQL commands for local development:
+
+```sh
+# Create a new grocery list
+pnpm exec wrangler d1 execute shopping-list --local --config=server/wrangler.json --command="INSERT INTO grocery_list (id, name) VALUES ('test-id-1', 'Min Inköpslista');"
+
+# Add an item with discount price
+pnpm exec wrangler d1 execute shopping-list --local --config=server/wrangler.json --command="INSERT INTO grocery_list_item (id, name, grocery_list_id, quantity, unit, discount_price) VALUES (lower(hex(randomblob(16))), 'Mjölk', 'test-id-1', 2, 'st', '{\"quantity\": 3, \"price\": 30, \"currency\": \"kr\"}');"
+
+# Reset tables (useful during development)
+pnpm exec wrangler d1 execute shopping-list --local --config=server/wrangler.json --command="DROP TABLE IF EXISTS grocery_list_item; DROP TABLE IF EXISTS grocery_list;"
+```
+
+Note: After dropping tables, remember to run migrations again with `pnpm run db:migrate:local`

@@ -8,6 +8,7 @@ import { GROCERY_ITEM_KNOWN_UNITS, GROCERY_ITEM_MODIFIERS } from "../constants";
 import {
 	grocery_list,
 	grocery_list_item,
+	grocery_list_item_insert_schema,
 	grocery_list_item_relations,
 	grocery_list_relations,
 } from "../db/schema";
@@ -88,16 +89,49 @@ export const grocery_list_router = new Hono<{ Bindings: Bindings }>()
 
 	// 	return c.json(list);
 	// })
-	.post("/add", zValidator("json", grocery_list_item_add_body_schema), (c) => {
-		const data = c.req.valid("json");
+	.post(
+		"/items/add",
+		zValidator("json", grocery_list_item_add_body_schema),
+		async (c) => {
+			const db = drizzle(c.env.Database, {
+				schema: {
+					grocery_list,
+					grocery_list_item,
+					grocery_list_item_relations,
+					grocery_list_relations,
+				},
+			});
+			const data = c.req.valid("json");
 
-		const parsed_item = parser.parse(data.input);
+			const parsed_item = parser.parse(data.input);
+			const {
+				success,
+				data: item,
+				error,
+			} = grocery_list_item_insert_schema.safeParse({
+				...parsed_item,
+				grocery_list_id: "test-id-1",
+			});
 
-		const item = parsed_item;
+			if (!success) {
+				return c.json(
+					{
+						message: "Invalid item",
+						errors: error.format(),
+					},
+					400,
+				);
+			}
 
-		console.log("/add", item);
+			const [inserted_item] = await db
+				.insert(grocery_list_item)
+				.values(item)
+				.returning();
 
-		return c.json(item);
-	});
+			console.log("/add", inserted_item);
+
+			return c.json(inserted_item);
+		},
+	);
 
 export type GroceryListRouter = typeof grocery_list_router;

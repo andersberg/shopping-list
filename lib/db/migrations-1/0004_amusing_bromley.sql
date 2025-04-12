@@ -1,1 +1,0 @@
-ALTER TABLE `grocery_list` ADD `deleted` integer DEFAULT false NOT NULL;

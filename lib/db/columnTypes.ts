@@ -6,8 +6,7 @@ import { GROCERY_ITEM_KNOWN_UNITS } from "../constants";
 export function createIdAsPrimaryKeyColumn() {
 	return text()
 		.primaryKey()
-		.$defaultFn(() => crypto.randomUUID())
-		.notNull();
+		.$defaultFn(() => crypto.randomUUID());
 }
 
 export function createDateTimeColumn() {
