@@ -10,10 +10,12 @@ import { api_client, grocery_list_client } from "./api-client";
 
 export const query_client = new QueryClient();
 
-const grocery_list_query_key = ["grocery-list"];
+const GROCERY_LIST_QUERY_KEY = ["grocery-list"];
+
+const QUERY_REFETCH_INTERVAL_MS = 30_000;
 
 const grocery_list_query_options = queryOptions({
-	queryKey: grocery_list_query_key,
+	queryKey: GROCERY_LIST_QUERY_KEY,
 	queryFn: async () => {
 		const res = await grocery_list_client.index.$get();
 		if (!res.ok) {
@@ -29,6 +31,8 @@ const grocery_list_query_options = queryOptions({
 			})),
 		};
 	},
+	refetchInterval: QUERY_REFETCH_INTERVAL_MS,
+	refetchIntervalInBackground: true,
 });
 
 export function useGroceryList() {
@@ -56,7 +60,7 @@ export function useGroceryList() {
 		onSuccess: (data) => {
 			const { item, status } = data;
 			query_client.setQueryData(
-				grocery_list_query_key,
+				GROCERY_LIST_QUERY_KEY,
 				(oldData: GroceryList | undefined) => {
 					if (status === "created") {
 						return {
@@ -76,7 +80,7 @@ export function useGroceryList() {
 			);
 
 			query_client.invalidateQueries({
-				queryKey: grocery_list_query_key,
+				queryKey: GROCERY_LIST_QUERY_KEY,
 			});
 		},
 	});
@@ -107,7 +111,7 @@ export function useGroceryList() {
 		onSuccess: (data) => {
 			const { item } = data;
 			query_client.setQueryData(
-				grocery_list_query_key,
+				GROCERY_LIST_QUERY_KEY,
 				(oldData: GroceryList | undefined) => ({
 					...oldData,
 					items:
@@ -117,7 +121,7 @@ export function useGroceryList() {
 				}),
 			);
 			query_client.invalidateQueries({
-				queryKey: grocery_list_query_key,
+				queryKey: GROCERY_LIST_QUERY_KEY,
 			});
 		},
 	});
@@ -135,14 +139,14 @@ export function useGroceryList() {
 		},
 		onSuccess: (_, deletedId) => {
 			query_client.setQueryData(
-				grocery_list_query_key,
+				GROCERY_LIST_QUERY_KEY,
 				(oldData: GroceryList | undefined) => ({
 					...oldData,
 					items: oldData?.items.filter((item) => item.id !== deletedId) ?? [],
 				}),
 			);
 			query_client.invalidateQueries({
-				queryKey: grocery_list_query_key,
+				queryKey: GROCERY_LIST_QUERY_KEY,
 			});
 		},
 	});

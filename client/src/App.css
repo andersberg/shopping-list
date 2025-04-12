@@ -75,12 +75,25 @@
   margin: 0.5em 0;
 }
 
+.app main .grocery-items-wrapper {
+  display: grid;
+  grid-template-rows: 1.5rem 1fr;
+  gap: 0.25rem;
+}
+
+.app main .grocery-items-wrapper .placeholder {
+  grid-row: 1 / 2;
+  justify-self: end;
+}
+
 .app main ul.grocery-items {
+  grid-row: 2 / 3;
   list-style: none;
   padding: 0;
 
   width: min(100%, 40rem);
   margin-inline: auto;
+  margin-block: 0;
 }
 
 .app main ul.grocery-items li {

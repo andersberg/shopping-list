@@ -1,17 +1,38 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./App.css";
 import { useGroceryList } from "./queries";
 import { useMinLoadingTime } from "./useMinLoadingTime";
 
+const UPDATED_NOTIFICATION_DURATION_MS = 2_000;
+const LOADING_DELAYED_DURATION_MS = 500;
+
 export function App() {
 	const { query, add_mutation, update_mutation, delete_mutation } =
 		useGroceryList();
-	const { data, isLoading, error } = query;
+	const { data, isLoading, error, dataUpdatedAt, isFetched } = query;
 	const { mutate: add_grocery_item } = add_mutation;
 	const { mutate: update_grocery_item } = update_mutation;
 	const { mutate: delete_grocery_item } = delete_mutation;
 
-	const is_loading_delayed = useMinLoadingTime(isLoading, 500);
+	const [show_update_notification, set_show_update_notification] =
+		useState(false);
+
+	// Effect to handle showing update notification
+	useEffect(() => {
+		if (dataUpdatedAt && isFetched) {
+			set_show_update_notification(true);
+			const timer = setTimeout(
+				() => set_show_update_notification(false),
+				UPDATED_NOTIFICATION_DURATION_MS,
+			);
+			return () => clearTimeout(timer);
+		}
+	}, [dataUpdatedAt, isFetched]);
+
+	const is_loading_delayed = useMinLoadingTime(
+		isLoading,
+		LOADING_DELAYED_DURATION_MS,
+	);
 	const form_ref = useRef<HTMLFormElement>(null);
 
 	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -94,86 +115,91 @@ export function App() {
 						</ul>
 					</div>
 				) : (
-					<ul className="grocery-items">
-						{items_sorted_by_checked.map((grocery) => (
-							<li
-								key={grocery.id}
-								className={["grocery-item", grocery.checked && "added"]
-									.filter(Boolean)
-									.join(" ")}
-							>
-								<dl>
-									<dt>Vara:</dt>
-									<dd>{grocery.name}</dd>
-								</dl>
-
-								<dl>
-									<dt>Antal:</dt>
-									<dd>{grocery.quantity}</dd>
-								</dl>
-
-								{grocery.unit && (
+					<div className="grocery-items-wrapper">
+						{show_update_notification && !isLoading && (
+							<div className="placeholder">Listan har uppdaterats.</div>
+						)}
+						<ul className="grocery-items">
+							{items_sorted_by_checked.map((grocery) => (
+								<li
+									key={grocery.id}
+									className={["grocery-item", grocery.checked && "added"]
+										.filter(Boolean)
+										.join(" ")}
+								>
 									<dl>
-										<dt>Enhet:</dt>
-										<dd>{grocery.unit}</dd>
+										<dt>Vara:</dt>
+										<dd>{grocery.name}</dd>
 									</dl>
-								)}
 
-								{grocery.comment && (
 									<dl>
-										<dt>Kommentar:</dt>
-										<dd>{grocery.comment}</dd>
+										<dt>Antal:</dt>
+										<dd>{grocery.quantity}</dd>
 									</dl>
-								)}
 
-								{grocery.discount_price && (
+									{grocery.unit && (
+										<dl>
+											<dt>Enhet:</dt>
+											<dd>{grocery.unit}</dd>
+										</dl>
+									)}
+
+									{grocery.comment && (
+										<dl>
+											<dt>Kommentar:</dt>
+											<dd>{grocery.comment}</dd>
+										</dl>
+									)}
+
+									{grocery.discount_price && (
+										<dl>
+											<dt>Rabatt:</dt>
+											<dd>
+												{grocery.discount_price.quantity} för{" "}
+												{grocery.discount_price.price}{" "}
+												{grocery.discount_price.currency}
+											</dd>
+										</dl>
+									)}
+
 									<dl>
-										<dt>Rabatt:</dt>
+										<dt>Tillagd:</dt>
+										<dd>{grocery.created_at.toLocaleString("sv-SE")}</dd>
+									</dl>
+
+									<dl>
+										<dt>Uppdaterad:</dt>
+										<dd>{grocery.updated_at.toLocaleString("sv-SE")}</dd>
+									</dl>
+
+									<dl>
+										<dt>Köpt:</dt>
 										<dd>
-											{grocery.discount_price.quantity} för{" "}
-											{grocery.discount_price.price}{" "}
-											{grocery.discount_price.currency}
+											<input
+												type="checkbox"
+												checked={grocery.checked}
+												onChange={(e) =>
+													handleToggleCheck(grocery.id, e.target.checked)
+												}
+											/>
 										</dd>
 									</dl>
-								)}
 
-								<dl>
-									<dt>Tillagd:</dt>
-									<dd>{grocery.created_at.toLocaleString("sv-SE")}</dd>
-								</dl>
-
-								<dl>
-									<dt>Uppdaterad:</dt>
-									<dd>{grocery.updated_at.toLocaleString("sv-SE")}</dd>
-								</dl>
-
-								<dl>
-									<dt>Köpt:</dt>
-									<dd>
-										<input
-											type="checkbox"
-											checked={grocery.checked}
-											onChange={(e) =>
-												handleToggleCheck(grocery.id, e.target.checked)
-											}
-										/>
-									</dd>
-								</dl>
-
-								<dl>
-									<dt>Radera:</dt>
-									<dd>
-										<button
-											type="button"
-											onClick={() => handleDelete(grocery.id)}
-										>
-											Radera
-										</button>
-									</dd>
-								</dl>
-							</li>
-						))}
-					</ul>
+									<dl>
+										<dt>Radera:</dt>
+										<dd>
+											<button
+												type="button"
+												onClick={() => handleDelete(grocery.id)}
+											>
+												Radera
+											</button>
+										</dd>
+									</dl>
+								</li>
+							))}
+						</ul>
+					</div>
 				)}
 				<h1>🛒</h1>
 			</main>
