@@ -10,7 +10,7 @@ export function createIdAsPrimaryKeyColumn() {
 }
 
 export function createDateTimeColumn() {
-	return text().notNull().default(sql`CURRENT_TIMESTAMP`);
+	return text().notNull().default(sql`CURRENT_TIMESTAMP`).$type<Date>();
 }
 
 export function createForeignKeyColumn<T extends SQLiteColumn>(column: T) {

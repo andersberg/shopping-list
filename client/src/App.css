@@ -105,3 +105,11 @@
   font-style: italic;
   font-weight: bold;
 }
+
+.app main ul.grocery-items li.added {
+  color: hsla(0, 0%, 0%, 0.5);
+}
+
+.app main ul.grocery-items li.added dd {
+  text-decoration: line-through;
+}

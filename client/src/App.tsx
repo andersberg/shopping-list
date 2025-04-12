@@ -4,9 +4,12 @@ import { useGroceryList } from "./queries";
 import { useMinLoadingTime } from "./useMinLoadingTime";
 
 export function App() {
-	const { query, mutation } = useGroceryList();
+	const { query, add_mutation, update_mutation, delete_mutation } =
+		useGroceryList();
 	const { data, isLoading, error } = query;
-	const { mutate: add_grocery_item } = mutation;
+	const { mutate: add_grocery_item } = add_mutation;
+	const { mutate: update_grocery_item } = update_mutation;
+	const { mutate: delete_grocery_item } = delete_mutation;
 
 	const is_loading_delayed = useMinLoadingTime(isLoading, 500);
 	const form_ref = useRef<HTMLFormElement>(null);
@@ -21,9 +24,25 @@ export function App() {
 		form_ref.current?.reset();
 	}
 
+	function handleToggleCheck(id: string, checked: boolean) {
+		update_grocery_item({
+			id,
+			updates: { checked },
+		});
+	}
+
+	function handleDelete(id: string) {
+		if (confirm("Är du säker på att du vill ta bort varan?")) {
+			delete_grocery_item(id);
+		}
+	}
+
 	if (error) {
 		return <div>Error: {error.message}</div>;
 	}
+
+	const items_sorted_by_checked =
+		data?.items.sort((a, b) => (a.checked ? 1 : b.checked ? -1 : 0)) ?? [];
 
 	return (
 		<div className="app">
@@ -54,7 +73,7 @@ export function App() {
 					<div className="placeholder">
 						<h2>Laddar...</h2>
 					</div>
-				) : data?.items.length === 0 ? (
+				) : items_sorted_by_checked.length === 0 ? (
 					<div className="placeholder">
 						<h2>Inköpslistan "{data?.name}" är tom.</h2>
 						<p>Lägg till en vara för att börja.</p>
@@ -76,16 +95,23 @@ export function App() {
 					</div>
 				) : (
 					<ul className="grocery-items">
-						{data?.items.map((grocery) => (
-							<li key={grocery.id}>
+						{items_sorted_by_checked.map((grocery) => (
+							<li
+								key={grocery.id}
+								className={["grocery-item", grocery.checked && "added"]
+									.filter(Boolean)
+									.join(" ")}
+							>
 								<dl>
 									<dt>Vara:</dt>
 									<dd>{grocery.name}</dd>
 								</dl>
+
 								<dl>
 									<dt>Antal:</dt>
 									<dd>{grocery.quantity}</dd>
 								</dl>
+
 								{grocery.unit && (
 									<dl>
 										<dt>Enhet:</dt>
@@ -110,6 +136,41 @@ export function App() {
 										</dd>
 									</dl>
 								)}
+
+								<dl>
+									<dt>Tillagd:</dt>
+									<dd>{grocery.created_at.toLocaleString("sv-SE")}</dd>
+								</dl>
+
+								<dl>
+									<dt>Uppdaterad:</dt>
+									<dd>{grocery.updated_at.toLocaleString("sv-SE")}</dd>
+								</dl>
+
+								<dl>
+									<dt>Köpt:</dt>
+									<dd>
+										<input
+											type="checkbox"
+											checked={grocery.checked}
+											onChange={(e) =>
+												handleToggleCheck(grocery.id, e.target.checked)
+											}
+										/>
+									</dd>
+								</dl>
+
+								<dl>
+									<dt>Radera:</dt>
+									<dd>
+										<button
+											type="button"
+											onClick={() => handleDelete(grocery.id)}
+										>
+											Radera
+										</button>
+									</dd>
+								</dl>
 							</li>
 						))}
 					</ul>
