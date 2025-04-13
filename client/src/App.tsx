@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import "./App.css";
+import { GroceryInput } from "./components/GroceryInput";
 import { useGroceryList } from "./queries";
 import { useMinLoadingTime } from "./useMinLoadingTime";
 
@@ -36,17 +37,6 @@ export function App() {
 		isLoading,
 		LOADING_DELAYED_DURATION_MS,
 	);
-	const form_ref = useRef<HTMLFormElement>(null);
-
-	function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-		event.preventDefault();
-		const form_data = new FormData(event.target as HTMLFormElement);
-		const input = form_data.get("input");
-		if (!input || input.toString().trim() === "") return;
-
-		add_grocery_item(input.toString().trim());
-		form_ref.current?.reset();
-	}
 
 	function handleToggleCheck(id: string, checked: boolean) {
 		update_grocery_item({
@@ -65,38 +55,21 @@ export function App() {
 		return <div>Error: {error.message}</div>;
 	}
 
-	const items_sorted = [...(data?.items ?? [])].sort((a, b) => {
-		// First sort by checked status
-		if (a.checked !== b.checked) {
-			return a.checked ? 1 : -1;
-		}
-		// Then by updated_at in descending order
-		return b.updated_at.getTime() - a.updated_at.getTime();
-	});
+	const items_sorted = useMemo(() => {
+		return [...(data?.items ?? [])].sort((a, b) => {
+			// First sort by checked status
+			if (a.checked !== b.checked) {
+				return a.checked ? 1 : -1;
+			}
+			// Then by updated_at in descending order
+			return b.updated_at.getTime() - a.updated_at.getTime();
+		});
+	}, [data?.items]);
 
 	return (
 		<div className="app">
 			<header>
-				<form
-					ref={form_ref}
-					onSubmit={handleSubmit}
-				>
-					<div className="input-wrapper">
-						<input
-							type="text"
-							name="input"
-							placeholder={'"1 kg mjöl"'}
-							enterKeyHint="send"
-						/>
-						<button
-							type="button"
-							onClick={() => form_ref.current?.reset()}
-						>
-							Rensa
-						</button>
-					</div>
-					<button type="submit">Lägg till</button>
-				</form>
+				<GroceryInput on_add_item={add_grocery_item} />
 			</header>
 			<main>
 				{is_loading_delayed ? (
@@ -133,7 +106,7 @@ export function App() {
 								<li className="grocery-item optimistic">
 									<dl>
 										<dt>Vara:</dt>
-										<dd>{added_item}</dd>
+										<dd>{added_item.name}</dd>
 									</dl>
 									<dl>
 										<dt>Tillagd:</dt>

@@ -1,11 +1,24 @@
 import { z } from "zod";
 import { GROCERY_ITEM_KNOWN_UNITS } from "../constants";
 
-const grocery_item_input_schema = z.string().nonempty();
+export const grocery_item_input_schema = z.object({
+	name: z.string().nonempty(),
+	quantity: z.number().min(1),
+	unit: z.enum(GROCERY_ITEM_KNOWN_UNITS).optional(),
+	comment: z.string().optional(),
+	discount_price: z
+		.object({
+			quantity: z.number(),
+			price: z.number(),
+			currency: z.string(),
+		})
+		.optional(),
+});
+
 export type GroceryItemInput = z.infer<typeof grocery_item_input_schema>;
 
 export const grocery_list_item_add_body_schema = z.object({
-	input: grocery_item_input_schema,
+	item: grocery_item_input_schema,
 });
 
 // Schema for the update endpoint

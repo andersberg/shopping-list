@@ -5,7 +5,11 @@ import {
 	useQuery,
 } from "@tanstack/react-query";
 import type { GroceryList } from "lib/GroceryItem";
-import type { GroceryItemInput, GroceryListItemUpdate } from "lib/api/schema";
+import {
+	type GroceryListItemUpdate,
+	grocery_item_input_schema,
+} from "lib/api/schema";
+import type { ParsedGroceryItem } from "../../lib/GroceryInputParser/Parser";
 import { api_client, grocery_list_client } from "./api-client";
 
 export const query_client = new QueryClient();
@@ -40,9 +44,12 @@ export function useGroceryList() {
 
 	const add_mutation = useMutation({
 		mutationKey: ["grocery-list:add"],
-		mutationFn: async (input: GroceryItemInput) => {
+		mutationFn: async (item: ParsedGroceryItem) => {
+			// Validate the parsed item against our schema
+			const validated_grocery_item = grocery_item_input_schema.parse(item);
+
 			const res = await api_client["grocery-list"].items.add.$post({
-				json: { input },
+				json: { item: validated_grocery_item },
 			});
 			if (!res.ok) {
 				throw new Error("Failed to add item");

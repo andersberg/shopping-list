@@ -4,8 +4,6 @@ import { and, eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { Hono } from "hono";
 import { z } from "zod";
-import { GroceryInputParser } from "../GroceryInputParser/Parser";
-import { GROCERY_ITEM_KNOWN_UNITS, GROCERY_ITEM_MODIFIERS } from "../constants";
 import {
 	type GroceryListItemSelect,
 	grocery_list,
@@ -19,11 +17,6 @@ import {
 	grocery_list_item_add_body_schema,
 	grocery_list_item_update_schema,
 } from "./schema";
-
-const parser = new GroceryInputParser(
-	GROCERY_ITEM_KNOWN_UNITS,
-	GROCERY_ITEM_MODIFIERS,
-);
 
 interface Bindings {
 	Database: D1Database;
@@ -85,15 +78,15 @@ export const grocery_list_router = new Hono<{ Bindings: Bindings }>()
 					grocery_list_relations,
 				},
 			});
-			const data = c.req.valid("json");
 
-			const parsed_item = parser.parse(data.input);
+			const { item } = c.req.valid("json");
+
 			const {
 				success,
-				data: item,
+				data: validated_item,
 				error,
 			} = grocery_list_item_insert_schema.safeParse({
-				...parsed_item,
+				...item,
 				grocery_list_id: "test-id-1",
 			});
 
@@ -113,8 +106,11 @@ export const grocery_list_router = new Hono<{ Bindings: Bindings }>()
 				.from(grocery_list_item)
 				.where(
 					and(
-						eq(grocery_list_item.name, item.name),
-						eq(grocery_list_item.grocery_list_id, item.grocery_list_id),
+						eq(grocery_list_item.name, validated_item.name),
+						eq(
+							grocery_list_item.grocery_list_id,
+							validated_item.grocery_list_id,
+						),
 					),
 				);
 
@@ -126,10 +122,13 @@ export const grocery_list_router = new Hono<{ Bindings: Bindings }>()
 				const [updated_item] = await db
 					.update(grocery_list_item)
 					.set({
-						quantity: existing_item.quantity + item.quantity,
-						unit: item.unit, // Use latest unit
-						comment: mergeComments(existing_item.comment, item.comment ?? null),
-						discount_price: item.discount_price, // Use latest discount price
+						quantity: existing_item.quantity + validated_item.quantity,
+						unit: validated_item.unit, // Use latest unit
+						comment: mergeComments(
+							existing_item.comment,
+							validated_item.comment ?? null,
+						),
+						discount_price: validated_item.discount_price, // Use latest discount price
 					})
 					.where(eq(grocery_list_item.id, existing_item.id))
 					.returning();
@@ -140,7 +139,7 @@ export const grocery_list_router = new Hono<{ Bindings: Bindings }>()
 				// Insert new item
 				const [inserted_item] = await db
 					.insert(grocery_list_item)
-					.values(item)
+					.values(validated_item)
 					.returning();
 
 				result = inserted_item;
