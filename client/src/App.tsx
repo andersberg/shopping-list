@@ -10,6 +10,9 @@ export function App() {
 	const { query, add_mutation, update_mutation, delete_mutation } =
 		useGroceryList();
 	const { data, isLoading, error, dataUpdatedAt, isFetched } = query;
+	const { isPending: is_adding, variables: added_item } = add_mutation;
+	const { isPending: is_updating, variables: updating_item } = update_mutation;
+	const { isPending: is_deleting, variables: deleting_id } = delete_mutation;
 	const { mutate: add_grocery_item } = add_mutation;
 	const { mutate: update_grocery_item } = update_mutation;
 	const { mutate: delete_grocery_item } = delete_mutation;
@@ -62,8 +65,14 @@ export function App() {
 		return <div>Error: {error.message}</div>;
 	}
 
-	const items_sorted_by_checked =
-		data?.items.sort((a, b) => (a.checked ? 1 : b.checked ? -1 : 0)) ?? [];
+	const items_sorted = [...(data?.items ?? [])].sort((a, b) => {
+		// First sort by checked status
+		if (a.checked !== b.checked) {
+			return a.checked ? 1 : -1;
+		}
+		// Then by updated_at in descending order
+		return b.updated_at.getTime() - a.updated_at.getTime();
+	});
 
 	return (
 		<div className="app">
@@ -94,7 +103,7 @@ export function App() {
 					<div className="placeholder">
 						<h2>Laddar...</h2>
 					</div>
-				) : items_sorted_by_checked.length === 0 ? (
+				) : items_sorted.length === 0 ? (
 					<div className="placeholder">
 						<h2>Inköpslistan "{data?.name}" är tom.</h2>
 						<p>Lägg till en vara för att börja.</p>
@@ -120,84 +129,134 @@ export function App() {
 							<div className="placeholder">Listan har uppdaterats.</div>
 						)}
 						<ul className="grocery-items">
-							{items_sorted_by_checked.map((grocery) => (
-								<li
-									key={grocery.id}
-									className={["grocery-item", grocery.checked && "added"]
-										.filter(Boolean)
-										.join(" ")}
-								>
+							{is_adding && added_item && (
+								<li className="grocery-item optimistic">
 									<dl>
 										<dt>Vara:</dt>
-										<dd>{grocery.name}</dd>
+										<dd>{added_item}</dd>
 									</dl>
-
-									<dl>
-										<dt>Antal:</dt>
-										<dd>{grocery.quantity}</dd>
-									</dl>
-
-									{grocery.unit && (
-										<dl>
-											<dt>Enhet:</dt>
-											<dd>{grocery.unit}</dd>
-										</dl>
-									)}
-
-									{grocery.comment && (
-										<dl>
-											<dt>Kommentar:</dt>
-											<dd>{grocery.comment}</dd>
-										</dl>
-									)}
-
-									{grocery.discount_price && (
-										<dl>
-											<dt>Rabatt:</dt>
-											<dd>
-												{grocery.discount_price.quantity} för{" "}
-												{grocery.discount_price.price}{" "}
-												{grocery.discount_price.currency}
-											</dd>
-										</dl>
-									)}
-
 									<dl>
 										<dt>Tillagd:</dt>
-										<dd>{grocery.created_at.toLocaleString("sv-SE")}</dd>
+										<dd>{new Date().toLocaleString("sv-SE")}</dd>
 									</dl>
-
-									<dl>
-										<dt>Uppdaterad:</dt>
-										<dd>{grocery.updated_at.toLocaleString("sv-SE")}</dd>
-									</dl>
-
 									<dl>
 										<dt>Köpt:</dt>
 										<dd>
 											<input
 												type="checkbox"
-												checked={grocery.checked}
-												onChange={(e) =>
-													handleToggleCheck(grocery.id, e.target.checked)
-												}
+												disabled
+												checked={false}
 											/>
 										</dd>
 									</dl>
-
-									<dl>
-										<dt>Radera:</dt>
-										<dd>
-											<button
-												type="button"
-												onClick={() => handleDelete(grocery.id)}
-											>
-												Radera
-											</button>
-										</dd>
-									</dl>
 								</li>
-							))}
+							)}
+							{items_sorted.map((grocery) => {
+								// Skip item if it's being deleted
+								if (is_deleting && deleting_id === grocery.id) {
+									return null;
+								}
+
+								// Apply optimistic update if item is being updated
+								const is_being_updated =
+									is_updating &&
+									updating_item &&
+									updating_item.id === grocery.id;
+
+								const displayed_item = is_being_updated
+									? { ...grocery, checked: updating_item.updates.checked }
+									: grocery;
+
+								return (
+									<li
+										key={grocery.id}
+										className={[
+											"grocery-item",
+											displayed_item.checked && "added",
+											is_being_updated && "optimistic",
+										]
+											.filter(Boolean)
+											.join(" ")}
+										style={is_being_updated ? { opacity: 0.7 } : undefined}
+									>
+										<dl>
+											<dt>Vara:</dt>
+											<dd>{displayed_item.name}</dd>
+										</dl>
+
+										<dl>
+											<dt>Antal:</dt>
+											<dd>{displayed_item.quantity}</dd>
+										</dl>
+
+										{displayed_item.unit && (
+											<dl>
+												<dt>Enhet:</dt>
+												<dd>{displayed_item.unit}</dd>
+											</dl>
+										)}
+
+										{displayed_item.comment && (
+											<dl>
+												<dt>Kommentar:</dt>
+												<dd>{displayed_item.comment}</dd>
+											</dl>
+										)}
+
+										{displayed_item.discount_price && (
+											<dl>
+												<dt>Rabatt:</dt>
+												<dd>
+													{displayed_item.discount_price.quantity} för{" "}
+													{displayed_item.discount_price.price}{" "}
+													{displayed_item.discount_price.currency}
+												</dd>
+											</dl>
+										)}
+
+										<dl>
+											<dt>Tillagd:</dt>
+											<dd>
+												{displayed_item.created_at.toLocaleString("sv-SE")}
+											</dd>
+										</dl>
+
+										<dl>
+											<dt>Uppdaterad:</dt>
+											<dd>
+												{displayed_item.updated_at.toLocaleString("sv-SE")}
+											</dd>
+										</dl>
+
+										<dl>
+											<dt>Köpt:</dt>
+											<dd>
+												<input
+													type="checkbox"
+													checked={displayed_item.checked}
+													onChange={(e) =>
+														handleToggleCheck(grocery.id, e.target.checked)
+													}
+													disabled={is_being_updated}
+												/>
+											</dd>
+										</dl>
+
+										<dl>
+											<dt>Radera:</dt>
+											<dd>
+												<button
+													type="button"
+													onClick={() => handleDelete(grocery.id)}
+													disabled={is_being_updated}
+												>
+													Radera
+												</button>
+											</dd>
+										</dl>
+									</li>
+								);
+							})}
 						</ul>
 					</div>
 				)}

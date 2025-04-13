@@ -47,38 +47,9 @@ export function useGroceryList() {
 			if (!res.ok) {
 				throw new Error("Failed to add item");
 			}
-			const data = await res.json();
-			return {
-				...data,
-				item: {
-					...data.item,
-					created_at: new Date(data.item.created_at),
-					updated_at: new Date(data.item.updated_at),
-				},
-			};
+			return res.json();
 		},
-		onSuccess: (data) => {
-			const { item, status } = data;
-			query_client.setQueryData(
-				GROCERY_LIST_QUERY_KEY,
-				(oldData: GroceryList | undefined) => {
-					if (status === "created") {
-						return {
-							...oldData,
-							items: [item, ...(oldData?.items ?? [])],
-						};
-					}
-					// For updates, replace the existing item
-					return {
-						...oldData,
-						items:
-							oldData?.items.map((existingItem) =>
-								existingItem.id === item.id ? item : existingItem,
-							) ?? [],
-					};
-				},
-			);
-
+		onSettled: () => {
 			query_client.invalidateQueries({
 				queryKey: GROCERY_LIST_QUERY_KEY,
 			});
