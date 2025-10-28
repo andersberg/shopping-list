@@ -16,9 +16,9 @@
     "db:execute:remote": "wrangler d1 execute shopping-list --remote --config=server/wrangler.json"
   },
   "devDependencies": {
-    "@biomejs/biome": "1.9.4",
+    "@biomejs/biome": "2.3.1",
     "typescript": "catalog:",
-    "wrangler": "^4.10.0"
+    "wrangler": "catalog:"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

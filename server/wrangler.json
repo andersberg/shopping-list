@@ -1,21 +1,24 @@
 {
-	"$schema": "node_modules/wrangler/config-schema.json",
-	"name": "server",
-	"main": "src/index.ts",
-	"compatibility_date": "2025-04-08",
-	"assets": {
-		"directory": "public"
-	},
-	"dev": {
-		"port": 5180,
-		"host": "0.0.0.0"
-	},
-	"d1_databases": [
-		{
-			"binding": "Database",
-			"database_name": "shopping-list",
-			"database_id": "c976d27c-61a0-448e-9532-c537bee1d760",
-			"migrations_dir": "../lib/db/migrations"
-		}
-	]
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "server",
+  "main": "src/index.ts",
+  "compatibility_date": "2025-04-08",
+  "assets": {
+    "directory": "public"
+  },
+  "dev": {
+    "port": 5180,
+    "host": "0.0.0.0"
+  },
+  "ai": {
+    "binding": "AI"
+  },
+  "d1_databases": [
+    {
+      "binding": "Database",
+      "database_name": "shopping-list",
+      "database_id": "c976d27c-61a0-448e-9532-c537bee1d760",
+      "migrations_dir": "../lib/db/migrations"
+    }
+  ]
 }
