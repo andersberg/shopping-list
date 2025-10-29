@@ -17,7 +17,6 @@ import {
   grocery_list_item_add_body_schema,
   grocery_list_item_update_schema,
 } from "./schema";
-import { GroceryInputParser } from "../AI/GroceryInputParser/GroceryInputParser";
 
 export const grocery_list_router = new Hono<{
   Bindings: CloudflareEnvironmentBindings;
@@ -223,26 +222,6 @@ export const grocery_list_router = new Hono<{
     await db.delete(grocery_list_item).where(eq(grocery_list_item.id, id));
 
     return c.json({ message: "Item deleted successfully" });
-  })
-  .post(
-    "/parse",
-    zValidator(
-      "json",
-      z.object({
-        input: z.string().nonempty(),
-      }),
-    ),
-    async (c) => {
-      const { input } = await c.req.json();
-      console.log("/parse", input);
-      const ai = c.env.AI;
-
-      const parser = new GroceryInputParser(ai);
-
-      const parsed = await parser.parse_input(input);
-
-      return c.json({ item: parsed });
-    },
-  );
+  });
 
 export type GroceryListRouter = typeof grocery_list_router;

@@ -1,0 +1,702 @@
+[
+  {
+    "line": "2 paket ekologisk mjölk",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "mjölk",
+        "category": "mejeri",
+        "quantity": 2,
+        "quantity_unit": "pkt",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": true,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "1 kg potatis",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "potatis",
+        "category": "frukt & grönt",
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 1,
+        "size_unit": "kg",
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 1,
+        "total_quantity_unit": "kg",
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "6 st ägg",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "ägg",
+        "category": null,
+        "quantity": 6,
+        "quantity_unit": "st",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "1 burk krossade tomater",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "krossade tomater",
+        "category": "skafferi",
+        "quantity": 1,
+        "quantity_unit": "burk",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "500 g spaghetti",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "spagetti",
+        "category": null,
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 500,
+        "size_unit": "g",
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "3 dl grädde",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "grädde",
+        "category": "mejeri",
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 3,
+        "size_unit": "dl",
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 3,
+        "total_quantity_unit": "dl",
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "1 flaska olivolja",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "olivolja",
+        "category": null,
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": "flaska",
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "2 pkt jäst",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "jäst",
+        "category": "skafferi",
+        "quantity": 2,
+        "quantity_unit": "pkt",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "1 st gurka",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "gurka",
+        "category": "frukt & grönt",
+        "quantity": 1,
+        "quantity_unit": "st",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "4 bananer",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "banan",
+        "category": "frukt & grönt",
+        "quantity": 4,
+        "quantity_unit": "st",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "ett halvt kilo morötter",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "morot",
+        "category": "frukt & grönt",
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 0.5,
+        "size_unit": "kg",
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0.5,
+        "total_quantity_unit": "kg",
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "två paket med smör",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "smör",
+        "category": null,
+        "quantity": 2,
+        "quantity_unit": "pkt",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "en burk tonfisk i olja",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "tonfisk",
+        "category": "fisk & skaldjur",
+        "quantity": 1,
+        "quantity_unit": "burk",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": "i olja",
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "mjölk 2 liter",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "mjölk",
+        "category": "mejeri",
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 2,
+        "size_unit": "l",
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 2,
+        "total_quantity_unit": "l",
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "potatis 1 kilo",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "potatis",
+        "category": "frukt & grönt",
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 1,
+        "size_unit": "kg",
+        "brand": null,
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 1,
+        "total_quantity_unit": "kg",
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "3 stycken röda äpplen",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "äpple",
+        "category": "frukt & grönt",
+        "quantity": 3,
+        "quantity_unit": "st",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": "röda",
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "ett par tomater",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "tomat",
+        "category": "frukt & grönt",
+        "quantity": 2,
+        "quantity_unit": "st",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": "ett par",
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "ungefär ett kilo lök",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "lök",
+        "category": null,
+        "quantity": 0,
+        "quantity_unit": null,
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": "ungefär ett kilo",
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "lite grädde",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "grädde",
+        "category": null,
+        "quantity": 0,
+        "quantity_unit": null,
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": "lite",
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "några ägg",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "ägg",
+        "category": null,
+        "quantity": 0,
+        "quantity_unit": null,
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": "några",
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "2 paket Arla mjölk från Ica",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "mjölk",
+        "category": "mejeri",
+        "quantity": 2,
+        "quantity_unit": "pkt",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": "Arla",
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": "Ica",
+        "store_raw": "Ica",
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "Zeta olivolja 500 ml",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "olivolja",
+        "category": "skafferi",
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 500,
+        "size_unit": "ml",
+        "brand": "Zeta",
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "Garant kikärtor burk",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "kikärtor",
+        "category": null,
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": false,
+        "comment": "Garant kikärtor burk",
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "1 st ekologisk banan från Coop",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "banan",
+        "category": "frukt & grönt",
+        "quantity": 1,
+        "quantity_unit": "st",
+        "size_value": 0,
+        "size_unit": null,
+        "brand": null,
+        "organic": true,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 0,
+        "total_quantity_unit": null,
+        "store_normalized": "Coop",
+        "store_raw": "Coop",
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  },
+  {
+    "line": "Findus ärtor 750 g",
+    "status": 200,
+    "body": {
+      "response": {
+        "item": "ärtor",
+        "category": "fryst",
+        "quantity": 1,
+        "quantity_unit": null,
+        "size_value": 750,
+        "size_unit": "g",
+        "brand": "Findus",
+        "organic": false,
+        "comment": null,
+        "unit_normalized": null,
+        "total_quantity_value": 750,
+        "total_quantity_unit": "g",
+        "store_normalized": null,
+        "store_raw": null,
+        "offer_quantity": 0,
+        "offer_total_price_value": 0,
+        "offer_currency": null,
+        "offer_unit_price_value": 0,
+        "status": "ok",
+        "error": null
+      }
+    }
+  }
+]

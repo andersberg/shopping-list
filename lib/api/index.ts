@@ -4,30 +4,43 @@ import { grocery_list_router } from "./grocery-list";
 import { zValidator } from "@hono/zod-validator";
 import { object, string, z } from "zod/v4";
 import { CloudflareEnvironmentBindings } from "../cloudflare-environment-bindings";
-import { createWorkersAI } from "workers-ai-provider";
-import { generateObject } from "ai";
-import { AiModels, AiTextGenerationInput } from "@cloudflare/workers-types";
-import { create_system_prompt } from "../AI/GroceryInputParser/prompts/system";
-import { create_assistant_prompt } from "../AI/GroceryInputParser/prompts/assistant";
-import {
-  ALLOWED_CATEGORIES,
-  OFFER_CURRENCIES,
-  QUANTITY_UNIT_ALIASES_BY_CANONICAL,
-  QUANTITY_UNIT_ALIAS_MAP,
-  QUANTITY_UNITS,
-  SIZE_UNIT_ALIASES_BY_CANONICAL,
-  SIZE_UNIT_ALIAS_MAP,
-  SIZE_UNITS,
-  STORE_ALIASES_BY_CANONICAL,
-  STORE_ALIAS_MAP,
-  STORE_NORMALIZED_VALUES,
-  STATUS,
-  GroceryItemSchema,
-} from "../AI/GroceryInputParser/grocery-item";
+import type { AiModels } from "@cloudflare/workers-types";
+import { prompt_builder } from "../AI/GroceryInputParser/prompts/prompt-builder";
+import { STORE_NAMES } from "../AI/GroceryInputParser/store-names";
+import { BRAND_NAMES } from "../AI/GroceryInputParser/brand-names";
+import { CATEGORY_NAMES } from "../AI/GroceryInputParser/category-names";
+import { QUANTITY_UNITS } from "../AI/GroceryInputParser/quantity-units";
+import { SIZE_UNITS } from "../AI/GroceryInputParser/size-units";
 
 // const MODEL_NAME: keyof AiModels = "@cf/meta/llama-3.1-8b-instruct-fp8";
 const MODEL_NAME: keyof AiModels =
   "@cf/meta/llama-3.1-8b-instruct-fast" as keyof AiModels;
+
+const STATUS = ["ok", "unparsed"] as const;
+const CURRENCY = ["SEK"];
+
+const GroceryItemSchema = z.strictObject({
+  item: z.string().nullable(),
+  category: z.enum(CATEGORY_NAMES).nullable(),
+  quantity: z.number().min(0),
+  quantity_unit: z.enum(QUANTITY_UNITS).nullable(),
+  size_value: z.number().min(0),
+  size_unit: z.enum(SIZE_UNITS).nullable(),
+  brand: z.string().nullable(),
+  organic: z.boolean(),
+  comment: z.string().nullable(),
+  unit_normalized: z.enum(SIZE_UNITS).nullable(),
+  total_quantity_value: z.number().min(0),
+  total_quantity_unit: z.enum(SIZE_UNITS).nullable(),
+  store_normalized: z.enum(STORE_NAMES).nullable(),
+  store_raw: z.string().nullable(),
+  offer_quantity: z.number().min(0),
+  offer_total_price_value: z.number().min(0),
+  offer_currency: z.enum(CURRENCY).nullable(),
+  offer_unit_price_value: z.number().min(0),
+  status: z.enum(STATUS),
+  error: z.string().nullable(),
+});
 
 const loose_GroceryItemSchema = z.looseObject({
   ...GroceryItemSchema.shape,
@@ -45,41 +58,15 @@ const GroceryItemSchema_as_json_schema = z.toJSONSchema(
   loose_GroceryItemSchema,
 );
 
-const messages_base = [
-  {
-    role: "system",
-    content: create_system_prompt({
-      schema: GroceryItemSchema_as_json_schema,
-      allowed_categories: ALLOWED_CATEGORIES,
-      quantity_units: QUANTITY_UNITS,
-      quantity_unit_alias_map: QUANTITY_UNIT_ALIAS_MAP,
-      quantity_unit_aliases_by_canonical: QUANTITY_UNIT_ALIASES_BY_CANONICAL,
-      size_units: SIZE_UNITS,
-      size_unit_alias_map: SIZE_UNIT_ALIAS_MAP,
-      size_unit_aliases_by_canonical: SIZE_UNIT_ALIASES_BY_CANONICAL,
-      store_normalized_values: STORE_NORMALIZED_VALUES,
-      store_alias_map: STORE_ALIAS_MAP,
-      store_aliases_by_canonical: STORE_ALIASES_BY_CANONICAL,
-      offer_currencies: OFFER_CURRENCIES,
-    }),
-  },
-  {
-    role: "assistant",
-    content: create_assistant_prompt({
-      allowed_categories: ALLOWED_CATEGORIES,
-      quantity_units: QUANTITY_UNITS,
-      quantity_unit_alias_map: QUANTITY_UNIT_ALIAS_MAP,
-      quantity_unit_aliases_by_canonical: QUANTITY_UNIT_ALIASES_BY_CANONICAL,
-      size_units: SIZE_UNITS,
-      size_unit_alias_map: SIZE_UNIT_ALIAS_MAP,
-      size_unit_aliases_by_canonical: SIZE_UNIT_ALIASES_BY_CANONICAL,
-      store_normalized_values: STORE_NORMALIZED_VALUES,
-      store_alias_map: STORE_ALIAS_MAP,
-      store_aliases_by_canonical: STORE_ALIASES_BY_CANONICAL,
-      offer_currencies: OFFER_CURRENCIES,
-    }),
-  },
-] satisfies AiTextGenerationInput["messages"];
+function create_prompt(input: string) {
+  return prompt_builder(input, {
+    categories: CATEGORY_NAMES,
+    quantity_units: QUANTITY_UNITS,
+    size_units: SIZE_UNITS,
+    brands: BRAND_NAMES,
+    stores: STORE_NAMES,
+  });
+}
 
 // console.log("messages_base", messages_base);
 
@@ -88,7 +75,7 @@ export const api_router = new Hono<{
 }>()
   .route("/grocery-list", grocery_list_router)
   .post(
-    "/parse-cf-ai",
+    "/parse",
     zValidator(
       "json",
       object({
@@ -99,16 +86,8 @@ export const api_router = new Hono<{
       const { input } = await c.req.json();
       console.log("/parse-cf-ai", input);
 
-      const messages = [
-        ...messages_base,
-        {
-          role: "user",
-          content: input,
-        },
-      ] satisfies AiTextGenerationInput["messages"];
-
       const response = await c.env.AI.run(MODEL_NAME, {
-        messages,
+        prompt: create_prompt(input),
         response_format: {
           type: "json_schema",
           //schema: z.toJSONSchema(z.any()),
@@ -119,28 +98,6 @@ export const api_router = new Hono<{
       return c.json(response);
     },
   )
-  .post("/parse-ai-sdk", async (c) => {
-    const { input } = await c.req.json();
-    console.log("/parse-ai-sdk", input);
-
-    const messages = [
-      ...messages_base,
-      {
-        role: "user",
-        content: input,
-      },
-    ] satisfies AiTextGenerationInput["messages"];
-
-    const workers_ai = createWorkersAI({ binding: c.env.AI });
-
-    const result = await generateObject({
-      model: workers_ai(MODEL_NAME),
-      messages,
-      schema: z.any(),
-    });
-
-    return c.json(result.object);
-  })
   .get("/", (c) => {
     return c.json({
       message: MESSAGE,
