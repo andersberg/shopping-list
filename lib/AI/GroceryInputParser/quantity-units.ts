@@ -7,4 +7,6 @@ export const QUANTITY_UNITS = [
   "förp",
   "kartong",
   "rulle",
+  "kg",
+  "kilo",
 ] as const;

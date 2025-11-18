@@ -1,5 +1,9 @@
 import { z } from "zod";
 import { grocery_list_item_insert_schema } from "./db/schema";
+import { CATEGORY_NAMES } from "./AI/GroceryInputParser/category-names";
+import { QUANTITY_UNITS } from "./AI/GroceryInputParser/quantity-units";
+import { SIZE_UNITS } from "./AI/GroceryInputParser/size-units";
+import { STORE_NAMES } from "./AI/GroceryInputParser/store-names";
 
 const grocery_item_discount_price_schema = z.object({
 	quantity: z.number().min(1),
@@ -11,6 +15,7 @@ export type GroceryItemDiscountPrice = z.infer<
 	typeof grocery_item_discount_price_schema
 >;
 
+// Database schema (for legacy compatibility)
 export const grocery_item_schema = grocery_list_item_insert_schema.pick({
 	name: true,
 	comment: true,
@@ -19,7 +24,42 @@ export const grocery_item_schema = grocery_list_item_insert_schema.pick({
 	unit: true,
 });
 
-export type GroceryItem = z.infer<typeof grocery_item_schema>;
+export type GroceryItemLegacy = z.infer<typeof grocery_item_schema>;
+
+// Full API schema with all fields
+const STATUS = ["ok", "needs_review", "parse_error"] as const;
+const CURRENCY = ["SEK"] as const;
+
+export const grocery_item_full_schema = z.strictObject({
+  // Database fields (mapped from API fields)
+  name: z.string().nullable(),
+  comment: z.string().nullable(),
+  discount_price: grocery_item_discount_price_schema.nullable(),
+  quantity: z.number().min(0),
+  unit: z.string().nullable(),
+  
+  // Additional API fields
+  item: z.string().nullable(),
+  category: z.enum(CATEGORY_NAMES).nullable(),
+  quantity_unit: z.enum(QUANTITY_UNITS).nullable(),
+  size_value: z.number().min(0),
+  size_unit: z.enum(SIZE_UNITS).nullable(),
+  brand: z.string().nullable(),
+  organic: z.boolean(),
+  unit_normalized: z.enum(SIZE_UNITS).nullable(),
+  total_quantity_value: z.number().min(0),
+  total_quantity_unit: z.enum(SIZE_UNITS).nullable(),
+  store_normalized: z.enum(STORE_NAMES).nullable(),
+  store_raw: z.string().nullable(),
+  offer_quantity: z.number().min(0),
+  offer_total_price_value: z.number().min(0),
+  offer_currency: z.enum(CURRENCY).nullable(),
+  offer_unit_price_value: z.number().min(0),
+  status: z.enum(STATUS),
+  error: z.string().nullable(),
+});
+
+export type GroceryItem = z.infer<typeof grocery_item_full_schema>;
 
 export const grocery_list_item_schema = grocery_item_schema.extend({
 	id: z.string().uuid(),

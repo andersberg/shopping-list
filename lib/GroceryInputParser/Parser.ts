@@ -1,7 +1,11 @@
-import type { GroceryItem } from "../GroceryItem";
+import type { GroceryItemLegacy } from "../GroceryItem";
 
-export interface ParsedGroceryItem extends Omit<GroceryItem, "unit"> {
+export interface ParsedGroceryItem {
+	quantity: number;
 	unit: string | undefined;
+	item: string;
+	comment: string | undefined;
+	discount_price: GroceryItemLegacy["discount_price"] | undefined;
 }
 
 /**
@@ -40,7 +44,7 @@ export class GroceryInputParser {
 
 		let quantity = 1;
 		let unit: string | undefined;
-		let discount_price: GroceryItem["discount_price"] | undefined;
+		let discount_price: GroceryItemLegacy["discount_price"] | undefined;
 
 		// 1. Extract quantity if the first token is numeric.
 		if (tokens.length && /^\d+(\.\d+)?$/.test(tokens[0])) {
@@ -91,7 +95,7 @@ export class GroceryInputParser {
 		return {
 			quantity,
 			unit,
-			name,
+			item: name,
 			comment: found_modifiers.length ? found_modifiers.join(", ") : undefined,
 			discount_price,
 		};
