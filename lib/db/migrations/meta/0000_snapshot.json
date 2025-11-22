@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "4ca81025-569c-4d2a-b10d-76cec633b3f2",
+  "id": "cbcf16a3-2520-4582-aa44-fae6c557e312",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "grocery_list": {
@@ -44,6 +44,13 @@
           "primaryKey": false,
           "notNull": true,
           "autoincrement": false
+        },
+        "store": {
+          "name": "store",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {
@@ -57,8 +64,7 @@
       },
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
+      "uniqueConstraints": {}
     },
     "grocery_list_item": {
       "name": "grocery_list_item",
@@ -137,17 +143,76 @@
           "notNull": true,
           "autoincrement": false,
           "default": "'st'"
+        },
+        "input_raw": {
+          "name": "input_raw",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "''"
+        },
+        "item": {
+          "name": "item",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "quantity_unit": {
+          "name": "quantity_unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "size_value": {
+          "name": "size_value",
+          "type": "real",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "size_unit": {
+          "name": "size_unit",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "brand": {
+          "name": "brand",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "organic": {
+          "name": "organic",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": false
+        },
+        "status": {
+          "name": "status",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "'needs_review'"
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": 0
         }
       },
-      "indexes": {
-        "grocery_list_item_name_unique": {
-          "name": "grocery_list_item_name_unique",
-          "columns": [
-            "name"
-          ],
-          "isUnique": true
-        }
-      },
+      "indexes": {},
       "foreignKeys": {
         "grocery_list_item_grocery_list_id_grocery_list_id_fk": {
           "name": "grocery_list_item_grocery_list_id_grocery_list_id_fk",
@@ -164,11 +229,9 @@
         }
       },
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {}
+      "uniqueConstraints": {}
     }
   },
-  "views": {},
   "enums": {},
   "_meta": {
     "schemas": {},
