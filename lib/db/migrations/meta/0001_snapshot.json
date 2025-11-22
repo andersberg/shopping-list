@@ -1,0 +1,69 @@
+{
+  "version": "7",
+  "dialect": "sqlite",
+  "id": "c2a93a67-b869-4f86-8d77-90d12d69c7a6",
+  "prevId": "4ca81025-569c-4d2a-b10d-76cec633b3f2",
+  "tables": {
+    "grocery_list": {
+      "name": "grocery_list",
+      "columns": {
+        "id": {"name": "id", "type": "text", "primaryKey": true, "notNull": true, "autoincrement": false},
+        "created_at": {"name": "created_at", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false, "default": "CURRENT_TIMESTAMP"},
+        "updated_at": {"name": "updated_at", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false, "default": "CURRENT_TIMESTAMP"},
+        "deleted": {"name": "deleted", "type": "integer", "primaryKey": false, "notNull": true, "autoincrement": false, "default": false},
+        "name": {"name": "name", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false},
+        "store": {"name": "store", "type": "text", "primaryKey": false, "notNull": false, "autoincrement": false}
+      },
+      "indexes": {
+        "grocery_list_name_unique": {"name": "grocery_list_name_unique", "columns": ["name"], "isUnique": true}
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    },
+    "grocery_list_item": {
+      "name": "grocery_list_item",
+      "columns": {
+        "id": {"name": "id", "type": "text", "primaryKey": true, "notNull": true, "autoincrement": false},
+        "created_at": {"name": "created_at", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false, "default": "CURRENT_TIMESTAMP"},
+        "updated_at": {"name": "updated_at", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false, "default": "CURRENT_TIMESTAMP"},
+        "name": {"name": "name", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false},
+        "grocery_list_id": {"name": "grocery_list_id", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false},
+        "checked": {"name": "checked", "type": "integer", "primaryKey": false, "notNull": true, "autoincrement": false, "default": false},
+        "comment": {"name": "comment", "type": "text", "primaryKey": false, "notNull": false, "autoincrement": false},
+        "discount_price": {"name": "discount_price", "type": "text", "primaryKey": false, "notNull": false, "autoincrement": false},
+        "quantity": {"name": "quantity", "type": "integer", "primaryKey": false, "notNull": true, "autoincrement": false, "default": 1},
+        "unit": {"name": "unit", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false, "default": "'st'"},
+        "input_raw": {"name": "input_raw", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false, "default": ""},
+        "item": {"name": "item", "type": "text", "primaryKey": false, "notNull": false, "autoincrement": false},
+        "quantity_unit": {"name": "quantity_unit", "type": "text", "primaryKey": false, "notNull": false, "autoincrement": false},
+        "size_value": {"name": "size_value", "type": "real", "primaryKey": false, "notNull": false, "autoincrement": false},
+        "size_unit": {"name": "size_unit", "type": "text", "primaryKey": false, "notNull": false, "autoincrement": false},
+        "brand": {"name": "brand", "type": "text", "primaryKey": false, "notNull": false, "autoincrement": false},
+        "organic": {"name": "organic", "type": "integer", "primaryKey": false, "notNull": true, "autoincrement": false, "default": false},
+        "status": {"name": "status", "type": "text", "primaryKey": false, "notNull": true, "autoincrement": false, "default": "'needs_review'"},
+        "position": {"name": "position", "type": "integer", "primaryKey": false, "notNull": true, "autoincrement": false, "default": 0}
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "grocery_list_item_grocery_list_id_grocery_list_id_fk": {
+          "name": "grocery_list_item_grocery_list_id_grocery_list_id_fk",
+          "tableFrom": "grocery_list_item",
+          "tableTo": "grocery_list",
+          "columnsFrom": ["grocery_list_id"],
+          "columnsTo": ["id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {}
+    }
+  },
+  "views": {},
+  "enums": {},
+  "_meta": {"schemas": {}, "tables": {}, "columns": {}},
+  "internal": {"indexes": {}}
+}
