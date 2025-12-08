@@ -143,6 +143,68 @@ export const api_router = new Hono<{
       return c.json(grocery_item);
     },
   )
+  .post(
+    "/parse-tokens",
+    zValidator(
+      "json",
+      object({
+        input: string().nonempty(),
+      }),
+    ),
+    async (c) => {
+      const { input } = await c.req.json();
+      console.log("/parse-tokens", input);
+
+      const ai_response = await c.env.AI.run(MODEL_NAME, {
+        prompt: create_prompt(input),
+      });
+
+      console.log("Raw AI response:", JSON.stringify(ai_response, null, 2));
+
+      // Cloudflare Workers AI returns { response: string } for text models
+      let response_text;
+      if (typeof ai_response === 'string') {
+        response_text = ai_response;
+      } else if (ai_response && typeof ai_response === 'object' && 'response' in ai_response) {
+        response_text = ai_response.response;
+      } else {
+        console.error("Unexpected AI response format:", ai_response);
+        return c.json({
+          status: "parse_error",
+          error: "Unexpected AI response format",
+        }, 500);
+      }
+
+      // Try to parse response text as JSON
+      let parsed_response;
+      try {
+        parsed_response = JSON.parse(response_text);
+      } catch (e) {
+        console.error("Failed to parse AI response as JSON:", e);
+        console.error("Response text was:", response_text);
+        return c.json({
+          status: "parse_error",
+          error: "AI response is not valid JSON",
+          raw_response: response_text,
+        }, 500);
+      }
+
+      // Validate AI response
+      const parse_result = GroceryAiExtractionSchema.safeParse(parsed_response);
+      if (!parse_result.success) {
+        console.error("AI response validation failed:", parse_result.error);
+        console.error("AI response was:", parsed_response);
+        return c.json({
+          status: "parse_error",
+          error: "AI response validation failed",
+          details: parse_result.error.format(),
+        }, 500);
+      }
+
+      // Return only Phase 1 tokens (no Phase 2 mapping)
+      return c.json(parse_result.data);
+    },
+  )
   .get("/", (c) => {
     return c.json({
       message: MESSAGE,

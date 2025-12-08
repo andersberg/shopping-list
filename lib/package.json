@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "vitest",
+    "audit:phase1": "tsx api/run-audit.ts",
     "db:generate": "drizzle-kit generate --config=./db/drizzle.config.ts",
     "db:studio": "drizzle-kit studio --config=./db/drizzle.config.ts",
     "db:exec:local": "wrangler d1 execute --config=./db/drizzle.config.ts --local",
@@ -25,6 +26,8 @@
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250409.0",
     "drizzle-kit": "^0.30.6",
+    "picocolors": "^1.1.0",
+    "tsx": "^4.7.0",
     "typescript": "catalog:"
   }
 }
