@@ -57,6 +57,7 @@ export const grocery_item_full_schema = z.strictObject({
   offer_unit_price_value: z.number().min(0),
   status: z.enum(STATUS),
   error: z.string().nullable(),
+  source: z.enum(["manual", "ai"]),
 });
 
 export type GroceryItem = z.infer<typeof grocery_item_full_schema>;

@@ -44,44 +44,44 @@
 | React Props & Handlers | camelCase | userId, onClick
 | CSS Classes | kebab-case | .main-header
 
-File casing:
+### File casing:
 Use kebab-case by default; allow PascalCase only when the file exports one primary class or React component (e.g. User.ts, UserCard.tsx).
 
-Imports & Modules
+### Imports & Modules
 - ESM only; always include file extensions (.ts, .tsx, .js).
 - Named imports/exports only — no default exports.
 - Use relative imports unless explicit aliases are configured.
 - Barrel files allowed only at package entry points; never per feature.
 
-React
+### React
 - Function components only; small and focused.
 - Local state first, lift minimally, global state sparingly.
 - Allow related sub-components in the same file (UserCard, UserCardHeader).
 - Separate data fetching (hooks/adapters) from presentation.
 - CSS classes use kebab-case.
 
-Errors & Validation
+### Errors & Validation
 - Functions may throw; let exceptions bubble and catch once at boundaries (API/worker/CLI).
 - Boundary layers translate errors into structured responses or Result objects.
 - Expected negatives (e.g. not found) should be explicit — use try_, maybe_, or document with @throws.
 - Validate all external inputs (HTTP, DB, env) at boundaries using schemas; trust validated values inside the domain.
 
-Constants & Literals
+### Constants & Literals
 - Inline only trivial literals (0, 1, -1, "", true, false, indices).
 - Name all meaningful values with SCREAMING_SNAKE_CASE.
 - Group constants near usage or under lib/constants/.
 
-Documentation
+### Documentation
 - Every exported symbol requires JSDoc with Summary / Params / Returns / Throws / Example.
 - Focus on intent and contract, not implementation details.
 
-Testing
+### Testing
 - Colocate tests with implementation: *.test.ts or *.test.tsx.
 - Keep tests deterministic and isolated from external systems.
 
 ⸻
 
-Commit & Pull Request Guidelines
+## Commit & Pull Request Guidelines
 - Use Conventional Commits:
 - feat: new functionality
 - fix: bug fix
@@ -96,11 +96,12 @@ Commit & Pull Request Guidelines
 
 ⸻
 
-Agent Behavior Summary
+## Agent Behavior Summary
 
-For AI agents (Zed/OpenCode/Claude):
+### For AI agents:
 - Ask before assuming. Clarify uncertainties before proposing code.
 - Output in Markdown; concise bullets and examples only when relevant.
 - Prefer clarity over brevity; explain reasoning when choices exist.
 - Follow the above naming, import, and validation rules precisely.
 - Be consistent with domain-first organization and test colocation.
+- Be consice. Sacrifice grammar for concision.

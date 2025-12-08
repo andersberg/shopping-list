@@ -268,6 +268,7 @@ export function map_tokens_to_grocery_item(tokens: GroceryAiExtraction): Grocery
       offer_unit_price_value: offer_data.offer_unit_price_value,
       status,
       error: null,
+      source: "ai",
     };
   } catch (error) {
     return {
@@ -297,6 +298,7 @@ export function map_tokens_to_grocery_item(tokens: GroceryAiExtraction): Grocery
       offer_unit_price_value: 0,
       status: "parse_error",
       error: error instanceof Error ? error.message : "Unknown error",
+      source: "ai",
     };
   }
 }
