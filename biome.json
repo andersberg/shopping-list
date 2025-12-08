@@ -1,5 +1,5 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"$schema": "https://biomejs.dev/schemas/2.3.1/schema.json",
 
 	"vcs": {
 		"enabled": false,
@@ -8,14 +8,16 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"include": ["server/src", "client/src", "lib"],
-		"ignore": [
-			"node_modules",
-			"dist",
-			"build",
-			"public",
-			"./package.json",
-			"legacy"
+		"includes": [
+			"**/server/src/**",
+			"**/client/src/**",
+			"**/lib/**",
+			"!**/node_modules",
+			"!**/dist",
+			"!**/build",
+			"!**/public",
+			"!package.json",
+			"!**/legacy"
 		]
 	},
 	"formatter": {
@@ -25,9 +27,7 @@
 		"lineEnding": "lf",
 		"attributePosition": "multiline"
 	},
-	"organizeImports": {
-		"enabled": true
-	},
+	"assist": { "actions": { "source": { "organizeImports": "on" } } },
 	"linter": {
 		"enabled": true,
 		"rules": {
@@ -100,9 +100,7 @@
 			"correctness": {
 				"noUnusedVariables": "info"
 			},
-			"a11y": {
-				"all": true
-			}
+			"a11y": {}
 		}
 	},
 	"javascript": {

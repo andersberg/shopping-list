@@ -1,4 +1,4 @@
-import type { GroceryItemLegacy } from "../GroceryItem";
+import type { GroceryItemLegacy } from "../grocery-item";
 
 export interface ParsedGroceryItem {
 	quantity: number;

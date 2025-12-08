@@ -1,5 +1,5 @@
-import { GroceryInputParser } from "./Parser";
-import { GROCERY_ITEM_KNOWN_UNITS, GROCERY_ITEM_MODIFIERS } from "./constants";
+import { GroceryInputParser } from "./parser";
+import { GROCERY_ITEM_KNOWN_UNITS, GROCERY_ITEM_MODIFIERS } from "../constants";
 
 const grocery_list = [
 	"2 fpk krossade tomater",

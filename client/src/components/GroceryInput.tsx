@@ -1,5 +1,5 @@
-import type { ParsedGroceryItem } from "lib/GroceryInputParser/Parser";
-import { GroceryInputParser } from "lib/GroceryInputParser/Parser";
+import type { ParsedGroceryItem } from "lib/grocery-input-parser/parser";
+import { GroceryInputParser } from "lib/grocery-input-parser/parser";
 import {
 	GROCERY_ITEM_KNOWN_UNITS,
 	GROCERY_ITEM_MODIFIERS,

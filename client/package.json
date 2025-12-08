@@ -12,7 +12,7 @@
   "dependencies": {
     "@tanstack/react-query": "^5.72.2",
     "@tanstack/react-query-devtools": "^5.72.2",
-    "hono": "^4.7.6",
+    "hono": "^4.10.3",
     "lib": "workspace:*",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"

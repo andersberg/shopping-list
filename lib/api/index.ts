@@ -5,13 +5,13 @@ import { zValidator } from "@hono/zod-validator";
 import { object, string, z } from "zod/v4";
 import { CloudflareEnvironmentBindings } from "../cloudflare-environment-bindings";
 import type { AiModels } from "@cloudflare/workers-types";
-import { create_token_extraction_prompt } from "../AI/GroceryInputParser/prompts/token-extraction-prompt";
+import { create_token_extraction_prompt } from "../ai/grocery-input-parser/prompts/token-extraction-prompt";
 import { GroceryAiExtractionSchema, map_tokens_to_grocery_item } from "./token-mapper";
-import { STORE_NAMES } from "../AI/GroceryInputParser/store-names";
-import { BRAND_NAMES } from "../AI/GroceryInputParser/brand-names";
-import { CATEGORY_NAMES } from "../AI/GroceryInputParser/category-names";
-import { QUANTITY_UNITS } from "../AI/GroceryInputParser/quantity-units";
-import { SIZE_UNITS } from "../AI/GroceryInputParser/size-units";
+import { STORE_NAMES } from "../ai/grocery-input-parser/store-names";
+import { BRAND_NAMES } from "../ai/grocery-input-parser/brand-names";
+import { CATEGORY_NAMES } from "../ai/grocery-input-parser/category-names";
+import { QUANTITY_UNITS } from "../ai/grocery-input-parser/quantity-units";
+import { SIZE_UNITS } from "../ai/grocery-input-parser/size-units";
 
 // const MODEL_NAME: keyof AiModels = "@cf/meta/llama-3.1-8b-instruct-fp8";
 const MODEL_NAME: keyof AiModels =

@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { grocery_list_item_insert_schema } from "./db/schema";
-import { CATEGORY_NAMES } from "./AI/GroceryInputParser/category-names";
-import { QUANTITY_UNITS } from "./AI/GroceryInputParser/quantity-units";
-import { SIZE_UNITS } from "./AI/GroceryInputParser/size-units";
-import { STORE_NAMES } from "./AI/GroceryInputParser/store-names";
+import { CATEGORY_NAMES } from "./ai/grocery-input-parser/category-names";
+import { QUANTITY_UNITS } from "./ai/grocery-input-parser/quantity-units";
+import { SIZE_UNITS } from "./ai/grocery-input-parser/size-units";
+import { STORE_NAMES } from "./ai/grocery-input-parser/store-names";
 
 const grocery_item_discount_price_schema = z.object({
 	quantity: z.number().min(1),

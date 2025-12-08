@@ -4,12 +4,12 @@ import {
 	useMutation,
 	useQuery,
 } from "@tanstack/react-query";
-import type { GroceryList } from "lib/GroceryItem";
+import type { GroceryList } from "lib/grocery-item";
 import {
 	type GroceryListItemUpdate,
 	grocery_item_input_schema,
 } from "lib/api/schema";
-import type { ParsedGroceryItem } from "../../lib/GroceryInputParser/Parser";
+import type { ParsedGroceryItem } from "../../lib/grocery-input-parser/parser";
 import { api_client, grocery_list_client } from "./api-client";
 
 export const query_client = new QueryClient();

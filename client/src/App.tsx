@@ -106,7 +106,7 @@ export function App() {
 								<li className="grocery-item optimistic">
 									<dl>
 										<dt>Vara:</dt>
-										<dd>{added_item.name}</dd>
+										<dd>{added_item.item}</dd>
 									</dl>
 									<dl>
 										<dt>Tillagd:</dt>
