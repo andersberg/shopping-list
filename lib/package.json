@@ -15,6 +15,7 @@
   "dependencies": {
     "@hono/zod-validator": "^0.7.4",
     "ai": "^5.0.80",
+    "dedent": "^1.7.0",
     "dotenv": "^16.5.0",
     "drizzle-orm": "^0.41.0",
     "drizzle-zod": "^0.7.1",
