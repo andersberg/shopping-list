@@ -230,15 +230,15 @@ For input `"3 pkt 1,5l mjölk eko arla 4/50kr ica"`:
 - [x] Copy and refactor token mapper
 - [x] Copy prompt file
 
-### Phase 4 - Test Alignment
-- [ ] Update manual parser tests
-- [ ] Update AI audit system
-- [ ] Create parser index
+### Phase 4 - Test Alignment & Integration
+- [x] Update manual parser tests
+- [x] Update AI audit system
+- [x] Create parser index
 
 ### Phase 5 - Integration
-- [ ] Update parse endpoint
-- [ ] Update all import references
-- [ ] Final testing and verification
+- [x] Update parse endpoint
+- [x] Update all import references
+- [x] Final testing and verification
 
 ---
 
