@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import type { GroceryItem } from "./token-mapper";
+import type { GroceryItem } from "../grocery-item";
 
 // Test data from scripts/send-parse-cf-ai.js
 const TEST_LINES = [

@@ -1,4 +1,4 @@
-import type { GroceryAiExtraction } from "../token-mapper";
+import type { GroceryAiExtraction } from "../../parsers/ai/token-mapper";
 
 export interface TestCase {
 	id: string; // Unique kebab-case ID

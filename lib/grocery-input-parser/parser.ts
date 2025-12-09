@@ -1,5 +1,6 @@
 import { CURRENCY_SEK } from "../constants";
-import type { GroceryItemLegacy } from "../grocery-item";
+import type { GroceryItemLegacy, GroceryItem } from "../grocery-item";
+import { ManualParser } from "../parsers/manual/manual-parser";
 
 export interface ParsedGroceryItem {
 	quantity: number;
@@ -10,134 +11,41 @@ export interface ParsedGroceryItem {
 }
 
 /**
- * Parses grocery list text into structured objects.
+ * Adapter class to provide backward compatibility for client code
+ * that expects the legacy ParsedGroceryItem format.
  *
- * This class provides a structured way to parse grocery list text into objects
- * that represent individual items. It handles various formats including
- * quantity, unit, item, comment, and discount price.
- *
- * @example
- * const parser = new GroceryInputParser(
- *   ["fpk", "pkt", "kg", "g", "l", "dl", "ml", "st"],
- *   ["ekologisk", "ej zero", "extra", "extra virgin", "hemgjord"]
- * );
- * const item = parser.parse("4 pkt pasta ekologisk");
- * console.log(item);
+ * This wraps the new ManualParser and converts GroceryItem to ParsedGroceryItem.
  */
 export class GroceryInputParser {
-	readonly known_units: readonly string[];
-	readonly modifiers: readonly string[];
+	private manualParser: ManualParser;
 
-	constructor(knownUnits: readonly string[], modifiers: readonly string[]) {
-		this.known_units = knownUnits;
-		this.modifiers = modifiers;
+	// Keep parameters for backward compatibility
+	constructor(_knownUnits: readonly string[], _modifiers: readonly string[]) {
+		// The new ManualParser doesn't need these parameters, but we keep them
+		// for backward compatibility with existing client code
+		this.manualParser = new ManualParser();
 	}
 
 	/**
-	 * Parses a single line of grocery list text.
-	 *
-	 * @param input - The grocery list line (e.g., "4 pkt pasta ekologisk")
-	 * @returns Object containing quantity, unit, item, comment, and discount_price.
+	 * Parses grocery input and returns legacy ParsedGroceryItem format
+	 * for backward compatibility with client code.
 	 */
-	private parse_grocery_input(input: string) {
-		// Normalize input: lowercase and trim whitespace.
-		let tokens = input.trim().toLowerCase().split(/\s+/);
+	parse(input: string): ParsedGroceryItem {
+		const groceryItem: GroceryItem = this.manualParser.parse(input);
 
-		let quantity = 1;
-		let unit: string | undefined;
-		let discount_price: GroceryItemLegacy["discount_price"] | undefined;
-
-		// 1. Extract quantity if the first token is numeric.
-		if (tokens.length && /^\d+(\.\d+)?$/.test(tokens[0])) {
-			quantity = Number.parseFloat(tokens[0]);
-			tokens.shift();
-		}
-
-		// 2. Check if the next token is a known unit.
-		if (tokens.length && this.known_units.includes(tokens[0])) {
-			unit = tokens[0];
-			tokens.shift();
-		}
-
-		// 3. Check for special price pattern at the end.
-		// Expected format: "<number>/<number> kr"
-		if (tokens.length >= 2) {
-			const potential_special = tokens.slice(-2); // Get the last two tokens.
-			const special_regex = /^(\d+)\/(\d+)$/;
-			if (
-				special_regex.test(potential_special[0]) &&
-				potential_special[1] === CURRENCY_SEK
-			) {
-				const match = potential_special[0].match(special_regex);
-				if (match) {
-					discount_price = {
-						quantity: Number.parseInt(match[1], 10),
-						price: Number.parseInt(match[2], 10),
-						currency: CURRENCY_SEK,
-					};
-				}
-				// Remove special price tokens.
-				tokens.splice(-2, 2);
-			}
-		}
-
-		// 4. Remove any modifiers from tokens (regardless of position).
-		// Sort modifiers by descending word count.
-		const sorted_modifiers = [...this.modifiers].sort(
-			(a, b) => b.split(" ").length - a.split(" ").length,
-		);
-		const { tokens: tokens_without_modifiers, found_modifiers } =
-			this.remove_modifiers(tokens, sorted_modifiers);
-		tokens = tokens_without_modifiers;
-
-		// 5. The remaining tokens form the core item name.
-		const name = tokens.join(" ").trim() || "";
-
+		// Convert GroceryItem to ParsedGroceryItem format
 		return {
-			quantity,
-			unit,
-			item: name,
-			comment: found_modifiers.length ? found_modifiers.join(", ") : undefined,
-			discount_price,
+			quantity: groceryItem.quantity,
+			unit: groceryItem.quantity_unit || undefined,
+			item: groceryItem.item || "",
+			comment: groceryItem.comment || undefined,
+			discount_price: groceryItem.offer_total_price_value
+				? {
+						amount: groceryItem.offer_total_price_value,
+						currency: CURRENCY_SEK,
+						quantity: groceryItem.offer_quantity,
+					}
+				: undefined,
 		};
-	}
-
-	/**
-	 * Helper function that removes any occurrences of modifier phrases from tokens.
-	 *
-	 * @param tokens - Array of tokens.
-	 * @param sorted_modifiers - Modifiers sorted by descending word count.
-	 * @returns Object containing remaining tokens and found modifiers.
-	 */
-	private remove_modifiers(tokens: string[], sortedModifiers: string[]) {
-		const found_modifiers: string[] = [];
-		let processed_count = 0;
-		while (processed_count < tokens.length) {
-			let matched = false;
-			for (const mod of sortedModifiers) {
-				const mod_tokens = mod.split(" ");
-				// Check if the modifier fits at position i.
-				if (
-					processed_count + mod_tokens.length <= tokens.length &&
-					mod_tokens.every(
-						(modToken, index) => tokens[processed_count + index] === modToken,
-					)
-				) {
-					found_modifiers.push(mod);
-					// Remove the matched tokens.
-					tokens.splice(processed_count, mod_tokens.length);
-					matched = true;
-					break; // break out of the inner loop to re-check current index.
-				}
-			}
-			if (!matched) {
-				processed_count++;
-			}
-		}
-		return { tokens, found_modifiers };
-	}
-
-	public parse(input: string): ParsedGroceryItem {
-		return this.parse_grocery_input(input);
 	}
 }

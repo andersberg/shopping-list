@@ -48,6 +48,7 @@ describe("Token Mapper", () => {
 			offer_unit_price_value: 0,
 			status: "ok",
 			error: null,
+			source: "ai",
 		});
 	});
 

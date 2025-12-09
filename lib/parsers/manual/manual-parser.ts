@@ -235,13 +235,32 @@ export function interpret_grammar(
 					// "1,5l mjölk -> size=1.5".
 
 					// Decision: If it contains a decimal "1.5", it's likely size.
-					// If it's an integer AND unit is in QUANTITY_UNITS, it's quantity.
+					// Container units (pkt, burk, flaska, st) are quantity.
+					// Weight/volume units (kg, g, l, ml, dl) are size.
+					// Even if a unit is in both lists, prefer its semantic meaning.
+
+					// Define weight/volume size units that should always be treated as size
+					const WEIGHT_VOLUME_UNITS = [
+						"kg",
+						"g",
+						"l",
+						"ml",
+						"dl",
+						"cl",
+						"hg",
+						"mg",
+					];
 
 					if (t.text.includes(".")) {
 						is_size = true;
+					} else if (WEIGHT_VOLUME_UNITS.includes(potential_unit)) {
+						// Weight/volume units are always size
+						is_size = true;
 					} else if (is_qty_unit) {
-						is_size = false; // It's quantity
+						// Container units are quantity
+						is_size = false;
 					} else if (is_size_unit) {
+						// Fallback to size unit
 						is_size = true;
 					}
 				}
