@@ -51,10 +51,6 @@ export function App() {
 		}
 	}
 
-	if (error) {
-		return <div>Error: {error.message}</div>;
-	}
-
 	const items_sorted = useMemo(() => {
 		return [...(data?.items ?? [])].sort((a, b) => {
 			// First sort by checked status
@@ -65,6 +61,10 @@ export function App() {
 			return b.updated_at.getTime() - a.updated_at.getTime();
 		});
 	}, [data?.items]);
+
+	if (error) {
+		return <div>Error: {error.message}</div>;
+	}
 
 	return (
 		<div className="app">

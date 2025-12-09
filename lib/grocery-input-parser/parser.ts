@@ -1,3 +1,4 @@
+import { CURRENCY_SEK } from "../constants";
 import type { GroceryItemLegacy } from "../grocery-item";
 
 export interface ParsedGroceryItem {
@@ -65,14 +66,14 @@ export class GroceryInputParser {
 			const special_regex = /^(\d+)\/(\d+)$/;
 			if (
 				special_regex.test(potential_special[0]) &&
-				potential_special[1] === "kr"
+				potential_special[1] === CURRENCY_SEK
 			) {
 				const match = potential_special[0].match(special_regex);
 				if (match) {
 					discount_price = {
-						quantity: Number.parseInt(match[1]),
-						price: Number.parseInt(match[2]),
-						currency: "kr",
+						quantity: Number.parseInt(match[1], 10),
+						price: Number.parseInt(match[2], 10),
+						currency: CURRENCY_SEK,
 					};
 				}
 				// Remove special price tokens.

@@ -38,6 +38,7 @@
 					"level": "error",
 					"options": {
 						"strictCase": true,
+						"requireAscii": false,
 						"conventions": [
 							{
 								"selector": {

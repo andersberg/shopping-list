@@ -4,9 +4,9 @@
  * @returns Komplett XML-prompt som en sträng.
  */
 export function create_token_extraction_prompt(input: string): string {
-  const user_input = xml_escape(input);
+	const user_input = xml_escape(input);
 
-  return `<task>
+	return `<task>
   <description>
     You extract raw tokens from a single Swedish grocery line.
     You DO NOT normalize, translate, or guess.
@@ -135,10 +135,10 @@ export function create_token_extraction_prompt(input: string): string {
  * Summary: Escape:ar <, >, & och citattecken i user_input.
  */
 export function xml_escape(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
+	return s
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&apos;");
 }

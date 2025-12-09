@@ -3,10 +3,12 @@
 ## 1. Purpose
 
 The model’s task is token extraction only — not interpretation or normalization.
-It converts a free-text grocery line into a structured set of raw fields that the backend later canonicalizes and validates.
-Execution and validation are handled within a Cloudflare Worker using Cloudflare AI and Zod v4.
+It converts a free-text grocery line into a structured set of raw fields that
+the backend later canonicalizes and validates. Execution and validation are
+handled within a Cloudflare Worker using Cloudflare AI and Zod v4.
 
 ## 2. Runtime & Model
+
 - Provider: Cloudflare AI (via Workers AI SDK)
 - Model: @cf/meta/llama-3.1-8b-instruct
 - Deterministic temperature (temperature = 0)
@@ -14,19 +16,20 @@ Execution and validation are handled within a Cloudflare Worker using Cloudflare
 
 Example invocation:
 
-```ts 
-const ai_response = await ai.run('@cf/meta/llama-3.1-8b-instruct', {
+```ts
+const ai_response = await ai.run("@cf/meta/llama-3.1-8b-instruct", {
   prompt,
   temperature: 0,
 });
 ```
 
-All AI responses must be validated using Zod v4 before any backend logic executes.
+All AI responses must be validated using Zod v4 before any backend logic
+executes.
 
 ## 3. Output Contract (AI → Backend)
 
-Return a single JSON object conforming to the schema below.
-Any missing value must be null. Arrays may be empty but never omitted.
+Return a single JSON object conforming to the schema below. Any missing value
+must be null. Arrays may be empty but never omitted.
 
 ```json
 {
@@ -62,18 +65,25 @@ export const GroceryAiExtractionSchema = z.object({
 });
 ```
 
-Any AI response failing this validation must be rejected and logged with status: "parse_error".
+Any AI response failing this validation must be rejected and logged with status:
+"parse_error".
 
 ## 4. Extraction Rules
-1.	Do not normalize or translate anything. Copy text as written; backend handles casing, singularization, and canonical mapping.
-2.	Do not invent or guess values. If the text lacks a field → output null.
-3.	Preserve numeric and textual formatting exactly (e.g., 1,5l vs 1.5l).
-4.	Price or offer patterns (containing /, kr, or “för” + number) → copy fully into raw_offer.
-5.	Quantity and offer may coexist. Backend decides which to trust.
-6.	Per-item size patterns (1,5l, 500g) → split into raw_size_value + raw_size_unit.
-7.	If unsure whether a word is a brand or store, put it in raw_brand; backend reclassifies later.
-8.	Any remaining words, preferences, flavors, or free-form notes → put into raw_comment.
-9.	Output JSON only. No prose, explanations, or extra keys.
+
+1. Do not normalize or translate anything. Copy text as written; backend handles
+   casing, singularization, and canonical mapping.
+2. Do not invent or guess values. If the text lacks a field → output null.
+3. Preserve numeric and textual formatting exactly (e.g., 1,5l vs 1.5l).
+4. Price or offer patterns (containing /, kr, or “för” + number) → copy fully
+   into raw_offer.
+5. Quantity and offer may coexist. Backend decides which to trust.
+6. Per-item size patterns (1,5l, 500g) → split into raw_size_value +
+   raw_size_unit.
+7. If unsure whether a word is a brand or store, put it in raw_brand; backend
+   reclassifies later.
+8. Any remaining words, preferences, flavors, or free-form notes → put into
+   raw_comment.
+9. Output JSON only. No prose, explanations, or extra keys.
 
 ## 5. XML Prompt Template
 
@@ -199,8 +209,9 @@ Any AI response failing this validation must be rejected and logged with status:
 ```
 
 ## 6. Validation & Error Handling
-1.	Validate every AI response with the GroceryAiExtractionSchema.
-2.	If validation fails → mark as:
+
+1. Validate every AI response with the GroceryAiExtractionSchema.
+2. If validation fails → mark as:
 
 ```json
 { "status": "parse_error", "raw_text": "..." }
@@ -208,24 +219,28 @@ Any AI response failing this validation must be rejected and logged with status:
 
 and log it for later review.
 
-3.	Do not retry the model automatically; failures are valuable training data.
-4.	Backend canonicalization, mapping, and enrichment only occur after successful validation.
+3. Do not retry the model automatically; failures are valuable training data.
+4. Backend canonicalization, mapping, and enrichment only occur after successful
+   validation.
 
 ## 7. Backend Handling (Post-Validation)
-1.	Normalization
-    - Lowercase all strings except raw_text.
-    - Strip diacritics for matching only (keep originals for display).
-    - Collapse whitespace and trim.
-    - Normalize decimal separators (1,5 → 1.5).
-2.	Mapping
-    - Match raw_item and raw_modifiers against internal dictionaries:
-    - Item dictionary: canonical name → category
-    - Synonyms: user phrasing → canonical item
-    - Units, brands, modifiers: fixed lookup lists
-    - If quantity is missing but offer contains one, infer quantity = offer_quantity.
-    - If raw_comment is present, keep as-is and map to comment in the final object.
-    - If raw_offer exists, parse into:
-    
+
+1. Normalization
+   - Lowercase all strings except raw_text.
+   - Strip diacritics for matching only (keep originals for display).
+   - Collapse whitespace and trim.
+   - Normalize decimal separators (1,5 → 1.5).
+2. Mapping
+   - Match raw_item and raw_modifiers against internal dictionaries:
+   - Item dictionary: canonical name → category
+   - Synonyms: user phrasing → canonical item
+   - Units, brands, modifiers: fixed lookup lists
+   - If quantity is missing but offer contains one, infer quantity =
+     offer_quantity.
+   - If raw_comment is present, keep as-is and map to comment in the final
+     object.
+   - If raw_offer exists, parse into:
+
 ```json
 {
   "offer_quantity": number,
@@ -235,12 +250,12 @@ and log it for later review.
 }
 ```
 
-3.	Enrichment
-    - Derive organic: true if any modifier in ["eko", "ekologisk", "organic"].
-    - Compute total_quantity_value = quantity * size_value if both exist.
-    - Map brand and store using known lists (store_normalized if match).
-4.	Output Object
-    - Produce stable, validated schema:
+3. Enrichment
+   - Derive organic: true if any modifier in ["eko", "ekologisk", "organic"].
+   - Compute total_quantity_value = quantity * size_value if both exist.
+   - Map brand and store using known lists (store_normalized if match).
+4. Output Object
+   - Produce stable, validated schema:
 
 ```json
 {
@@ -259,11 +274,10 @@ and log it for later review.
 }
 ```
 
-
 ## 5.	Logging & Review
 
-  - If no match or ambiguous → status: "needs_review".
-  - Log payload:
+- If no match or ambiguous → status: "needs_review".
+- Log payload:
 
 ```json
 {
@@ -274,4 +288,5 @@ and log it for later review.
   "timestamp": "ISO string"
 }
 ```
-  - Logged rows feed future synonym and dictionary expansion.
+
+- Logged rows feed future synonym and dictionary expansion.

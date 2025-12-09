@@ -1,5 +1,5 @@
-import { GroceryInputParser } from "./parser";
 import { GROCERY_ITEM_KNOWN_UNITS, GROCERY_ITEM_MODIFIERS } from "../constants";
+import { GroceryInputParser } from "./parser";
 
 const grocery_list = [
 	"2 fpk krossade tomater",
@@ -33,7 +33,7 @@ const grocery_list = [
 	"1 burk jordgubbssylt",
 	"1 pkt vetemjöl för bakning",
 	"4 libero blöjor",
-];
+] as const;
 
 const parser = new GroceryInputParser(
 	GROCERY_ITEM_KNOWN_UNITS,

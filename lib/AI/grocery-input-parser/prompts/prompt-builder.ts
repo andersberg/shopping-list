@@ -5,23 +5,23 @@
  * @returns Komplett XML-prompt som en sträng.
  */
 export function prompt_builder(
-  input: string,
-  domain: {
-    categories: ReadonlyArray<string>;
-    quantity_units: ReadonlyArray<string>;
-    size_units: ReadonlyArray<string>;
-    brands: ReadonlyArray<string>;
-    stores: ReadonlyArray<string>;
-  },
+	input: string,
+	domain: {
+		categories: ReadonlyArray<string>;
+		quantity_units: ReadonlyArray<string>;
+		size_units: ReadonlyArray<string>;
+		brands: ReadonlyArray<string>;
+		stores: ReadonlyArray<string>;
+	},
 ): string {
-  const categories_string = domain.categories.join(", ");
-  const brands_string = domain.brands.join(", ");
-  const quantity_units_string = domain.quantity_units.join(", ");
-  const size_units_string = domain.size_units.join(", ");
-  const stores_string = domain.stores.join(", ");
-  const user_input = xml_escape(input);
+	const categories_string = domain.categories.join(", ");
+	const brands_string = domain.brands.join(", ");
+	const quantity_units_string = domain.quantity_units.join(", ");
+	const size_units_string = domain.size_units.join(", ");
+	const stores_string = domain.stores.join(", ");
+	const user_input = xml_escape(input);
 
-  return `
+	return `
 <prompt>
   <system>
     Du är en strikt svensk extraherare för inköpsrader.
@@ -152,10 +152,10 @@ export function prompt_builder(
  * Summary: Escape:ar <, >, & och citattecken i user_input.
  */
 export function xml_escape(s: string): string {
-  return s
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&apos;");
+	return s
+		.replace(/&/g, "&amp;")
+		.replace(/</g, "&lt;")
+		.replace(/>/g, "&gt;")
+		.replace(/"/g, "&quot;")
+		.replace(/'/g, "&apos;");
 }

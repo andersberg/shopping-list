@@ -1,5 +1,4 @@
 import { BRAND_NAMES } from "../ai/grocery-input-parser/brand-names";
-import { CATEGORY_NAMES } from "../ai/grocery-input-parser/category-names";
 import { QUANTITY_UNITS } from "../ai/grocery-input-parser/quantity-units";
 import { SIZE_UNITS } from "../ai/grocery-input-parser/size-units";
 import { STORE_NAMES } from "../ai/grocery-input-parser/store-names";
@@ -73,7 +72,7 @@ export type ParsedDraft = {
 // Implementation
 export function interpret_grammar(
 	tokens: AnnotatedToken[],
-	original_text: string, // Not strictly used in logic but passed as per plan/spec if needed for substrings
+	_original_text: string, // Not strictly used in logic but passed as per plan/spec if needed for substrings
 ): ParsedDraft {
 	const draft: ParsedDraft = {
 		item: null,
@@ -93,7 +92,9 @@ export function interpret_grammar(
 
 	const used_indices = new Set<number>();
 	const mark_used = (indices: number[]) =>
-		indices.forEach((i) => used_indices.add(i));
+		indices.forEach((i) => {
+			used_indices.add(i);
+		});
 
 	// 1. Offer / Price Patterns
 	for (let i = 0; i < tokens.length; i++) {

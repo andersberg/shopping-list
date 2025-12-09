@@ -4,11 +4,11 @@ import {
 	useMutation,
 	useQuery,
 } from "@tanstack/react-query";
-import type { GroceryList } from "lib/grocery-item";
 import {
 	type GroceryListItemUpdate,
 	grocery_item_input_schema,
 } from "lib/api/schema";
+import type { GroceryList } from "lib/grocery-item";
 import type { ParsedGroceryItem } from "../../lib/grocery-input-parser/parser";
 import { api_client, grocery_list_client } from "./api-client";
 
@@ -68,7 +68,10 @@ export function useGroceryList() {
 		mutationFn: async ({
 			id,
 			updates,
-		}: { id: string; updates: GroceryListItemUpdate }) => {
+		}: {
+			id: string;
+			updates: GroceryListItemUpdate;
+		}) => {
 			const res = await api_client["grocery-list"].items[":id"].$patch({
 				param: { id },
 				json: updates,

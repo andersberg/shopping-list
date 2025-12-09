@@ -1,17 +1,17 @@
 {
-  "name": "@shopping-list/cloudflare-env",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
-  "main": "./src/index.ts",
-  "types": "./src/index.ts",
-  "exports": {
-    ".": {
-      "types": "./src/index.ts",
-      "default": "./src/index.ts"
-    }
-  },
-  "dependencies": {
-    "@cloudflare/workers-types": "^4.20250409.0"
-  }
+	"name": "@shopping-list/cloudflare-env",
+	"version": "0.0.0",
+	"private": true,
+	"type": "module",
+	"main": "./src/index.ts",
+	"types": "./src/index.ts",
+	"exports": {
+		".": {
+			"types": "./src/index.ts",
+			"default": "./src/index.ts"
+		}
+	},
+	"dependencies": {
+		"@cloudflare/workers-types": "^4.20250409.0"
+	}
 }

@@ -36,3 +36,5 @@ export const GROCERY_ITEM_MODIFIERS = [
 	"saltade",
 	"grönt",
 ] as const;
+
+export const CURRENCY_SEK = "kr";

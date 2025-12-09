@@ -1,31 +1,50 @@
 # Two-Phase Parser Audit (2025-10-29)
 
 ## 1. Current `/api/parse` Flow
+
 - `lib/api/index.ts` exposes `POST /api/parse`.
-- The handler builds a single XML prompt via `lib/AI/GroceryInputParser/prompts/prompt-builder.ts`.
-- Domain lists injected: `CATEGORY_NAMES`, `QUANTITY_UNITS`, `SIZE_UNITS`, `BRAND_NAMES`, `STORE_NAMES`.
+- The handler builds a single XML prompt via
+  `lib/AI/GroceryInputParser/prompts/prompt-builder.ts`.
+- Domain lists injected: `CATEGORY_NAMES`, `QUANTITY_UNITS`, `SIZE_UNITS`,
+  `BRAND_NAMES`, `STORE_NAMES`.
 - Cloudflare AI run: model `@cf/meta/llama-3.1-8b-instruct-fast`.
-- The Worker requests a JSON-schema constrained response (`GroceryItemSchema_as_json_schema`) and returns the raw model output unmodified.
+- The Worker requests a JSON-schema constrained response
+  (`GroceryItemSchema_as_json_schema`) and returns the raw model output
+  unmodified.
 - No intermediate parsing/repair logic; prompt carries most normalization rules.
 
 ## 2. Prompt-Embedded Logic (Single Pass)
+
 - Quantity vs. size heuristics (`quantity_rules`, `container_rules`).
 - Category hints, including overrides for frequent items.
 - Item normalization (singularization, brand stripping, comment handling).
-- Organic detection, vague phrase handling, unit normalization, comment exclusions.
-- Examples encode expected schema ordering and edge-case behavior; prompt length and rule density currently high.
+- Organic detection, vague phrase handling, unit normalization, comment
+  exclusions.
+- Examples encode expected schema ordering and edge-case behavior; prompt length
+  and rule density currently high.
 
 ## 3. Shared Contracts & Schemas
-- `GroceryItemSchema` (Zod) mirrors the expected model output: quantity, quantity_unit, size_value/size_unit, total_quantity fields, brand/store metadata, offer placeholders.
-- Canonical enums come from the files in `lib/AI/GroceryInputParser/*.ts` (single source for categories, units, brands, stores).
-- Client-side legacy parser (`lib/GroceryInputParser/Parser.ts`) still feeds the UI forms; it shares types (`ParsedGroceryItem`) with the client but is separate from the Cloudflare AI flow.
+
+- `GroceryItemSchema` (Zod) mirrors the expected model output: quantity,
+  quantity_unit, size_value/size_unit, total_quantity fields, brand/store
+  metadata, offer placeholders.
+- Canonical enums come from the files in `lib/AI/GroceryInputParser/*.ts`
+  (single source for categories, units, brands, stores).
+- Client-side legacy parser (`lib/GroceryInputParser/Parser.ts`) still feeds the
+  UI forms; it shares types (`ParsedGroceryItem`) with the client but is
+  separate from the Cloudflare AI flow.
 
 ## 4. Downstream Dependencies
-- Client web app: uses `GroceryInputParser` (legacy) for quick parsing before sending to `/api/grocery-list/items/add`.
-- Database schema (`lib/db/schema.ts`) expects validated items: quantity ≥ 1, comment optional, discount price optional.
-- No consumer currently depends directly on `/api/parse`, but logs (`logs/*.json`) show it is under active testing for future integration.
+
+- Client web app: uses `GroceryInputParser` (legacy) for quick parsing before
+  sending to `/api/grocery-list/items/add`.
+- Database schema (`lib/db/schema.ts`) expects validated items: quantity ≥ 1,
+  comment optional, discount price optional.
+- No consumer currently depends directly on `/api/parse`, but logs
+  (`logs/*.json`) show it is under active testing for future integration.
 
 ## 5. Two-Phase Interfaces (Proposed)
+
 ```ts
 // Payload sent to Phase 1 (LLM extraction)
 interface ExtractionPayload {
@@ -77,7 +96,13 @@ interface NormalizedGroceryItem {
 ```
 
 ## 6. Migration Notes
-- Phase 1 prompt can be ~400–600 tokens: enforce “no reasoning” rules, focus on token extraction.
-- Phase 2 should move deterministic logic (unit conversion, category mapping, total computation) into TypeScript modules under `lib/parser/`.
-- Maintain Zod validation on both Phase 1 (ExtractionResult) and Phase 2 (NormalizedGroceryItem) to catch malformed data early.
-- Client integration plan: eventually replace/augment the local parser with the two-phase service once the normalization pipeline is solid and latency validated.
+
+- Phase 1 prompt can be ~400–600 tokens: enforce “no reasoning” rules, focus on
+  token extraction.
+- Phase 2 should move deterministic logic (unit conversion, category mapping,
+  total computation) into TypeScript modules under `lib/parser/`.
+- Maintain Zod validation on both Phase 1 (ExtractionResult) and Phase 2
+  (NormalizedGroceryItem) to catch malformed data early.
+- Client integration plan: eventually replace/augment the local parser with the
+  two-phase service once the normalization pipeline is solid and latency
+  validated.

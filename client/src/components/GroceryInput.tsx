@@ -1,9 +1,9 @@
-import type { ParsedGroceryItem } from "lib/grocery-input-parser/parser";
-import { GroceryInputParser } from "lib/grocery-input-parser/parser";
 import {
 	GROCERY_ITEM_KNOWN_UNITS,
 	GROCERY_ITEM_MODIFIERS,
 } from "lib/constants";
+import type { ParsedGroceryItem } from "lib/grocery-input-parser/parser";
+import { GroceryInputParser } from "lib/grocery-input-parser/parser";
 import { useRef, useState } from "react";
 
 const parser = new GroceryInputParser(

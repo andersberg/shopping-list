@@ -1,21 +1,19 @@
-import { Hono } from "hono";
-import { MESSAGE } from "../constants";
-import { grocery_list_router } from "./grocery-list";
-import { zValidator } from "@hono/zod-validator";
-import { object, string, z } from "zod/v4";
-import { CloudflareEnvironmentBindings } from "../cloudflare-environment-bindings";
 import type { AiModels } from "@cloudflare/workers-types";
-import { create_token_extraction_prompt } from "../ai/grocery-input-parser/prompts/token-extraction-prompt";
-import {
-	GroceryAiExtractionSchema,
-	map_tokens_to_grocery_item,
-} from "./token-mapper";
-import { parse_grocery_line } from "../grocery-input-parser/manual-parser";
-import { STORE_NAMES } from "../ai/grocery-input-parser/store-names";
-import { BRAND_NAMES } from "../ai/grocery-input-parser/brand-names";
+import { zValidator } from "@hono/zod-validator";
+import { Hono } from "hono";
+import { object, string, z } from "zod/v4";
 import { CATEGORY_NAMES } from "../ai/grocery-input-parser/category-names";
+import { create_token_extraction_prompt } from "../ai/grocery-input-parser/prompts/token-extraction-prompt";
 import { QUANTITY_UNITS } from "../ai/grocery-input-parser/quantity-units";
 import { SIZE_UNITS } from "../ai/grocery-input-parser/size-units";
+import { STORE_NAMES } from "../ai/grocery-input-parser/store-names";
+import type { CloudflareEnvironmentBindings } from "../cloudflare-environment-bindings";
+import { MESSAGE } from "../constants";
+import { grocery_list_router } from "./grocery-list";
+import {
+	grocery_ai_extraction_schema,
+	map_tokens_to_grocery_item,
+} from "./token-mapper";
 
 // const MODEL_NAME: keyof AiModels = "@cf/meta/llama-3.1-8b-instruct-fp8";
 const MODEL_NAME: keyof AiModels =
@@ -24,7 +22,7 @@ const MODEL_NAME: keyof AiModels =
 const STATUS = ["ok", "unparsed"] as const;
 const CURRENCY = ["SEK"];
 
-const GroceryItemSchema = z.strictObject({
+const GROCERY_ITEM_SCHEMA = z.strictObject({
 	item: z.string().nullable(),
 	category: z.enum(CATEGORY_NAMES).nullable(),
 	quantity: z.number().min(0),
@@ -47,12 +45,12 @@ const GroceryItemSchema = z.strictObject({
 	error: z.string().nullable(),
 });
 
-const GroceryAiExtractionSchema_as_json_schema = z.toJSONSchema(
-	GroceryAiExtractionSchema,
+const _GROCERY_AI_EXTRACTION_SCHEMA_AS_JSON_SCHEMA = z.toJSONSchema(
+	grocery_ai_extraction_schema,
 );
 
-const loose_GroceryItemSchema = z.looseObject({
-	...GroceryItemSchema.shape,
+const loose_grocery_item_schema = z.looseObject({
+	...GROCERY_ITEM_SCHEMA.shape,
 	category: z.string().nullable(),
 	quantity_unit: z.string().min(1).nullable(),
 	size_unit: z.string().min(1).nullable(),
@@ -63,8 +61,8 @@ const loose_GroceryItemSchema = z.looseObject({
 	status: z.enum(STATUS),
 });
 
-const GroceryItemSchema_as_json_schema = z.toJSONSchema(
-	loose_GroceryItemSchema,
+const _GROCERY_ITEM_SCHEMA_AS_JSON_SCHEMA = z.toJSONSchema(
+	loose_grocery_item_schema,
 );
 
 function create_prompt(input: string) {
@@ -89,37 +87,22 @@ export const api_router = new Hono<{
 			const { input } = await c.req.json();
 			console.log("/parse-cf-ai", input);
 
-			// Try manual parser first
-			const manual_result = parse_grocery_line(input);
-			if (manual_result.status === "ok") {
-				console.log("Manual parser success:", manual_result);
-				return c.json(manual_result);
-			}
-			console.log(
-				"Manual parser partial/failed, falling back to AI. Status:",
-				manual_result.status,
-			);
-
 			const ai_response = await c.env.AI.run(MODEL_NAME, {
 				prompt: create_prompt(input),
-				// @ts-ignore - response_format is available in the AI binding but types might be outdated
-				response_format: {
-					type: "json_schema",
-					schema: GroceryAiExtractionSchema_as_json_schema,
-				},
 			});
 
 			console.log("Raw AI response:", JSON.stringify(ai_response, null, 2));
 			console.log("AI response type:", typeof ai_response);
 
 			// Cloudflare Workers AI returns { response: string } for text models
-			let response_text;
+			let response_text: string | undefined;
 			if (typeof ai_response === "string") {
 				response_text = ai_response;
 			} else if (
 				ai_response &&
 				typeof ai_response === "object" &&
-				"response" in ai_response
+				"response" in ai_response &&
+				typeof ai_response.response === "string"
 			) {
 				response_text = ai_response.response;
 			} else {
@@ -131,8 +114,16 @@ export const api_router = new Hono<{
 				});
 			}
 
+			if (!response_text) {
+				return c.json({
+					status: "parse_error",
+					raw_text: input,
+					error: "AI response is not a string",
+				});
+			}
+
 			// Try to parse response text as JSON
-			let parsed_response;
+			let parsed_response: unknown;
 			try {
 				parsed_response = JSON.parse(response_text);
 			} catch (e) {
@@ -147,7 +138,8 @@ export const api_router = new Hono<{
 			}
 
 			// Validate AI response
-			const parse_result = GroceryAiExtractionSchema.safeParse(parsed_response);
+			const parse_result =
+				grocery_ai_extraction_schema.safeParse(parsed_response);
 			if (!parse_result.success) {
 				console.error("AI response validation failed:", parse_result.error);
 				console.error("AI response was:", parsed_response);
@@ -184,13 +176,14 @@ export const api_router = new Hono<{
 			console.log("Raw AI response:", JSON.stringify(ai_response, null, 2));
 
 			// Cloudflare Workers AI returns { response: string } for text models
-			let response_text;
+			let response_text: string | undefined;
 			if (typeof ai_response === "string") {
 				response_text = ai_response;
 			} else if (
 				ai_response &&
 				typeof ai_response === "object" &&
-				"response" in ai_response
+				"response" in ai_response &&
+				typeof ai_response.response === "string"
 			) {
 				response_text = ai_response.response;
 			} else {
@@ -204,8 +197,18 @@ export const api_router = new Hono<{
 				);
 			}
 
+			if (!response_text) {
+				return c.json(
+					{
+						status: "parse_error",
+						error: "AI response is not a string",
+					},
+					500,
+				);
+			}
+
 			// Try to parse response text as JSON
-			let parsed_response;
+			let parsed_response: unknown;
 			try {
 				parsed_response = JSON.parse(response_text);
 			} catch (e) {
@@ -222,7 +225,8 @@ export const api_router = new Hono<{
 			}
 
 			// Validate AI response
-			const parse_result = GroceryAiExtractionSchema.safeParse(parsed_response);
+			const parse_result =
+				grocery_ai_extraction_schema.safeParse(parsed_response);
 			if (!parse_result.success) {
 				console.error("AI response validation failed:", parse_result.error);
 				console.error("AI response was:", parsed_response);
