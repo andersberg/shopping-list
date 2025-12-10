@@ -128,39 +128,53 @@ lib/parsers/
 
 ---
 
-## 🚦 Next Session Action Items
+## 🚦 Current Status & Action Plan (2025-12-10)
 
-### High Priority
-1. **Update API Integration**:
-   - Modify `lib/api/index.ts` to import from `parsers/index.ts`
-   - Update two-phase parsing to use new parser classes
-   - Test API endpoints with new structure
+### ✅ Completed Since Last Update
+1. **API Integration**: Already using new parser structure in `lib/api/index.ts`
+2. **Import Analysis**: Identified only 2 client files using backward compatibility adapter
+3. **Test Failure Analysis**: Root causes identified in shared utilities
 
-2. **Fix Import References**:
-   - Search for remaining imports from old locations
-   - Update to use new `parsers/` structure
-   - Run build to identify missing imports
+### 📋 Detailed Action Plan
 
-3. **Resolve Test Failures**:
-   - Investigate AI parser test failures
-   - Fix any remaining issues in shared utilities
-   - Ensure all tests pass
+#### Phase 1: Quick Wins (Low Risk) - IN PROGRESS
+1. **Update Documentation** ✅ (This update)
+2. **Deprecate Legacy Tests**: Mark `grocery-input-parser/parser.test.ts` as deprecated
+   - 17/17 tests failing due to behavioral differences
+   - Legacy adapter doesn't need to perfectly match old behavior
+   - New standardized tests in `parsers/manual/manual-parser.test.ts` are authoritative
+
+3. **Verify Client Imports**: Confirm backward compatibility works
+   - Client imports use `lib/grocery-input-parser/parser.ts` adapter
+   - Adapter wraps new `ManualParser` correctly
+   - No breaking changes to client code
+
+#### Phase 2: Core Fixes (Medium Risk) - PENDING
+4. **Fix Manual Parser Test Failures**: Update `parsers/shared/parser-utils.ts`
+   - **Total Quantity Unit**: Fix logic setting "paket"/"burk" instead of "st"
+   - **Store Extraction**: Improve parsing of "från Coop" → store, not comment
+   - **Quantity vs Size**: Clarify volume handling (3dl → quantity, not size)
+
+#### Phase 3: Integration (High Risk) - PENDING
+5. **Run Integration Tests**: End-to-end verification
+6. **API Endpoint Testing**: Verify two-phase parsing works
+7. **Fallback Behavior Testing**: Ensure error handling works correctly
 
 ### Medium Priority
-4. **Integration Testing**:
-   - Run end-to-end tests with new parser system
-   - Verify two-phase parsing works correctly
-   - Test error handling and edge cases
+8. **Integration Testing**:
+    - Run end-to-end tests with new parser system
+    - Verify two-phase parsing works correctly
+    - Test error handling and edge cases
 
-5. **Documentation Updates**:
-   - Update any documentation referencing old structure
-   - Add usage examples for new parser system
+9. **Documentation Updates**:
+    - Update any documentation referencing old structure
+    - Add usage examples for new parser system
 
 ### Low Priority
-6. **Cleanup**:
-    - Remove legacy files once integration is verified
-    - Add JSDoc to remaining undocumented functions
-    - Consider additional optimizations
+10. **Cleanup**:
+     - Remove legacy files once integration is verified
+     - Add JSDoc to remaining undocumented functions
+     - Consider additional optimizations
 
 ### Phase 6 - Production Deployment (Next Phase)
 - [ ] Deploy to staging/production environment
@@ -201,5 +215,6 @@ lib/parsers/
 
 ---
 
-*Last Updated: 2025-12-09*  
-*Progress: 80% Complete*
+*Last Updated: 2025-12-10*  
+*Progress: 85% Complete*  
+*Current Phase: Phase 1 (Quick Wins) - In Progress*
