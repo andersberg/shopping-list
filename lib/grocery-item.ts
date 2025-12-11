@@ -40,18 +40,6 @@ export type GroceryItemDiscountPrice = z.infer<
 	typeof grocery_item_discount_price_schema
 >;
 
-// NOTE: Legacy schemas are kept for now to avoid breaking other parts of the codebase.
-// These should be removed or updated in a future task.
-export const grocery_item_schema = z.object({
-	name: z.string().nullable(),
-	comment: z.string().nullable(),
-	discount_price: grocery_item_discount_price_schema.nullable(),
-	quantity: z.number().min(0),
-	unit: z.string().nullable(),
-});
-
-export type GroceryItemLegacy = z.infer<typeof grocery_item_schema>;
-
 // --- Main GROCERY_ITEM Schema ---
 const PARSE_STATUS = ["success", "partial", "error"] as const;
 const PARSE_SOURCE = ["manual", "ai"] as const;
@@ -71,7 +59,7 @@ export const grocery_item_full_schema = z.strictObject({
 
 	// 1. Purchase Intent (How many containers?)
 	purchase_quantity: z.number().min(1).default(1),
-	purchase_unit: ContainerUnit.default("st" as any),
+	purchase_unit: ContainerUnit.default("st" as ContainerUnit),
 
 	// 2. Item Specification (Size of one container)
 	item_size: z.number().min(0).default(1),
@@ -86,13 +74,14 @@ export const grocery_item_full_schema = z.strictObject({
 
 export type GroceryItem = z.infer<typeof grocery_item_full_schema>;
 
-export const grocery_list_item_schema = grocery_item_schema.extend({
-	id: z.string().uuid(),
-	items: z.array(grocery_list_item_schema),
+// Legacy schemas - kept for reference during migration
+// TODO: Remove these once migration is complete
+export const grocery_item_legacy_schema = z.object({
+	name: z.string().nullable(),
+	comment: z.string().nullable(),
+	discount_price: grocery_item_discount_price_schema.nullable(),
+	quantity: z.number().min(0),
+	unit: z.string().nullable(),
 });
 
-export type GroceryList = z.infer<typeof grocery_list_item_schema>;
-
-export function sort_grocery_list_items(items: GroceryListItem[]) {
-	return items.sort((a, b) => b.updated_at.getTime() - a.updated_at.getTime());
-}
+export type GroceryItemLegacy = z.infer<typeof grocery_item_legacy_schema>;
