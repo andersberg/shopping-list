@@ -105,3 +105,9 @@ Use kebab-case by default; allow PascalCase only when the file exports one prima
 - Follow the above naming, import, and validation rules precisely.
 - Be consistent with domain-first organization and test colocation.
 - Be consice. Sacrifice grammar for concision.
+
+### Agent Workflow & Permissions
+- **Plan-First Approach:** For significant refactoring or new feature implementation, agents must first present a detailed plan to the user and await explicit user approval before making any code changes.
+- **Implementation vs. Planning:** Clearly separate the "planning" phase (read-only, documentation) from the "implementation" phase (file edits, code execution).
+- **Permission Required:** Do not execute implementation steps (file edits, running commands, commits) until the user has reviewed the plan and explicitly approved it.
+- **Revert on Mistake:** If an agent accidentally executes without approval, they must immediately revert changes and wait for user direction.
