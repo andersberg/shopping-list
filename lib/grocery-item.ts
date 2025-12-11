@@ -1,85 +1,98 @@
 import { z } from "zod";
 import {
-  CATEGORY_NAMES,
-  QUANTITY_UNITS,
-  SIZE_UNITS,
-  STORE_NAMES,
+	CATEGORY_NAMES,
+	CONTAINER_UNITS,
+	SIZE_UNITS,
+	STORE_NAMES,
+	BRAND_NAMES,
+	PROPERTY_NAMES,
 } from "./constants";
 import { grocery_list_item_insert_schema } from "./db/schema";
 
+// --- Branded Types (DB-driven, validated at runtime) ---
+export const ContainerUnit = z.string().brand<"ContainerUnit">();
+export type ContainerUnit = z.infer<typeof ContainerUnit>;
+
+export const Store = z.string().brand<"Store">();
+export type Store = z.infer<typeof Store>;
+
+export const Brand = z.string().brand<"Brand">();
+export type Brand = z.infer<typeof Brand>;
+
+export const Property = z.string().brand<"Property">();
+export type Property = z.infer<typeof Property>;
+
+export const ItemCanonical = z.string().brand<"ItemCanonical">();
+export type ItemCanonical = z.infer<typeof ItemCanonical>;
+
+export const Category = z.string().brand<"Category">();
+export type Category = z.infer<typeof Category>;
+
+// --- Schemas ---
+
 const grocery_item_discount_price_schema = z.object({
-  quantity: z.number().min(1),
-  price: z.number().min(0),
-  currency: z.string().nonempty().max(3),
+	quantity: z.number().min(1),
+	price: z.number().min(0),
+	currency: z.string().nonempty().max(3),
 });
 
 export type GroceryItemDiscountPrice = z.infer<
-  typeof grocery_item_discount_price_schema
+	typeof grocery_item_discount_price_schema
 >;
 
-// Database schema (for legacy compatibility)
-export const grocery_item_schema = grocery_list_item_insert_schema.pick({
-  name: true,
-  comment: true,
-  discount_price: true,
-  quantity: true,
-  unit: true,
+// NOTE: Legacy schemas are kept for now to avoid breaking other parts of the codebase.
+// These should be removed or updated in a future task.
+export const grocery_item_schema = z.object({
+	name: z.string().nullable(),
+	comment: z.string().nullable(),
+	discount_price: grocery_item_discount_price_schema.nullable(),
+	quantity: z.number().min(0),
+	unit: z.string().nullable(),
 });
 
 export type GroceryItemLegacy = z.infer<typeof grocery_item_schema>;
 
-// Full API schema with all fields
-const STATUS = ["ok", "needs_review", "parse_error"] as const;
-const CURRENCY = ["SEK"] as const;
+// --- Main GROCERY_ITEM Schema ---
+const PARSE_STATUS = ["success", "partial", "error"] as const;
+const PARSE_SOURCE = ["manual", "ai"] as const;
 
 export const grocery_item_full_schema = z.strictObject({
-  // Database fields (mapped from API fields)
-  name: z.string().nullable(),
-  comment: z.string().nullable(),
-  discount_price: grocery_item_discount_price_schema.nullable(),
-  quantity: z.number().min(0),
-  unit: z.string().nullable(),
+	// Metadata
+	original_input: z.string(),
+	parse_status: z.enum(PARSE_STATUS),
+	parse_error: z.string().nullable(),
+	parse_source: z.enum(PARSE_SOURCE),
 
-  // Additional API fields
-  item: z.string().nullable(),
-  category: z.enum(CATEGORY_NAMES).nullable(),
-  quantity_unit: z.enum(QUANTITY_UNITS).nullable(),
-  size_value: z.number().min(0),
-  size_unit: z.enum(SIZE_UNITS).nullable(),
-  brand: z.string().nullable(),
-  organic: z.boolean(),
-  unit_normalized: z.enum(SIZE_UNITS).nullable(),
-  total_quantity_value: z.number().min(0),
-  total_quantity_unit: z.enum(SIZE_UNITS).nullable(),
-  store_normalized: z.enum(STORE_NAMES).nullable(),
-  store_raw: z.string().nullable(),
-  offer_quantity: z.number().min(0),
-  offer_total_price_value: z.number().min(0),
-  offer_currency: z.enum(CURRENCY).nullable(),
-  offer_unit_price_value: z.number().min(0),
-  status: z.enum(STATUS),
-  error: z.string().nullable(),
-  source: z.enum(["manual", "ai"]),
+	// Core Product Data
+	item: z.string(),
+	item_canonical: ItemCanonical.nullable(),
+	category: Category.nullable(),
+	brand: Brand.nullable(),
+
+	// 1. Purchase Intent (How many containers?)
+	purchase_quantity: z.number().min(1).default(1),
+	purchase_unit: ContainerUnit.default("st" as any),
+
+	// 2. Item Specification (Size of one container)
+	item_size: z.number().min(0).default(1),
+	item_unit: z.enum(SIZE_UNITS).default("st"),
+
+	// Additional Details
+	properties: z.array(Property).default([]),
+	stores: z.array(Store).default([]),
+	comment: z.string().nullable(),
+	offer: grocery_item_discount_price_schema.nullable(),
 });
 
 export type GroceryItem = z.infer<typeof grocery_item_full_schema>;
 
 export const grocery_list_item_schema = grocery_item_schema.extend({
-  id: z.string().uuid(),
-  added_at: z.date(),
-  updated_at: z.date(),
-  checked: z.boolean().default(false),
+	id: z.string().uuid(),
+	items: z.array(grocery_list_item_schema),
 });
 
-export type GroceryListItem = z.infer<typeof grocery_list_item_schema>;
-
-export const grocery_list_schema = z.object({
-  id: z.string().uuid(),
-  items: z.array(grocery_list_item_schema),
-});
-
-export type GroceryList = z.infer<typeof grocery_list_schema>;
+export type GroceryList = z.infer<typeof grocery_list_item_schema>;
 
 export function sort_grocery_list_items(items: GroceryListItem[]) {
-  return items.sort((a, b) => b.updated_at.getTime() - a.updated_at.getTime());
+	return items.sort((a, b) => b.updated_at.getTime() - a.updated_at.getTime());
 }

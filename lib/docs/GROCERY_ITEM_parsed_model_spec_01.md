@@ -65,20 +65,36 @@ All quantity and unit fields have sensible defaults (1, "st"). This simplifies a
 | Field | Type | Required | Default | Description |
 |-------|------|----------|---------|-------------|
 | original_input | string | yes | — | Raw input string, preserved for traceability and re-parsing |
-| item | string | yes | — | The product name ("pasta", "mjölk", "äpplen") |
+| item | string | yes | — | The product name as entered by user (for display) |
+| item_canonical | ItemCanonical | no | null | Normalized item name for matching and aggregation — branded string, DB-driven |
 | purchase_quantity | number | yes | 1 | Number of packages/containers to buy |
-| purchase_unit | string | yes | "st" | Container type (st, flaskor, burkar, paket, kartonger, påsar) |
+| purchase_unit | ContainerUnit | yes | "st" | Container type — branded string, DB-driven |
 | item_size | number | yes | 1 | Size/measure of each package |
-| item_unit | string | yes | "st" | Unit of item_size (g, hg, kg, ml, cl, dl, l, st) |
+| item_unit | SizeUnit | yes | "st" | Unit of item_size — code enum (mg, g, hg, kg, ml, cl, dl, l, st) |
 | comment | string | no | null | Unparsed or ambiguous info, also used for user notes |
-| brand | string | no | null | Product brand ("Arla", "Felix", "Barilla") |
-| properties | string[] | no | [] | Product attributes ("ekologisk", "laktosfri", "glutenfri") |
-| store | string | no | null | Normalized store name where item should be purchased |
-| offer | Offer | no | null | Discount/offer structure if present |
-| category | string | no | null | Product category, from user input or item library |
+| brand | Brand | no | null | Product brand — branded string, DB-driven |
+| properties | Property[] | no | [] | Product attributes — branded strings, DB-driven |
+| stores | Store[] | no | [] | Stores where item is available — branded strings, DB-driven |
+| offer | Offer | no | null | Best deal to track (single offer, not per-store) |
+| category | Category | no | null | Product category — branded string, DB-driven |
 | parse_status | enum | yes | — | success, partial, error |
 | parse_error | string | no | null | Error description when parse_status is error |
 | parse_source | enum | yes | — | manual, ai |
+
+#### Type definitions (Zod v4)
+
+```typescript
+// Code enum — static, affects business logic
+const SizeUnit = z.enum(["mg", "g", "hg", "kg", "ml", "cl", "dl", "l", "st"]);
+
+// Branded types — DB-driven, validated at runtime
+const ContainerUnit = z.string().brand<"ContainerUnit">();
+const Store = z.string().brand<"Store">();
+const Brand = z.string().brand<"Brand">();
+const Property = z.string().brand<"Property">();
+const ItemCanonical = z.string().brand<"ItemCanonical">();
+const Category = z.string().brand<"Category">();
+```
 
 ### OFFER
 
@@ -86,29 +102,45 @@ All quantity and unit fields have sensible defaults (1, "st"). This simplifies a
 |-------|------|----------|-------------|
 | quantity | number | yes | Number of items in the offer |
 | price | number | yes | Total price for the offer quantity |
-| currency | string | yes | Currency code ("kr", "sek") |
+| currency | string | yes | Currency code — currently SEK only ("kr", "sek") |
+
+**Currency support:** Currently only Swedish kronor (SEK) is supported, recognized as "kr" or "sek" in input. The currency field is a string (not enum) to allow future extension via the branded type + DB pattern if multi-currency support is needed.
 
 ---
 
 ## Related Model: UNIT
 
-Units should be defined in a separate lookup table to support parsing and conversion.
+Units are split between code and database based on whether they affect business logic.
 
-| Field | Type | Required | Description |
-|-------|------|----------|-------------|
-| id | string | yes | Canonical identifier ("g", "kg", "burkar") |
-| category | enum | yes | weight, volume, count |
-| base_unit | string | no | Reference unit for conversion (null if this is the base) |
-| conversion_factor | number | no | Multiply by this to convert to base unit |
-| abbreviations | string[] | yes | Aliases for parsing ("g", "gr", "gram") |
+### Size units (code enum)
 
-### Unit categories
+These are static and defined in code. They have conversion factors for aggregation.
 
-| Category | Units | Base unit |
-|----------|-------|-----------|
-| weight | g, hg, kg | g |
-| volume | ml, cl, dl, l | ml |
-| count | st, burkar, flaskor, paket, kartonger, påsar | st |
+| id | category | base_unit | conversion_factor | abbreviations |
+|----|----------|-----------|-------------------|---------------|
+| mg | weight | null | 1 | ["mg", "milligram"] |
+| g | weight | mg | 1000 | ["g", "gr", "gram"] |
+| hg | weight | mg | 100000 | ["hg", "hekto", "hektogram"] |
+| kg | weight | mg | 1000000 | ["kg", "kilo", "kilogram"] |
+| ml | volume | null | 1 | ["ml", "milliliter"] |
+| cl | volume | ml | 10 | ["cl", "centiliter"] |
+| dl | volume | ml | 100 | ["dl", "deciliter"] |
+| l | volume | ml | 1000 | ["l", "liter"] |
+| st | count | null | 1 | ["st", "stk", "styck", "stycken"] |
+
+### Container units (DB-driven)
+
+These are descriptive and user-editable. They are semantically equivalent to "st" (no conversion factors).
+
+| id | category | abbreviations |
+|----|----------|---------------|
+| burkar | count | ["burk", "burkar"] |
+| flaskor | count | ["flaska", "flaskor"] |
+| paket | count | ["paket", "pkt"] |
+| kartonger | count | ["kartong", "kartonger"] |
+| påsar | count | ["påse", "påsar"] |
+
+New containers can be added in the DB without code deployment. If a container isn't recognized, the parser falls back to "st".
 
 ---
 
@@ -126,24 +158,26 @@ These are computed at read time, not stored:
 
 ## Parsing Examples
 
-| Input | purchase_quantity | purchase_unit | item_size | item_unit | item | Other fields |
-|-------|-------------------|---------------|-----------|-----------|------|--------------|
-| "pasta" | 1 | st | 1 | st | pasta | |
-| "3 äpplen" | 3 | st | 1 | st | äpplen | |
-| "500 g pasta" | 1 | st | 500 | g | pasta | |
-| "3 500 g pasta" | 3 | st | 500 | g | pasta | |
-| "1.5 l cola" | 1 | st | 1.5 | l | cola | |
-| "1 kg bananer" | 1 | st | 1 | kg | bananer | |
-| "6-pack öl" | 1 | st | 6 | st | öl | |
-| "2 6-pack öl" | 2 | st | 6 | st | öl | |
-| "2 burkar krossade tomater" | 2 | burkar | 1 | st | krossade tomater | |
-| "2 flaskor cola 1.5 l" | 2 | flaskor | 1.5 | l | cola | |
-| "400 g burk krossade tomater" | 1 | burk | 400 | g | krossade tomater | |
-| "4 mjölk 1.5l" | 4 | st | 1.5 | l | mjölk | |
-| "eko mjölk Arla" | 1 | st | 1 | st | mjölk | brand: "Arla", properties: ["ekologisk"] |
-| "cola Willys 3/50kr" | 1 | st | 1 | st | cola | store: "Willys", offer: {quantity: 3, price: 50, currency: "kr"} |
-| "mjölk till lasagnen" | 1 | st | 1 | st | mjölk | comment: "till lasagnen" |
-| "4 mjölk grön 1.5l eko Willys 4/20kr" | 4 | st | 1.5 | l | mjölk | properties: ["ekologisk"], store: "Willys", offer: {quantity: 4, price: 20, currency: "kr"}, comment: "grön" |
+| Input | purchase_quantity | purchase_unit | item_size | item_unit | item | item_canonical | Other fields |
+|-------|-------------------|---------------|-----------|-----------|------|----------------|--------------|
+| "pasta" | 1 | st | 1 | st | pasta | pasta | |
+| "3 äpplen" | 3 | st | 1 | st | äpplen | äpple | |
+| "500 g pasta" | 1 | st | 500 | g | pasta | pasta | |
+| "3 500 g pasta" | 3 | st | 500 | g | pasta | pasta | |
+| "1.5 l cola" | 1 | st | 1.5 | l | cola | cola | |
+| "1 kg bananer" | 1 | st | 1 | kg | bananer | banan | |
+| "6-pack öl" | 1 | st | 6 | st | öl | öl | |
+| "2 6-pack öl" | 2 | st | 6 | st | öl | öl | |
+| "2 burkar krossade tomater" | 2 | burkar | 1 | st | krossade tomater | krossade tomater | |
+| "2 flaskor cola 1.5 l" | 2 | flaskor | 1.5 | l | cola | cola | |
+| "400 g burk krossade tomater" | 1 | burk | 400 | g | krossade tomater | krossade tomater | |
+| "4 mjölk 1.5l" | 4 | st | 1.5 | l | mjölk | mjölk | |
+| "grön mjölk" | 1 | st | 1 | st | grön mjölk | mellanmjölk | |
+| "2 mjölk grön eko laktosfri" | 2 | st | 1 | st | mjölk grön | mellanmjölk | properties: ["ekologisk", "laktosfri"] |
+| "eko mjölk Arla" | 1 | st | 1 | st | mjölk | mjölk | brand: "Arla", properties: ["ekologisk"] |
+| "cola Willys 3/50kr" | 1 | st | 1 | st | cola | cola | stores: ["Willys"], offer: {quantity: 3, price: 50, currency: "kr"} |
+| "mjölk till lasagnen" | 1 | st | 1 | st | mjölk | mjölk | comment: "till lasagnen" |
+| "4 mjölk grön 1.5l eko Willys 4/20kr" | 4 | st | 1.5 | l | mjölk grön | mellanmjölk | properties: ["ekologisk"], stores: ["Willys"], offer: {quantity: 4, price: 20, currency: "kr"} |
 
 ---
 
@@ -209,6 +243,68 @@ These are computed at read time, not stored:
 
 Unknown values that don't match predefined lists should go to comment rather than being silently dropped.
 
+### 10. Static vs dynamic vocabulary architecture
+
+**Decision:** Size units are code enums; containers, stores, brands, and properties are DB-driven with branded types.
+
+**Rationale:** Different vocabularies have different characteristics:
+
+| Vocabulary | Change frequency | Affects business logic | User-editable |
+|------------|------------------|------------------------|---------------|
+| Size units | Rarely | Yes — conversion, aggregation | No |
+| Containers | Occasionally | No — descriptive only | Yes |
+| Stores | Occasionally | No — filtering only | Yes |
+| Brands | Frequently | No — filtering only | Yes |
+| Properties | Occasionally | No — filtering only | Yes |
+| Item canonical | Frequently | No — matching only | Yes |
+| Categories | Occasionally | No — filtering only | Yes |
+
+Size units are fundamental to business logic — conversion factors and aggregation depend on knowing exactly what units exist. The metric system rarely changes. Code deployment for new units is acceptable.
+
+Everything else is "data, not code" — validated at parse time against DB, with model defaults as fallback.
+
+**Implementation:**
+
+| Vocabulary | Source | Zod strategy | Fallback |
+|------------|--------|--------------|----------|
+| Size units | Code | `z.enum(["mg", "g", "hg", "kg", "ml", "cl", "dl", "l", "st"])` | — |
+| Containers | DB | `z.string().brand<"ContainerUnit">()` | "st" |
+| Stores | DB | `z.array(z.string().brand<"Store">())` | [] |
+| Brands | DB | `z.string().brand<"Brand">()` | null |
+| Properties | DB | `z.string().brand<"Property">()` | [] |
+| Item canonical | DB | `z.string().brand<"ItemCanonical">()` | null |
+| Categories | DB | `z.string().brand<"Category">()` | null |
+
+Branded types (Zod v4) provide type distinction without autocomplete dependency — you can't accidentally assign a `Store` to a `Brand` field, but adding new values doesn't require code changes.
+
+### 11. Separate item (display) from item_canonical (matching)
+
+**Decision:** Two fields for item name — `item` preserves user input for display, `item_canonical` normalizes for aggregation and matching. The item library is DB-driven.
+
+**Rationale:** Users expect to see what they typed ("grön mjölk"), but the system needs a canonical form ("mellanmjölk") for:
+- **Aggregation** — "grön mjölk" + "mellanmjölk" should combine
+- **Search** — searching "mjölk" finds both variants
+- **Item library** — linking to common items with prefilled data (category, default size, etc.)
+
+The item library (DB) maps aliases/variants to canonical names:
+- "mjölk grön", "grön mjölk" → "mellanmjölk"
+- "mjölk blå", "blå mjölk" → "lättmjölk"
+- "äpplen", "äpple" → "äpple"
+
+`item_canonical` is null if no mapping exists — the item is still valid, just not normalized.
+
+### 12. Multiple stores, single offer
+
+**Decision:** `stores` is an array (item available at multiple stores), but `offer` is singular (one best deal).
+
+**Rationale:** 
+- **stores** answers "where can I buy this?" — useful for filtering, shopping route planning, or items only available at select stores
+- **offer** answers "what's the best deal?" — user adds one offer they want to track
+
+This is intentional. If a user finds deals at multiple stores, they pick the best one. The model doesn't support per-store offers because that's comparison shopping, not purchase intent.
+
+If multiple offers appear in input (rare), parser takes the first and puts the rest in comment.
+
 ---
 
 ## Validation Rules
@@ -217,8 +313,9 @@ Unknown values that don't match predefined lists should go to comment rather tha
 2. item_size must be ≥ 0 (0 could indicate "unknown size")
 3. item must be non-empty after parsing
 4. If offer is present, offer.quantity must be ≥ 1 and offer.price must be ≥ 0
-5. purchase_unit should match a known UNIT.id where category is "count"
-6. item_unit should match a known UNIT.id
+5. item_unit must be a valid SizeUnit (code enum validation)
+6. purchase_unit validated against DB container list (falls back to "st" if not found)
+7. stores, brand, properties, item_canonical, category validated against respective DB lists (empty array/null if not found)
 
 ---
 
@@ -226,7 +323,7 @@ Unknown values that don't match predefined lists should go to comment rather tha
 
 Items can be aggregated when:
 
-1. item matches (normalized)
+1. item_canonical matches (or item if item_canonical is null)
 2. item_unit is in the same UNIT.category
 3. brand matches (or both null)
 4. properties match
@@ -275,13 +372,17 @@ This balances performance (most inputs handled by fast manual parser) with flexi
 ### Manual parser responsibilities
 
 1. Extract offer pattern first ("3/50kr") — most specific, avoids number confusion
-2. Extract known stores, brands, properties via lookup
-3. Extract size+unit patterns ("500g", "1.5 l")
-4. Extract container patterns ("2 burkar", "3 flaskor")
+2. Extract known stores, brands, properties via **DB lookup**
+3. Extract size+unit patterns ("500g", "1.5 l") — size units from **code enum**
+4. Extract container patterns ("2 burkar", "3 flaskor") — containers from **DB lookup**, fallback to "st"
 5. Extract leading bare number as purchase_quantity
-6. Remaining tokens → item name (first match against item library, then raw)
+6. Remaining tokens → item name, then lookup item_canonical and category from **item library (DB)**
 7. Unmatched tokens → comment
 8. Set parse_status based on confidence
+
+**Data sources:**
+- Size units: Code enum (always available)
+- Containers, stores, brands, properties, item library (canonical + category): DB (loaded at parse time or cached)
 
 ### Number interpretation rules
 
@@ -299,11 +400,13 @@ When using AI for parsing, provide:
 
 1. The original input string
 2. The incomplete model from manual parser (if any)
-3. The UNIT lookup table
-4. Known stores, brands, properties lists
-5. Example input/output pairs from this specification
-6. Instruction to preserve unparsed segments in comment
-7. Instruction to set parse_status: partial when uncertain
+3. The size units list (code enum: mg, g, hg, kg, ml, cl, dl, l, st)
+4. The container units list (from DB)
+5. Known stores, brands, properties lists (from DB)
+6. Item library with canonical names and categories (from DB)
+7. Example input/output pairs from this specification
+8. Instruction to preserve unparsed segments in comment
+9. Instruction to set parse_status: partial when uncertain
 
 ### Manual parser patterns
 
