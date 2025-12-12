@@ -156,9 +156,146 @@ These are computed at read time, not stored:
 
 ---
 
+## Architecture
+
+### Separation of Concerns
+
+The model implementation maintains clear separation between:
+
+- **Parsing Logic**: Text processing, tokenization, pattern recognition, extraction of raw data from input strings
+- **Domain Logic**: Business rules, canonicalization, normalization, validation, transformation of raw data into domain objects
+
+This architectural separation provides:
+- **Independent Testing**: Business rules can be tested without parsing complexity
+- **Reusability**: Domain services work with any parser (manual, AI, future implementations)
+- **Maintainability**: Clear boundaries make code easier to understand and modify
+- **Performance**: Domain logic can be optimized and cached independently
+
+### Parser Interface
+
+Parsers are responsible for extracting structured tokens from text, not for applying business rules:
+
+```typescript
+interface ParsedTokens {
+  raw_item: string | null;
+  raw_quantity: string | null;
+  raw_unit: string | null;
+  raw_brand: string | null;
+  raw_modifiers: string[];
+  raw_offer: string | null;
+  raw_size_value: string | null;
+  raw_size_unit: string | null;
+  raw_comment: string | null;
+}
+
+interface GroceryParser {
+  source: "manual" | "ai";
+  parse(input: string): ParsedTokens;
+}
+```
+
+### Domain Services
+
+Business logic is implemented in domain services that transform ParsedTokens into GroceryItem objects:
+
+```typescript
+// Core domain services
+function canonicalize_item(item: string | null): { canonical: ItemCanonical | null; category: Category | null }
+function normalize_unit(unit: string | null): SizeUnit | ContainerUnit | null
+function parse_offer_string(offer_text: string | null): Offer | null
+function extract_properties(modifiers: string[]): Property[]
+function extract_organic_flag(modifiers: string[]): boolean
+function normalize_store_name(store: string | null): Store | null
+function normalize_brand_name(brand: string | null): Brand | null
+function determine_parse_status(item: ItemCanonical | null, category: Category | null, error: string | null): "ok" | "needs_review" | "parse_error"
+
+// Factory function that applies all domain logic
+function create_grocery_item_from_tokens(
+  tokens: ParsedTokens, 
+  source: "manual" | "ai"
+): GroceryItem
+```
+
+### Implementation Guidelines
+
+#### Domain-First Architecture
+- **Business Logic Location**: All domain logic lives in `lib/domain/` directory
+- **Parser Responsibility**: Parsers only handle text-to-structured-data conversion
+- **Service Reusability**: Domain services are designed to work with any parser implementation
+- **Factory Functions**: All branded types use factory functions for runtime validation
+
+#### Error Handling
+- **Parsing Errors**: Malformed input, unrecognized patterns
+- **Domain Errors**: Invalid values, business rule violations
+- **Status Determination**: `ok` (valid), `needs_review` (unknown values), `parse_error` (parsing failed)
+
+#### Performance Considerations
+- **Caching**: Domain services can cache expensive operations (category lookups, validations)
+- **Lazy Evaluation**: Expensive validations only when needed
+- **Batch Processing**: Domain services designed for bulk operations
+
+## Testing Requirements
+
+### Domain Logic Coverage
+All business rules must have comprehensive unit tests independent of parsing logic:
+
+#### Required Test Coverage
+- **Item Canonicalization**: 100% coverage of known items, pluralization rules, unknown items
+- **Unit Normalization**: All unit variations, invalid inputs, edge cases
+- **Offer Parsing**: Valid offers, malformed offers, edge cases (zero quantities, negative prices)
+- **Status Determination**: All status conditions, error scenarios
+- **Property Extraction**: Organic detection, modifier parsing
+- **Store/Brand Normalization**: Case variations, unknown values, validation
+
+#### Test Structure
+```typescript
+describe("Domain Services", () => {
+  describe("canonicalize_item", () => {
+    it("should canonicalize known items correctly")
+    it("should handle pluralization rules")
+    it("should return unknown items as-is with null category")
+    it("should handle null and empty inputs")
+  });
+
+  describe("normalize_unit", () => {
+    it("should normalize common unit variations")
+    it("should return null for invalid units")
+    it("should handle ambiguous units correctly")
+  });
+});
+```
+
+#### Integration Tests
+- **Model + Services**: Verify domain services work correctly with GroceryItem model
+- **End-to-End**: Complete workflows from parser input to final GroceryItem
+- **Edge Cases**: Complex inputs, malformed data, error conditions
+
+#### Parser-Domain Separation
+- **Parser Tests**: Focus on text extraction accuracy, tokenization, pattern recognition
+- **Domain Service Tests**: Focus on business rule correctness, validation, transformation
+- **Integration Tests**: Verify parser → domain service → model pipeline works correctly
+
+### Test Data Management
+- **Shared Test Cases**: Centralized test data in `lib/parsers/shared/test-cases.ts`
+- **Edge Case Library**: Comprehensive collection of problematic inputs
+- **Regression Tests**: Ensure fixes don't break existing functionality
+- **Performance Tests**: Validate domain service performance under load
+
 ## Parsing
 
-For parser interface, implementation details, and parsing examples, see `grocery-parser-spec.md`.
+For detailed parser implementation, patterns, and examples, see `grocery-parser-spec.md`.
+
+### Parser Responsibilities
+- **Text Processing**: Normalization, tokenization, pattern recognition
+- **Data Extraction**: Pull raw values from input strings
+- **Structure Creation**: Build ParsedTokens object
+- **Error Detection**: Identify parsing failures and malformed input
+
+### Parser Limitations
+- **No Business Logic**: Parsers don't apply canonicalization, normalization, or validation rules
+- **No Domain Decisions**: Parsers don't determine categories, status, or calculate derived values
+- **Stateless**: Each parse operation is independent
+- **Text Focus**: Only concerned with converting text to structured data
 
 ---
 
@@ -299,6 +436,59 @@ If multiple offers appear in input (rare), parser takes the first and puts the r
 7. stores, brand, properties, item_canonical, category validated against respective DB lists (empty array/null if not found)
 
 ---
+
+## Testing Requirements
+
+### Domain Logic Coverage
+All business rules must have comprehensive unit tests independent of parsing logic:
+
+#### Required Test Coverage
+- **Item Canonicalization**: 100% coverage of known items, pluralization rules, unknown items
+- **Unit Normalization**: All unit variations, invalid inputs, edge cases
+- **Offer Parsing**: Valid offers, malformed offers, edge cases (zero quantities, negative prices)
+- **Status Determination**: All status conditions, error scenarios
+- **Property Extraction**: Organic detection, modifier parsing
+- **Store/Brand Normalization**: Case variations, unknown values, validation
+
+#### Test Structure
+```typescript
+describe("Domain Services", () => {
+  describe("canonicalize_item", () => {
+    it("should canonicalize known items correctly")
+    it("should handle pluralization rules")
+    it("should return unknown items as-is with null category")
+    it("should handle null and empty inputs")
+  });
+
+  describe("normalize_unit", () => {
+    it("should normalize common unit variations")
+    it("should return null for invalid units")
+    it("should handle ambiguous units correctly")
+  });
+});
+```
+
+#### Integration Tests
+- **Model + Services**: Verify domain services work correctly with GroceryItem model
+- **End-to-End**: Complete workflows from parser input to final GroceryItem
+- **Edge Cases**: Complex inputs, malformed data, error conditions
+
+#### Parser-Domain Separation
+- **Parser Tests**: Focus on text extraction accuracy, tokenization, pattern recognition
+- **Domain Service Tests**: Focus on business rule correctness, validation, transformation
+- **Integration Tests**: Verify parser → domain service → model pipeline works correctly
+
+### Test Data Management
+- **Shared Test Cases**: Centralized test data in `lib/parsers/shared/test-cases.ts`
+- **Edge Case Library**: Comprehensive collection of problematic inputs
+- **Regression Tests**: Ensure fixes don't break existing functionality
+- **Performance Tests**: Validate domain service performance under load
+
+### Quality Standards
+- **Coverage**: Domain services must achieve 90%+ test coverage
+- **Edge Cases**: All identified edge cases must have corresponding tests
+- **Documentation**: Complex business rules must have test documentation explaining expected behavior
+- **CI/CD**: All domain service tests must run in continuous integration
 
 ## Aggregation Rules
 

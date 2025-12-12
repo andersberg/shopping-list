@@ -5,6 +5,7 @@ import z from "zod/v4";
 /** Zod schema for container unit validation */
 export const container_unit_schema = z
 	.string()
+	.trim()
 	.min(1, "Container unit cannot be empty")
 	.brand<"ContainerUnit">();
 
@@ -35,6 +36,7 @@ export const create_container_unit = (value: string): ContainerUnit => {
 /** Zod schema for store validation */
 export const store_schema = z
 	.string()
+	.trim()
 	.min(1, "Store name cannot be empty")
 	.brand<"Store">();
 
@@ -65,6 +67,7 @@ export const create_store = (value: string): Store => {
 /** Zod schema for brand validation */
 export const brand_schema = z
 	.string()
+	.trim()
 	.min(1, "Brand name cannot be empty")
 	.brand<"Brand">();
 
@@ -95,6 +98,7 @@ export const create_brand = (value: string): Brand => {
 /** Zod schema for property validation */
 export const property_schema = z
 	.string()
+	.trim()
 	.min(1, "Property cannot be empty")
 	.brand<"Property">();
 
@@ -125,6 +129,7 @@ export const create_property = (value: string): Property => {
 /** Zod schema for category validation */
 export const category_schema = z
 	.string()
+	.trim()
 	.min(1, "Category cannot be empty")
 	.brand<"Category">();
 
@@ -155,6 +160,7 @@ export const create_category = (value: string): Category => {
 /** Zod schema for item canonical validation */
 export const item_canonical_schema = z
 	.string()
+	.trim()
 	.min(1, "Item canonical cannot be empty")
 	.brand<"ItemCanonical">();
 
