@@ -1,7 +1,7 @@
 import { sql } from "drizzle-orm";
 import { integer, type SQLiteColumn, text } from "drizzle-orm/sqlite-core";
 import { GROCERY_ITEM_KNOWN_UNITS } from "../constants";
-import type { GroceryItemDiscountPrice } from "../grocery-item";
+import type { GroceryItemDiscountPrice } from "../domain/types";
 
 export function createIdAsPrimaryKeyColumn() {
 	return text()

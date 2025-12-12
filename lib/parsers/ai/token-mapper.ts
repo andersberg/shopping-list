@@ -1,9 +1,6 @@
 import { z } from "zod";
 import { BRAND_NAMES } from "../../constants";
-import {
-	grocery_item_full_schema,
-	type GroceryItem as UnifiedGroceryItem,
-} from "../../grocery-item";
+import { type GroceryItem as UnifiedGroceryItem } from "../../domain/grocery-item";
 
 export const grocery_ai_extraction_schema = z.object({
 	raw_text: z.string(),
@@ -20,8 +17,6 @@ export const grocery_ai_extraction_schema = z.object({
 
 export type GroceryAiExtraction = z.infer<typeof grocery_ai_extraction_schema>;
 
-// Re-export the unified schema
-export const grocery_item_schema = grocery_item_full_schema;
 export type GroceryItem = UnifiedGroceryItem;
 
 // Item dictionary for canonical mapping

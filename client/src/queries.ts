@@ -8,7 +8,7 @@ import {
 	type GroceryListItemUpdate,
 	grocery_item_input_schema,
 } from "lib/api/schema";
-import type { GroceryList } from "lib/grocery-item";
+import type { GroceryList } from "lib/domain/grocery-item";
 import type { ParsedGroceryItem } from "../../lib/grocery-input-parser/parser";
 import { api_client, grocery_list_client } from "./api-client";
 

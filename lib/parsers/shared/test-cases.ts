@@ -1,5 +1,5 @@
 import type { GroceryAiExtraction } from "../ai/token-mapper";
-import type { GroceryItem } from "../../grocery-item";
+import type { GroceryItem } from "../../domain/grocery-item";
 
 export interface SharedTestCase {
 	id: string; // Unique kebab-case ID

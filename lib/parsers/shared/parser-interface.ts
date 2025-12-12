@@ -1,4 +1,4 @@
-import type { GroceryItem } from "../../grocery-item";
+import type { GroceryItem } from "../../domain/grocery-item";
 
 /**
  * Unified interface for grocery line parsers.

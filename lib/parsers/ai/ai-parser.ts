@@ -9,7 +9,7 @@ import { map_tokens_to_grocery_item } from "./token-mapper";
 import { create_token_extraction_prompt } from "./prompts/token-extraction-prompt";
 import { GroceryParser } from "../shared/parser-interface";
 import { create_error_grocery_item } from "../shared/parser-utils";
-import type { GroceryItem } from "../../grocery-item";
+import type { GroceryItem } from "../../domain/grocery-item";
 
 // Schema for AI extraction (copied from token-mapper)
 export const grocery_ai_extraction_schema = z.object({

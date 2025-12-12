@@ -1,5 +1,5 @@
 import { BRAND_NAMES } from "../../constants";
-import type { GroceryItem } from "../../grocery-item";
+import type { GroceryItem } from "../../domain/grocery-item";
 
 // Item dictionary for canonical mapping (copied from token-mapper)
 export const ITEM_DICTIONARY: Record<

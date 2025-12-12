@@ -4,7 +4,7 @@ import {
 	SIZE_UNITS,
 	STORE_NAMES,
 } from "../../constants";
-import type { GroceryItem } from "../../grocery-item";
+import type { GroceryItem } from "../../domain/grocery-item";
 import { GroceryParser } from "../shared/parser-interface";
 import {
 	canonicalize_item,
