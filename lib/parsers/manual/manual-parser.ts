@@ -1,9 +1,9 @@
 import {
 	BRAND_NAMES,
-	QUANTITY_UNITS,
+	CONTAINER_UNITS,
 	SIZE_UNITS,
 	STORE_NAMES,
-} from "../../constants";
+} from "../../domain/constants";
 import type { GroceryItem } from "../../domain/grocery-item";
 import { GroceryParser } from "../shared/parser-interface";
 import {
@@ -204,10 +204,9 @@ export function interpret_grammar(
 			// BUT wait, "3 pkt" (quantity=3, unit=pkt) vs "1.5 l" (size=1.5, unit=l)
 			// How to disambiguate?
 			// Lexicon differentiation:
-			// pkt -> QUANTITY_UNITS
-			// l -> SIZE_UNITS
+			// pkt -> CONTAINER_UNITS
 			// If unit is ONLY in SIZE_UNITS -> it's a size.
-			// If unit is in QUANTITY_UNITS (even if also in SIZE_UNITS, e.g. 'st'?) -> prefer quantity?
+			// If unit is in CONTAINER_UNITS (even if also in SIZE_UNITS, e.g. 'st'?) -> prefer quantity?
 			// Spec 8.4: "3 pkt mjölk" -> quantity=3.
 			// Spec 8.5: "1,5l mjölk" -> size_value=1.5.
 
@@ -226,7 +225,7 @@ export function interpret_grammar(
 					const is_size_unit = LOWER_SIZE_UNITS.includes(potential_unit);
 
 					// If it's strictly a size unit (e.g. 'g', 'ml', 'l', 'kg'), treat as size.
-					// 'kg' is in both? QUANTITY_UNITS has 'kg', 'kilo'. SIZE_UNITS has 'kg'.
+					// 'kg' is in both? CONTAINER_UNITS has 'kg', 'kilo'. SIZE_UNITS has 'kg'.
 					// "1 kg potatis" -> quantity=1, unit=kg? Or size=1kg?
 					// Spec example: "1 kg potatis" -> quantity=1 (implied?), size=1kg?
 					// Fixture example: "1 kg potatis" -> parser output?
@@ -604,7 +603,9 @@ export function tokenize(input: NormalizedInput): Token[] {
 // 7. Lexicons & Annotation
 
 // Helpers
-const LOWER_QUANTITY_UNITS = QUANTITY_UNITS.map((u) => u.toLowerCase());
+const LOWER_QUANTITY_UNITS = CONTAINER_UNITS.map((u: string) =>
+	u.toLowerCase(),
+);
 const LOWER_SIZE_UNITS = SIZE_UNITS.map((u) => u.toLowerCase());
 const LOWER_BRAND_NAMES = BRAND_NAMES.map((b) => b.toLowerCase());
 const LOWER_STORE_NAMES = STORE_NAMES.map((s) => s.toLowerCase());

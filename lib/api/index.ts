@@ -5,11 +5,11 @@ import { parse_ai_response } from "../ai/ai-response-parser.js";
 import type { CloudflareEnvironmentBindings } from "../cloudflare-environment-bindings";
 import {
 	CATEGORY_NAMES,
-	MESSAGE,
-	QUANTITY_UNITS,
-	SIZE_UNITS,
 	STORE_NAMES,
-} from "../constants";
+	SIZE_UNITS,
+	CONTAINER_UNITS,
+} from "../domain/constants";
+import { MESSAGE } from "../constants";
 import { grocery_list_router } from "./grocery-list";
 import { AiParser } from "../parsers";
 import { grocery_ai_extraction_schema } from "../parsers/ai/token-mapper";

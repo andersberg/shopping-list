@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { BRAND_NAMES } from "../../constants";
+import { BRAND_NAMES } from "../../domain/constants";
 import { type GroceryItem as UnifiedGroceryItem } from "../../domain/grocery-item";
 
 export const grocery_ai_extraction_schema = z.object({
