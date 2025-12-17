@@ -15,6 +15,7 @@ import {
 	apply_default_quantity as domainApplyDefaultQuantity,
 	determine_parse_status as domainDetermineStatus,
 } from "../../domain/grocery-item-services";
+import { create_container_unit } from "../../domain/value-objects";
 import { match_brand } from "../../domain/fuzzy-matching-service";
 
 // === Normalization Functions ===
@@ -167,7 +168,7 @@ export function create_error_grocery_item(
 
 		// Purchase Intent
 		purchase_quantity: 1,
-		purchase_unit: "st",
+		purchase_unit: create_container_unit("st") as ContainerUnit,
 
 		// Item Specification
 		item_size: 1,
